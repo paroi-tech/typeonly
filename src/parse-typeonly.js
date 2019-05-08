@@ -1,6 +1,6 @@
 const { CommonTokenStream, InputStream, tree: { ParseTreeWalker } } = require("antlr4")
-const { TypeOnlyLexer } = require("../../antlr-parser/TypeOnlyLexer")
-const { TypeOnlyParser } = require("../../antlr-parser/TypeOnlyParser")
+const { TypeOnlyLexer } = require("../antlr-parser/TypeOnlyLexer")
+const { TypeOnlyParser } = require("../antlr-parser/TypeOnlyParser")
 const { AstExtractor } = require("./AstExtractor")
 
 function parseTypeOnlyToAst(source) {
@@ -10,6 +10,7 @@ function parseTypeOnlyToAst(source) {
   const parser = new TypeOnlyParser(tokenStream)
 
   parser.buildParseTrees = true
+
   parser.removeErrorListeners()
   const errors = []
   parser.addErrorListener({
@@ -18,7 +19,7 @@ function parseTypeOnlyToAst(source) {
     }
   })
 
-  const tree = parser.script()
+  const tree = parser.defs()
 
   const extractor = new AstExtractor()
   ParseTreeWalker.DEFAULT.walk(extractor, tree)

@@ -1,8 +1,28 @@
 const { parseTypeOnlyToAst } = require("./parse-typeonly")
 
-const test = `
-abc = 2 * 3
-def = "AAA"
-`
+const test = `interface abc12{sd:string
+df:string
+}interface dff{ff:string
+cc:string
+}`
+// const test = `interface Abc{ab:
+//   dc:
+// }interface Abc2{abs:
+//   dcd:
+// }`
 
-parseTypeOnlyToAst(test)
+// const ast = [
+//   {
+//     categ: "interface",
+//     name: "Abc",
+//     properties: [
+//       {
+//         name: "ab",
+//         type: "string"
+//       }
+//     ]
+//   }
+// ]
+
+const ast = parseTypeOnlyToAst(test)
+console.log(JSON.stringify(ast, undefined, 2))

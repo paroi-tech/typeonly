@@ -1,21 +1,44 @@
-const { TypeOnlyListener } = require("../../antlr-parser/TypeOnlyListener")
+const { TypeOnlyListener } = require("../antlr-parser/TypeOnlyListener")
 
-export default class AstExtractor extends TypeOnlyListener {
-  ast = {}
+class AstExtractor extends TypeOnlyListener {
 
-  enterProg(ctx) {
-    console.log("enter prog")
+  enterDefs(ctx) {
+    this.ast = {
+      declarations: []
+    }
+    console.log("enter defs")
   }
 
-  exitProg(ctx) {
-    console.log("exit prog")
+  exitDefs(ctx) {
+    console.log("exit defs")
   }
 
-  enterExpr(ctx) {
-    console.log("enter expr")
+  enterInterfac(ctx) {
+    this.currentInterfaceDecl = {
+      declarationType: "interface",
+      whichType: "interface",
+      name: ctx.name().getText(),
+      entries: []
+    }
+    this.ast.declarations.push(this.currentInterfaceDecl)
+    console.log("enter interface", ctx.getText())
   }
 
-  exitExpr(ctx) {
-    console.log("exit expr")
+  exitInterfac(ctx) {
+    console.log("exit interface", ctx.getText())
   }
+
+  enterProperty(ctx) {
+    this.currentInterfaceDecl.entries.push({
+      entryType: "property",
+      name: ctx.name().getText(),
+      type: ctx.primitiveType().getText()
+    })
+  }
+
+  exitProperty(ctx) {
+  }
+
 }
+
+exports.AstExtractor = AstExtractor
