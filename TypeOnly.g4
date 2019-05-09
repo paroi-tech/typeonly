@@ -2,20 +2,20 @@ grammar TypeOnly;
 
 // Parser Rules
 
-defs: (interfac)*;
+defs: (separator)*? (interfac)*;
 name: ID;
 interfac:
-  Interface ' ' name separator? OpenBrace separator? (
-    property propertySeparator
-  )* CloseBrace separator?;
+  Interface WS? name (separator)*? OpenBrace (separator)*? (
+    property propertySeparator (separator)*?
+  )* CloseBrace (separator)*?;
 propertySeparator:
   NewLine
   | SemiColon
   | Comma
   | SemiColon NewLine
   | Comma NewLine;
-separator: NewLine | ' ';
-property: name Colon primitiveType;
+separator: NewLine | WS;
+property: name WS? Colon WS? primitiveType;
 primitiveType: String | Number;
 
 // Lexer Rules
@@ -39,7 +39,13 @@ Colon: ':';
 SemiColon: ';';
 Comma: ',';
 
-ID: (Underscore | Letter | Dollar | Underscore Dollar | Dollar Underscore) (Letter | Underscore | Digit)*;
+ID: (
+    Underscore
+    | Letter
+    | Dollar
+    | Underscore Dollar
+    | Dollar Underscore
+  ) (Letter | Underscore | Digit)*;
 
 // New line
 NewLine: ('\r'? '\n' | '\r');
@@ -48,6 +54,6 @@ NewLine: ('\r'? '\n' | '\r');
 MultiLineComment: '/*' .*? '*/' -> channel(HIDDEN);
 SingleLineComment: '//' .*? [\r|\n] -> channel(HIDDEN);
 
-// WhiteSpaces
-// WS: (' ')+ -> channel(HIDDEN);
-WhiteSpaces: [ \t\f]+ -> channel(HIDDEN);
+// WhiteSpaces WS: (' ')+ -> channel(HIDDEN); WhiteSpaces: [\t\u000B\u000C\u0020\u00A0]+ ->
+// channel(HIDDEN); WS: [\t\u000B\u000C\u0020\u00A0]+;
+WS: [ \t\f]+ -> channel(HIDDEN);

@@ -1,10 +1,37 @@
 const { parseTypeOnlyToAst } = require("./parse-typeonly")
 
-const test = `interface abc12{sd:string
-df:string
-}interface dff{ff:string
-cc:string
-}`
+const test = `
+interface                                                     $_abc12
+
+
+
+
+
+
+
+
+{
+
+
+
+
+
+  sd : string
+
+
+
+
+  df:string
+}                 interface _$dff
+{
+  ff:string
+  cc:string
+}
+
+
+
+`
+
 // const test = `interface Abc{ab:
 //   dc:
 // }interface Abc2{abs:

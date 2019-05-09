@@ -3,6 +3,6 @@ interface _$Abc {
     dc: number;
 }
 interface Abc2 {
-    ab: string;
+    interface: string;
     dc: number;
 }
