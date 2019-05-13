@@ -11,13 +11,16 @@ function parseTypeOnlyToAst(source) {
 
   parser.buildParseTrees = true
 
-  parser.removeErrorListeners()
   const errors = []
-  parser.addErrorListener({
+  const errorListener = {
     syntaxError(recognizer, offendingSymbol, line, column, msg, e) {
       errors.push(`Syntax error at line ${line}:${column}, ${msg}`)
     }
-  })
+  }
+  lexer.removeErrorListeners()
+  lexer.addErrorListener(errorListener)
+  parser.removeErrorListeners()
+  parser.addErrorListener(errorListener)
 
   const tree = parser.defs()
 

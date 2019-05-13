@@ -1,43 +1,52 @@
 const { parseTypeOnlyToAst } = require("./parse-typeonly")
 
 const test = `
+export  interface 2D extends exc , kk {
+  df ? : string
+  readonly ff : number,
+},
+
+
+interface add {};interface add {}`
+// const test = `export type df = string`
+// const test = `
 
 
 
-//dsdsd
+// //dsdsd
 
 
 
-export interface               $_âªabc12   extends dff , dds
-
-
-
-
-
-
-
-
-{
-
-
-
-
-
-  sd : string
+// export interface               $_abc12   extends dff  ,  dds
 
 
 
 
-  df:string
-}                 interface _$dff
-{
-  ff:string
-  cc:string
-}
 
 
 
-`
+
+// {
+
+
+
+
+
+//   sd : string
+
+
+
+
+//   df:string
+// }                 interface _$dffs
+// {
+//   ff:string
+//   cc:string
+// }
+
+
+
+// `
 
 // const test = ``;
 

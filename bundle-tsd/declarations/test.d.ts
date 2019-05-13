@@ -6,8 +6,7 @@ declare type cl = {
     fd: number;
     gh: string;
 };
-export interface _âª$bc extends dfdf, cl {
+interface _âª$bc {
     $_ab: string;
     dc: number;
 }
-export {};
