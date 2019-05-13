@@ -1,7 +1,14 @@
 const { parseTypeOnlyToAst } = require("./parse-typeonly")
 
 const test = `
-interface                                                     $_abc12
+
+
+
+//dsdsd
+
+
+
+export interface               $_âªabc12   extends dff , dds
 
 
 
@@ -31,6 +38,8 @@ interface                                                     $_abc12
 
 
 `
+
+// const test = ``;
 
 // const test = `interface Abc{ab:
 //   dc:

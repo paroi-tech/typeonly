@@ -1,7 +1,6 @@
-
- interface                                  _$Abc
-
-
+type dfdf = {fd : number, gh: string}
+type cl = {fd : number, gh: string}
+ export   interface                                _âª$bc extends
 
 
 
@@ -15,13 +14,15 @@
 
 
 
-  ab: string
+  $_ab: string
 
 
 
 
 
-  dc: number
+  dc:
+
+  number
 }
 
 
