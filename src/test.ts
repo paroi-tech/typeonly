@@ -4,3 +4,14 @@
 //   $_ab: interface
 //   dc:number,
 // }
+// interface type extends fd { }
+// ABC = "dfd"
+// String
+// type A = ABC
+// string literal
+// type B = "ABC
+
+"
+
+let bbb: B
+bbb = "ABC"

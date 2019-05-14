@@ -88,7 +88,7 @@ export type AstType = string
 
 export interface AstLiteralType {
   whichType: "literal"
-  value: string | number | boolean | undefined | null | symbol
+  value: string | number | boolean | bigint
 }
 
 export interface AstCompositeType {

@@ -6,31 +6,34 @@ defs: separator* elements;
 elements: element*;
 element: interfaceDecl | typeDecl;
 
+// literalType: Number | String | BooleanLiteral | NullLiteral | Undefined | Symbol;
 // InterfaceDeclaration
 interfaceDecl:
   Export? WS? Interface WS? Identifier WS? extend? separator* interfaceSimple interfaceSeparator*;
-interfaceSimple: OpenBrace separator* interfaceBody
-    CloseBrace;
+interfaceSimple: OpenBrace separator* interfaceBody CloseBrace;
 interfaceSeparator: WS | NewLine | SemiColon | Comma;
 extend: (Extends WS? typeName ( WS? Comma WS? typeName)*);
 interfaceBody: ( property propertySeparator*)*;
 
 // TypeDeclaration
-typeDecl: Export? WS? Type WS? Identifier WS? Assign WS? typeType interfaceSeparator*;
+typeDecl:
+  Export? WS? Type WS? Identifier WS? Assign WS? typeType interfaceSeparator*;
 
 propertySeparator: WS | NewLine | SemiColon | Comma;
-property: ReadOnly? WS? Identifier WS? QuestionMark? WS? Colon WS? primitiveType;
+property:
+  ReadOnly? WS? propertyName WS? QuestionMark? WS? Colon WS? primitiveType;
 typeType: primitiveType | interfaceSimple;
 primitiveType: String | Number | Identifier;
 typeName: Identifier;
+propertyName: Identifier | JsKeyword;
 separator: NewLine | WS;
 
-identifierName: Identifier | reservedWord;
-reservedWord:
-  futureReservedWord
-  | ( NullLiteral | BooleanLiteral);
+// identifierName: Identifier | reservedWord; reservedWord: futureReservedWord | ( NullLiteral |
+// BooleanLiteral);
 
-futureReservedWord: Extends | Export | Interface | Type;
+// futureReservedWord: Extends | Export | Interface | Type; reservedWords: If | For | While | Do |
+// Break | Continue | Finally | Import | Extends | Export | Interface | NullLiteral |
+// BooleanLiteral;
 
 // Lexer Rules
 
@@ -42,6 +45,28 @@ SemiColon: ';';
 Comma: ',';
 Assign: '=';
 QuestionMark: '?';
+
+fragment While: 'while';
+fragment Do: 'do';
+fragment Break: 'break';
+fragment Continue: 'continue';
+fragment Finally: 'finally';
+fragment Public: 'public';
+fragment Private: 'private';
+fragment Import: 'import';
+fragment If: 'if';
+fragment For: 'for';
+
+JsKeyword:
+  If
+  | For
+  | While
+  | Do
+  | Break
+  | Continue
+  | Finally
+  | Private
+  | Import;
 
 // Keywords
 Interface: 'interface';
@@ -56,13 +81,12 @@ NullLiteral: 'null';
 
 BooleanLiteral: 'true' | 'false';
 
-// Identifier: (
-//     Underscore
-//     | UnicodeLetter
-//     | Dollar
-//     | Underscore Dollar
-//     | Dollar Underscore
-//   ) (UnicodeLetter | Underscore)*;
+Undefined: 'undefined';
+
+Symbol: 'symbol';
+
+// Identifier: ( Underscore | UnicodeLetter | Dollar | Underscore Dollar | Dollar Underscore )
+// (UnicodeLetter | Underscore)*;
 
 Identifier: IdentifierStart IdentifierPart*;
 
@@ -77,10 +101,7 @@ SingleLineComment:
 // WhiteSpaces
 WS: [\t\u000B\u000C\u0020\u00A0]+ -> channel(HIDDEN);
 
-fragment Digit: [0-9];
-// fragment Letter: [a-zA-Z];
-fragment Underscore: '_';
-fragment Dollar: '$';
+// fragment Digit: [0-9]; fragment Letter: [a-zA-Z]; fragment Underscore: '_'; fragment Dollar: '$';
 
 fragment UnicodeEscapeSequence:
   'u' HexDigit HexDigit HexDigit HexDigit;
