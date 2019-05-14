@@ -1,12 +1,12 @@
 type Color = "red" | "blue"
 const colors = ["red", "blue"]
 
-let data = JSON.parse(`{"col": "red"}`)
+const data = JSON.parse(`{"col": "red"}`)
 
 if (!colors.includes(data.col))
   throw new Error(`Invalid color: ${data.col}`)
 
-let color: Color = data.col
+const color: Color = data.col
 
 const processors = {
   red() {
@@ -20,3 +20,5 @@ const processors = {
 processors[color]()
 
 console.log(color)
+
+export { }

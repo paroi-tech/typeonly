@@ -28,7 +28,7 @@ df:string
     })
   })
 
-  const invalidIdentifiers = ["2b", "a-b"]
+  const invalidIdentifiers = ["2b", "a-b", "if", "for", "while", "do", "break", "continue"]
   invalidIdentifiers.forEach(identifier => {
     test(`invalid identifier: ${identifier}`, () => {
       const input = `interface ${identifier} {}`
@@ -70,8 +70,8 @@ interface I1 { a: string, b: string; c: string }
   })
 
   const validTypeNames = {
-    "primitive": ["number", "string", "boolean"],
-    "standard": ["Number", "String", "Boolean", "Date", "Symbol"],
+    "primitive": ["number", "string", "boolean", "bigint"],
+    "standard": ["Number", "String", "Boolean", "Bigint", "Date", "Symbol"],
     "typescript": ["any", "void", "object", "unknown", "never"],
     "identifier": validIdentifiers,
   }
