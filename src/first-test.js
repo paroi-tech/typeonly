@@ -1,7 +1,7 @@
 const { parseTypeOnlyToAst } = require("./parse-typeonly")
 
 const test = `
-type T1 = { a? : number; readonly a: number }
+type T1 = "/sd\sd/"
 `
 // const test = `
 // export  interface D extends exc , kk {

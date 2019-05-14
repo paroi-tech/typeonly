@@ -93,6 +93,7 @@ class AstExtractor extends TypeOnlyListener {
   }
 
   enterTypeDecl(ctx) {
+    const reg = /^".*"$|^'.*'$|^`.*`$/
     const exported = ctx.Export() !== null
     const typeType = ctx.typeType().getText()
     if (typeType.includes("{")) {
@@ -114,11 +115,21 @@ class AstExtractor extends TypeOnlyListener {
       }
     }
     this.ast.declarations.push(this.currentTypeDecl)
-
     // const children = Object.values(ctx.typeType().interfaceSimple().interfaceBody().property()).map(child => child.getText())
 
-    console.log("enter type decl", ctx.getText())
+    let literalValue
+    if (ctx.typeType().literal() !== null) {
+      literalValue = ctx.typeType().literal().getText()
+    }
+
+    console.log("enter type decl", literalValue)
   }
+  // enterLiteral(ctx) {
+  //   console.log("enter literal", ctx.getText())
+  // }
+  // exitLiteral(ctx) {
+  //   console.log("exit literal", ctx.getText())
+  // }
   exitTypeDecl(ctx) {
     console.log("exit type decl", ctx.getText())
   }

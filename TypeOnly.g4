@@ -6,6 +6,19 @@ defs: separator* elements;
 elements: element*;
 element: interfaceDecl | typeDecl;
 
+literal:
+  TemplateStringLiteral* NullLiteral
+  | BooleanLiteral
+  | StringLiteral
+  | TemplateStringLiteral
+  | numericLiteral TemplateStringLiteral*;
+numericLiteral:
+  DecimalLiteral
+  | HexIntegerLiteral
+  | OctalIntegerLiteral
+  | OctalIntegerLiteral2
+  | BinaryIntegerLiteral;
+literalSeparator: '\'' | '"' | '`' | '\\\\' | '/';
 // literalType: Number | String | BooleanLiteral | NullLiteral | Undefined | Symbol;
 // InterfaceDeclaration
 interfaceDecl:
@@ -22,7 +35,7 @@ typeDecl:
 propertySeparator: WS | NewLine | SemiColon | Comma;
 property:
   ReadOnly? WS? propertyName WS? QuestionMark? WS? Colon WS? primitiveType;
-typeType: primitiveType | interfaceSimple;
+typeType: interfaceSimple | literal | primitiveType;
 primitiveType: String | Number | Identifier;
 typeName: Identifier;
 propertyName: Identifier | JsKeyword;
@@ -37,7 +50,8 @@ separator: NewLine | WS;
 
 // Lexer Rules
 
-// Punctuation
+// RegularExpressionLiteral: '/' RegularExpressionFirstChar RegularExpressionChar* '/'
+// IdentifierPart*; Punctuation
 OpenBrace: '{';
 CloseBrace: '}';
 Colon: ':';
@@ -46,16 +60,31 @@ Comma: ',';
 Assign: '=';
 QuestionMark: '?';
 
-fragment While: 'while';
-fragment Do: 'do';
-fragment Break: 'break';
-fragment Continue: 'continue';
-fragment Finally: 'finally';
-fragment Public: 'public';
-fragment Private: 'private';
-fragment Import: 'import';
-fragment If: 'if';
-fragment For: 'for';
+// Literals
+NullLiteral: 'null';
+BooleanLiteral: 'true' | 'false';
+NumberLiteral: [0-9]+;
+BigIntLiteral: [0-9]+ 'n';
+DecimalLiteral:
+  DecimalIntegerLiteral '.' [0-9]* ExponentPart?
+  | '.' [0-9]+ ExponentPart?
+  | DecimalIntegerLiteral ExponentPart?;
+HexIntegerLiteral: '0' [xX] HexDigit+;
+OctalIntegerLiteral: '0' [0-7]+;
+OctalIntegerLiteral2: '0' [oO] [0-7]+;
+BinaryIntegerLiteral: '0' [bB] [01]+;
+
+// Keywords
+While: 'while';
+Do: 'do';
+Break: 'break';
+Continue: 'continue';
+Finally: 'finally';
+Public: 'public';
+Private: 'private';
+Import: 'import';
+If: 'if';
+For: 'for';
 
 JsKeyword:
   If
@@ -77,18 +106,17 @@ String: 'string';
 Number: 'number';
 ReadOnly: 'readonly';
 
-NullLiteral: 'null';
+Identifier: IdentifierStart IdentifierPart*;
 
-BooleanLiteral: 'true' | 'false';
-
-Undefined: 'undefined';
-
-Symbol: 'symbol';
+// StringLiteral:;
+StringLiteral: (
+    '"' DoubleStringCharacter* '"'
+    | '\'' SingleStringCharacter* '\''
+  );
+TemplateStringLiteral: '`' ('\\`' | ~'`')* '`';
 
 // Identifier: ( Underscore | UnicodeLetter | Dollar | Underscore Dollar | Dollar Underscore )
 // (UnicodeLetter | Underscore)*;
-
-Identifier: IdentifierStart IdentifierPart*;
 
 // New line
 NewLine: ('\r'? '\n' | '\r');
@@ -101,13 +129,33 @@ SingleLineComment:
 // WhiteSpaces
 WS: [\t\u000B\u000C\u0020\u00A0]+ -> channel(HIDDEN);
 
-// fragment Digit: [0-9]; fragment Letter: [a-zA-Z]; fragment Underscore: '_'; fragment Dollar: '$';
+// Fragments
+fragment DoubleStringCharacter:
+  ~["\\\r\n]
+  | '\\' EscapeSequence;
 
+fragment SingleStringCharacter:
+  ~['\\\r\n]
+  | '\\' EscapeSequence;
+fragment EscapeSequence:
+  CharacterEscapeSequence
+  | '0' // no digit ahead! TODO
+  | HexEscapeSequence
+  | UnicodeEscapeSequence
+  | ExtendedUnicodeEscapeSequence;
+fragment HexEscapeSequence: 'x' HexDigit HexDigit;
+fragment CharacterEscapeSequence:
+  SingleEscapeCharacter
+  | NonEscapeCharacter;
+fragment NonEscapeCharacter: ~['"\\bfnrtv0-9xu\r\n];
+fragment ExtendedUnicodeEscapeSequence: 'u' '{' HexDigit+ '}';
 fragment UnicodeEscapeSequence:
   'u' HexDigit HexDigit HexDigit HexDigit;
-
+fragment SingleEscapeCharacter: ['"\\bfnrtv];
+fragment EscapeCharacter: SingleEscapeCharacter | [0-9] | [xu];
 fragment HexDigit: [0-9a-fA-F];
-
+fragment DecimalIntegerLiteral: '0' | [1-9] [0-9]*;
+fragment ExponentPart: [eE] [+-]? [0-9]+;
 fragment IdentifierStart:
   UnicodeLetter
   | [$_]
@@ -514,3 +562,16 @@ fragment UnicodeConnectorPunctuation:
   | [\uFF65];
 fragment ZWNJ: '\u200C';
 fragment ZWJ: '\u200D';
+fragment RegularExpressionFirstChar:
+  ~[*\r\n\u2028\u2029\\/[]
+  | RegularExpressionBackslashSequence
+  | '[' RegularExpressionClassChar* ']';
+fragment RegularExpressionChar:
+  ~[\r\n\u2028\u2029\\/[]
+  | RegularExpressionBackslashSequence
+  | '[' RegularExpressionClassChar* ']';
+fragment RegularExpressionClassChar:
+  ~[\r\n\u2028\u2029\]\\]
+  | RegularExpressionBackslashSequence;
+fragment RegularExpressionBackslashSequence:
+  '\\' ~[\r\n\u2028\u2029];
