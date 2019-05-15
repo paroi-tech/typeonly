@@ -6,19 +6,22 @@ defs: separator* elements;
 elements: element*;
 element: interfaceDecl | typeDecl;
 
+// literal: literalSeparator NumberLiteral literalSeparator;
 literal:
-  TemplateStringLiteral* NullLiteral
+  literalSeparator* TemplateStringLiteral* NullLiteral
   | BooleanLiteral
   | StringLiteral
+  | BigIntLiteral
+  | NumberLiteral
   | TemplateStringLiteral
-  | numericLiteral TemplateStringLiteral*;
+  | numericLiteral TemplateStringLiteral* literalSeparator*;
 numericLiteral:
   DecimalLiteral
   | HexIntegerLiteral
   | OctalIntegerLiteral
   | OctalIntegerLiteral2
   | BinaryIntegerLiteral;
-literalSeparator: '\'' | '"' | '`' | '\\\\' | '/';
+literalSeparator: '"' | '\'' | '`';
 // literalType: Number | String | BooleanLiteral | NullLiteral | Undefined | Symbol;
 // InterfaceDeclaration
 interfaceDecl:
@@ -63,6 +66,7 @@ QuestionMark: '?';
 // Literals
 NullLiteral: 'null';
 BooleanLiteral: 'true' | 'false';
+// StringLit: [a-zA-Z]+;
 NumberLiteral: [0-9]+;
 BigIntLiteral: [0-9]+ 'n';
 DecimalLiteral:
@@ -108,7 +112,6 @@ ReadOnly: 'readonly';
 
 Identifier: IdentifierStart IdentifierPart*;
 
-// StringLiteral:;
 StringLiteral: (
     '"' DoubleStringCharacter* '"'
     | '\'' SingleStringCharacter* '\''

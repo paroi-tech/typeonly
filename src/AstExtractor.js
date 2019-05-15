@@ -20,13 +20,18 @@ class AstExtractor extends TypeOnlyListener {
     // if (jsKeyWords.has(typeName))
     //   throw new Error(`Reserved word: ${typeName}`)
     const exported = ctx.Export() !== null
+    const extds = []
+    if (ctx.extend() !== null) {
+      const extend = Object.values(ctx.extend().typeName()).map(child => child.getText())
+      extds.push(...extend)
+    }
     this.currentInterfaceDecl = {
       declarationType: "interface",
       whichType: "interface",
       name: ctx.Identifier().getText(),
       entries: [],
       exported,
-      extends: []
+      extends: extds
     }
     this.ast.declarations.push(this.currentInterfaceDecl)
 
@@ -39,22 +44,30 @@ class AstExtractor extends TypeOnlyListener {
     //     else
     //         text += ctx.children[index].getText()
     // }
-    // console.log("enter interface", ctx.getText())
+    // let ty
+    // if(ctx.extend().typeName() )
+    // en
+    // if (ctx.interfaceSimple())
+
+
+    // const children2 = Object.values(ctx.interfaceSimple().interfaceBody().property()).map(child => child.getText())
+
+    // console.log("enter interface", extds)
   }
 
   exitInterfaceDecl(ctx) {
     // console.log("exit interface", ctx.getText())
   }
 
-  enterExtend(ctx) {
-    const children = Object.values(ctx.typeName()).map(child => child.getText())
-    this.currentInterfaceDecl.extends.push(...children)
-    // console.log("enter extends", ctx.getText())
-  }
+  // enterExtend(ctx) {
+  //   const children = Object.values(ctx.typeName()).map(child => child.getText())
+  //   this.currentInterfaceDecl.extends.push(...children)
+  //   // console.log("enter extends", ctx.getText())
+  // }
 
-  exitExtend(ctx) {
-    // console.log("exit extends", ctx.getText())
-  }
+  // exitExtend(ctx) {
+  //   // console.log("exit extends", ctx.getText())
+  // }
 
   enterProperty(ctx) {
     if (this.currentInterfaceDecl !== undefined) {
@@ -85,44 +98,58 @@ class AstExtractor extends TypeOnlyListener {
       }
     }
 
-    console.log("enter property", ctx.getText())
+    // console.log("enter property", ctx.getText())
   }
 
   exitProperty(ctx) {
-    console.log("exit property")
+    // console.log("exit property")
   }
 
   enterTypeDecl(ctx) {
-    const reg = /^".*"$|^'.*'$|^`.*`$/
+    // const reg = /^".*"$|^'.*'$|^`.*`$/
+    let lit
     const exported = ctx.Export() !== null
-    const typeType = ctx.typeType().getText()
-    if (typeType.includes("{")) {
-      this.currentTypeDecl = {
-        declarationType: "type",
-        name: ctx.Identifier().getText(),
-        type: {
-          whichType: "interface",
-          entries: []
-        },
-        exported
-      }
-    } else {
-      this.currentTypeDecl = {
-        declarationType: "type",
-        name: ctx.Identifier().getText(),
-        type: ctx.typeType().getText(),
-        exported
+    // const typeType = ctx.typeType().getText()
+    if (ctx.typeType() !== null) {
+      if (ctx.typeType().interfaceSimple() !== null) {
+        this.currentTypeDecl = {
+          declarationType: "type",
+          name: ctx.Identifier().getText(),
+          type: {
+            whichType: "interface",
+            entries: []
+          },
+          exported
+        }
+      } else if (ctx.typeType() !== null && ctx.typeType().literal() !== null) {
+        // const children = Object.values(ctx.typeType().literal().literalSeparator()).map(child => child.getText())
+        // if (ctx.typeType().literal().literalSeparator() !== null)
+        //   lit = ctx.typeType().literal().literalSeparator().getText()
+
+        this.currentTypeDecl = {
+          declarationType: "type",
+          name: ctx.Identifier().getText(),
+          type: {
+            whichType: "literal",
+            // value: string | number | boolean | bigint
+            // stringDelim?: "\"" | "'" | "`"
+            value: eval(ctx.typeType().literal().getText())
+          },
+          exported
+        }
+      } else {
+        this.currentTypeDecl = {
+          declarationType: "type",
+          name: ctx.Identifier().getText(),
+          type: ctx.typeType().getText(),
+          exported
+        }
       }
     }
     this.ast.declarations.push(this.currentTypeDecl)
     // const children = Object.values(ctx.typeType().interfaceSimple().interfaceBody().property()).map(child => child.getText())
 
-    let literalValue
-    if (ctx.typeType().literal() !== null) {
-      literalValue = ctx.typeType().literal().getText()
-    }
-
-    console.log("enter type decl", literalValue)
+    console.log("enter type decl", ctx.getText())
   }
   // enterLiteral(ctx) {
   //   console.log("enter literal", ctx.getText())
@@ -130,10 +157,17 @@ class AstExtractor extends TypeOnlyListener {
   // exitLiteral(ctx) {
   //   console.log("exit literal", ctx.getText())
   // }
+
   exitTypeDecl(ctx) {
     console.log("exit type decl", ctx.getText())
   }
 
+  enterLiteralSeparator(ctx) {
+    console.log("enter literal sep", ctx.getText())
+  }
+  exitLiteralSeparator(ctx) {
+    console.log("exit literal sep", ctx.getText())
+  }
   // enterInterfaceSimple(ctx) {
   //   if (this.currentTypeDecl !== undefined) {
   //     this.currentTypeDecl.type.push({
