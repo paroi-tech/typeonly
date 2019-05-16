@@ -26,20 +26,30 @@ literalSeparator: '"' | '\'' | '`';
 // InterfaceDeclaration
 interfaceDecl:
   Export? WS? Interface WS? Identifier WS? extend? separator* interfaceSimple interfaceSeparator*;
-interfaceSimple: OpenBrace separator* interfaceBody CloseBrace;
+interfaceSimple:
+  OpenBrace separator* (
+    (property | functionProperty) propertySeparator*
+  )* CloseBrace;
 interfaceSeparator: WS | NewLine | SemiColon | Comma;
 extend: (Extends WS? typeName ( WS? Comma WS? typeName)*);
-interfaceBody: ( property propertySeparator*)*;
+// interfaceBody: ( property propertySeparator*)*;
 
 // TypeDeclaration
 typeDecl:
   Export? WS? Type WS? Identifier WS? Assign WS? typeType interfaceSeparator*;
 
-propertySeparator: WS | NewLine | SemiColon | Comma;
+propertySeparator: NewLine | SemiColon | Comma;
 property:
-  ReadOnly? WS? propertyName WS? QuestionMark? WS? Colon WS? primitiveType;
-typeType: interfaceSimple | literal | primitiveType;
-primitiveType: String | Number | Identifier;
+  ReadOnly? WS? propertyName WS? QuestionMark? WS? Colon WS? typeType;
+functionProperty:
+  ReadOnly? WS? propertyName WS? QuestionMark? OpenBracket WS? params* CloseBracket WS? Colon WS?
+    typeType;
+// propertyFunction: functionType1 | functionType2; functionType1: ; functionType2: ;
+typeType: Identifier | literal | interfaceSimple | functionType;
+functionType:
+  OpenBracket WS? params* CloseBracket WS? Assign MoreThan WS? Identifier;
+params: Identifier WS? Colon WS? typeType propertySeparator*;
+// primitiveType: Identifier | interfaceSimple;
 typeName: Identifier;
 propertyName: Identifier | JsKeyword;
 separator: NewLine | WS;
@@ -62,6 +72,9 @@ SemiColon: ';';
 Comma: ',';
 Assign: '=';
 QuestionMark: '?';
+OpenBracket: '(';
+CloseBracket: ')';
+MoreThan: '>';
 
 // Literals
 NullLiteral: 'null';
@@ -106,8 +119,7 @@ Interface: 'interface';
 Type: 'type';
 Export: 'export';
 Extends: 'extends';
-String: 'string';
-Number: 'number';
+// String: 'string'; Number: 'number';
 ReadOnly: 'readonly';
 
 Identifier: IdentifierStart IdentifierPart*;

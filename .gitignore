@@ -6,3 +6,9 @@ node_modules
 /.antlr
 /antlr-*.jar
 /antlr-parser
+
+/src/TestExtractor.js
+/src/test-test.js
+/src/parse-test.js
+/Test.g4
+/src/.antlr/Test*

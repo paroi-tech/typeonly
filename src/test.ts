@@ -20,8 +20,11 @@
 // let bbb: B
 // bbb = "ABC"
 
-const validLiterals = [`"abc"`, `12`, `2.3`, `false`, `true`]
-
+const validLiterals = [`"abc"`, `"a\\"b"`, `'a\\'b'`, `23n`, `12`, `2.3`, `false`, `true`]
 validLiterals.forEach(literal => {
-  console.log(eval(literal))
+  console.log(literal.substring(1, 1))
 })
+
+interface df {
+  r: for
+}

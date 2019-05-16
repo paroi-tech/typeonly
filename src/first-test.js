@@ -6,11 +6,21 @@ const { parseTypeOnlyToAst } = require("./parse-typeonly")
 // type T1 = "ZD"
 // `
 
+// const test = `interface I1 {
+//   a: {
+//     b: string
+//   }
+// }`
+
+// Function
 const test = `interface I1 {
-  a: {
-    b: string
-  }
+  a: (p1: T1, p2: T2) => void
 }`
+
+// const test = `interface add {
+//   a: number
+//   b: string
+// }`
 
 // const test = `
 // type T1 = {
