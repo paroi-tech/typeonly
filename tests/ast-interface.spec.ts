@@ -88,4 +88,27 @@ interface I1 { a: string, b: string; c: string }
       })
     }
   })
+
+  test("extends", () => {
+    const input = `
+interface I1 extends I2, I3 {
+  a: number
+}
+      `
+    const ast = parseTypeOnlyToAst(input)
+    const interfaceDecl = ast.declarations[0] as AstInterfaceDeclaration
+    expect(interfaceDecl.extends).toEqual(["I2", "I3"])
+  })
+
+  test("interface with optional property", () => {
+    const input = `
+interface I1 {
+  a?: number
+}
+      `
+    const ast = parseTypeOnlyToAst(input)
+    const interfaceDecl = ast.declarations[0] as AstInterfaceDeclaration
+    const prop = interfaceDecl.entries[0] as AstProperty
+    expect(prop.optional).toBe(true)
+  })
 })

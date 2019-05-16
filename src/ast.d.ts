@@ -117,8 +117,13 @@ export interface AstGenericType {
 
 export interface AstFunctionType {
   whichType: "function"
-  parameters: AstType[]
+  parameters: AstParameter[]
   returnValue: AstType
+}
+
+export interface AstParameter {
+  name: string
+  type: AstType
 }
 
 export interface AstInlineImportType {
