@@ -2,12 +2,12 @@ export interface Ast {
   declarations: AstDeclaration[]
 }
 
-export type AstDeclaration = AstImportDeclaration
+export type AstDeclaration = AstImport
   | AstNamedInterface
   | AstNamedType
   | AstStandaloneComment
 
-export interface AstImportDeclaration extends AstCommentable {
+export interface AstImport extends AstCommentable {
   declarationType: "import"
   from: string
   defaultName?: string
