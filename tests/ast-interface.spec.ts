@@ -1,4 +1,4 @@
-import { AstInterfaceDeclaration, AstProperty } from "../src/ast"
+import { AstNamedInterface, AstProperty } from "../src/ast"
 import { parseTypeOnlyToAst } from "../src/parse-typeonly"
 
 describe("AST Specification for Interfaces", () => {
@@ -23,8 +23,8 @@ df:string
     test(`valid identifier: ${identifier}`, () => {
       const input = `interface ${identifier} {}`
       const ast = parseTypeOnlyToAst(input)
-      const interfaceDecl = ast.declarations[0] as AstInterfaceDeclaration
-      expect(interfaceDecl.name).toBe(identifier)
+      const namedInterface = ast.declarations[0] as AstNamedInterface
+      expect(namedInterface.name).toBe(identifier)
     })
   })
 
@@ -56,8 +56,8 @@ interface I1 {
 }
 `
     const ast = parseTypeOnlyToAst(input)
-    const interfaceDecl = ast.declarations[0] as AstInterfaceDeclaration
-    expect(interfaceDecl.entries.length).toBe(4)
+    const namedInterface = ast.declarations[0] as AstNamedInterface
+    expect(namedInterface.entries.length).toBe(4)
   })
 
   test("inline interface", () => {
@@ -65,8 +65,8 @@ interface I1 {
 interface I1 { a: string, b: string; c: string }
 `
     const ast = parseTypeOnlyToAst(input)
-    const interfaceDecl = ast.declarations[0] as AstInterfaceDeclaration
-    expect(interfaceDecl.entries.length).toBe(3)
+    const namedInterface = ast.declarations[0] as AstNamedInterface
+    expect(namedInterface.entries.length).toBe(3)
   })
 
   const validTypeNames = {
@@ -82,8 +82,8 @@ interface I1 { a: string, b: string; c: string }
           a: ${typeName}
         }`
         const ast = parseTypeOnlyToAst(input)
-        const interfaceDecl = ast.declarations[0] as AstInterfaceDeclaration
-        const property = interfaceDecl.entries[0] as AstProperty
+        const namedInterface = ast.declarations[0] as AstNamedInterface
+        const property = namedInterface.entries[0] as AstProperty
         expect(property.type).toBe(typeName)
       })
     }
@@ -96,8 +96,8 @@ interface I1 extends I2, I3 {
 }
       `
     const ast = parseTypeOnlyToAst(input)
-    const interfaceDecl = ast.declarations[0] as AstInterfaceDeclaration
-    expect(interfaceDecl.extends).toEqual(["I2", "I3"])
+    const namedInterface = ast.declarations[0] as AstNamedInterface
+    expect(namedInterface.extends).toEqual(["I2", "I3"])
   })
 
   test("interface with optional property", () => {
@@ -107,8 +107,8 @@ interface I1 {
 }
       `
     const ast = parseTypeOnlyToAst(input)
-    const interfaceDecl = ast.declarations[0] as AstInterfaceDeclaration
-    const prop = interfaceDecl.entries[0] as AstProperty
+    const namedInterface = ast.declarations[0] as AstNamedInterface
+    const prop = namedInterface.entries[0] as AstProperty
     expect(prop.optional).toBe(true)
   })
 })

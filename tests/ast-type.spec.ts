@@ -1,4 +1,4 @@
-import { AstInterface, AstInterfaceDeclaration, AstProperty, AstTypeDeclaration } from "../src/ast"
+import { AstInterface, AstNamedInterface, AstProperty, AstNamedType } from "../src/ast"
 import { parseTypeOnlyToAst } from "../src/parse-typeonly"
 
 describe("AST Specification for Types", () => {
@@ -8,9 +8,9 @@ describe("AST Specification for Types", () => {
 type T1 = string
 `
     const ast = parseTypeOnlyToAst(input)
-    const typeDecl = ast.declarations[0] as AstTypeDeclaration
-    expect(typeDecl.name).toBe("T1")
-    expect(typeDecl.type).toBe("string")
+    const namedType = ast.declarations[0] as AstNamedType
+    expect(namedType.name).toBe("T1")
+    expect(namedType.type).toBe("string")
   })
 
   test("type assign with interface", () => {
@@ -18,8 +18,8 @@ type T1 = string
 type T1 = { a: number }
 `
     const ast = parseTypeOnlyToAst(input)
-    const typeDecl = ast.declarations[0] as AstTypeDeclaration
-    const type = typeDecl.type as AstInterface
+    const namedType = ast.declarations[0] as AstNamedType
+    const type = namedType.type as AstInterface
     expect(type.whichType).toBe("interface")
   })
 })

@@ -3,8 +3,8 @@ export interface Ast {
 }
 
 export type AstDeclaration = AstImportDeclaration
-  | AstInterfaceDeclaration
-  | AstTypeDeclaration
+  | AstNamedInterface
+  | AstNamedType
   | AstStandaloneComment
 
 export interface AstImportDeclaration extends AstCommentable {
@@ -22,7 +22,7 @@ export interface AstInterface {
   entries: AstInterfaceEntry[]
 }
 
-export interface AstInterfaceDeclaration extends AstInterface, AstCommentable {
+export interface AstNamedInterface extends AstInterface, AstCommentable {
   declarationType: "interface"
   name: string
   exported?: boolean
@@ -69,7 +69,7 @@ export interface AstMappedIndexSignature extends AstCommentable {
   readonly?: boolean
 }
 
-export interface AstTypeDeclaration extends AstCommentable {
+export interface AstNamedType extends AstCommentable {
   declarationType: "type"
   name: string
   type: AstType

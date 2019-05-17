@@ -1,4 +1,4 @@
-import { AstInterface, AstInterfaceDeclaration, AstProperty } from "../src/ast"
+import { AstInterface, AstNamedInterface, AstProperty } from "../src/ast"
 import { parseTypeOnlyToAst } from "../src/parse-typeonly"
 
 describe("AST Specification for Nested Types", () => {
@@ -12,10 +12,10 @@ interface I1 {
       `
     const ast = parseTypeOnlyToAst(input)
     expect(ast.declarations.length).toBe(1)
-    const interfaceDecl = ast.declarations[0] as AstInterfaceDeclaration
-    expect(interfaceDecl.whichType).toBe("interface")
-    expect(interfaceDecl.entries.length).toBe(1)
-    const property = interfaceDecl.entries[0] as AstProperty
+    const namedInterface = ast.declarations[0] as AstNamedInterface
+    expect(namedInterface.whichType).toBe("interface")
+    expect(namedInterface.entries.length).toBe(1)
+    const property = namedInterface.entries[0] as AstProperty
     expect(property.entryType).toBe("property")
     expect(property.name).toBe("a")
     const subType = property.type as AstInterface

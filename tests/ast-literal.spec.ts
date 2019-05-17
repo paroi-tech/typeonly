@@ -1,4 +1,4 @@
-import { AstTypeDeclaration } from "../src/ast"
+import { AstNamedType } from "../src/ast"
 import { parseTypeOnlyToAst } from "../src/parse-typeonly"
 
 describe("AST Specification for Literal Types", () => {
@@ -8,8 +8,8 @@ describe("AST Specification for Literal Types", () => {
     test(`valid literal: ${literal}`, () => {
       const input = `type T1 = ${literal}`
       const ast = parseTypeOnlyToAst(input)
-      const typeDecl = ast.declarations[0] as AstTypeDeclaration
-      expect(typeDecl.type).toEqual({
+      const namedType = ast.declarations[0] as AstNamedType
+      expect(namedType.type).toEqual({
         whichType: "literal",
         // tslint:disable-next-line: no-eval
         value: eval(literal)

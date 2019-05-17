@@ -4,7 +4,7 @@ grammar TypeOnly;
 
 defs: separator* elements;
 elements: element*;
-element: interfaceDecl | typeDecl;
+element: namedInterface | namedType;
 
 // literal: literalSeparator NumberLiteral literalSeparator;
 literal:
@@ -22,11 +22,11 @@ numericLiteral:
   | OctalIntegerLiteral2
   | BinaryIntegerLiteral;
 literalSeparator: '"' | '\'' | '`';
-// literalType: Number | String | BooleanLiteral | NullLiteral | Undefined | Symbol;
-// InterfaceDeclaration
-interfaceDecl:
-  Export? WS? Interface WS? Identifier WS? extend? separator* interfaceSimple interfaceSeparator*;
-interfaceSimple:
+// literalType: Number | String | BooleanLiteral | NullLiteral | Undefined | Symbol; NamedInterface
+namedInterface:
+  Export? WS? Interface WS? Identifier WS? extend? separator* anonymousInterface interfaceSeparator*
+    ;
+anonymousInterface:
   OpenBrace separator* (
     (property | functionProperty) propertySeparator*
   )* CloseBrace;
@@ -34,22 +34,22 @@ interfaceSeparator: WS | NewLine | SemiColon | Comma;
 extend: (Extends WS? typeName ( WS? Comma WS? typeName)*);
 // interfaceBody: ( property propertySeparator*)*;
 
-// TypeDeclaration
-typeDecl:
-  Export? WS? Type WS? Identifier WS? Assign WS? typeType interfaceSeparator*;
+// NamedType
+namedType:
+  Export? WS? Type WS? Identifier WS? Assign WS? aType interfaceSeparator*;
 
 propertySeparator: NewLine | SemiColon | Comma;
 property:
-  ReadOnly? WS? propertyName WS? QuestionMark? WS? Colon WS? typeType;
+  ReadOnly? WS? propertyName WS? QuestionMark? WS? Colon WS? aType;
 functionProperty:
   ReadOnly? WS? propertyName WS? QuestionMark? OpenBracket WS? params* CloseBracket WS? Colon WS?
-    typeType;
+    aType;
 // propertyFunction: functionType1 | functionType2; functionType1: ; functionType2: ;
-typeType: Identifier | literal | interfaceSimple | functionType;
+aType: Identifier | literal | anonymousInterface | functionType;
 functionType:
   OpenBracket WS? params* CloseBracket WS? Assign MoreThan WS? Identifier;
-params: Identifier WS? Colon WS? typeType propertySeparator*;
-// primitiveType: Identifier | interfaceSimple;
+params: Identifier WS? Colon WS? aType propertySeparator*;
+// primitiveType: Identifier | anonymousInterface;
 typeName: Identifier;
 propertyName: Identifier | JsKeyword;
 separator: NewLine | WS;

@@ -12,3 +12,4 @@ node_modules
 /src/parse-test.js
 /Test.g4
 /src/.antlr/Test*
+/src/tmp

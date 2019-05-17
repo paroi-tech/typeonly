@@ -1,12 +1,12 @@
-import { AstFunctionProperty, AstFunctionType, AstInterfaceDeclaration, AstProperty } from "../src/ast"
+import { AstFunctionProperty, AstFunctionType, AstNamedInterface, AstProperty } from "../src/ast"
 import { parseTypeOnlyToAst } from "../src/parse-typeonly"
 
 describe("AST Specification for Interfaces (part 2)", () => {
   const testFunctionAsProperty = (input: string, entryType: string, parameters: any[], returnValue: string) => {
     test(`a function as ${entryType}, ${parameters.length === 0 ? "no parameter" : `with ${parameters.length} parameters`}`, () => {
       const ast = parseTypeOnlyToAst(input)
-      const interfaceDecl = ast.declarations[0] as AstInterfaceDeclaration
-      const prop = interfaceDecl.entries[0] as AstProperty
+      const namedInterface = ast.declarations[0] as AstNamedInterface
+      const prop = namedInterface.entries[0] as AstProperty
       expect(prop.entryType).toBe(entryType)
       expect(prop.name).toBe("a")
       const propType = prop.type as AstFunctionType

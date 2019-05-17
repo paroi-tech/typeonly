@@ -48,14 +48,14 @@ class AstExtractor extends TypeOnlyListener {
     console.log("exit interface", ctx.getText(), Object.keys(this.currentInterfaces.entries).length)
   }
 
-  // AstTypeDeclaration
+  // AstNamedType
   enterTypeDecl(ctx) {
     // const reg = /^".*"$|^'.*'$|^`.*`$/
     let lit
     const exported = ctx.Export() !== null
-    // const typeType = ctx.typeType().getText()
-    if (ctx.typeType() !== null) {
-      if (ctx.typeType().interfaceSimple() !== null) {
+    // const aType = ctx.aType().getText()
+    if (ctx.aType() !== null) {
+      if (ctx.aType().anonymousInterface() !== null) {
         this.currentTypeDecl = {
           declarationType: "type",
           name: ctx.Identifier().getText(),
@@ -65,21 +65,21 @@ class AstExtractor extends TypeOnlyListener {
           },
           exported
         }
-      } else if (ctx.typeType() !== null && ctx.typeType().literal() !== null) {
-        // const children = Object.values(ctx.typeType().literal().literalSeparator()).map(child => child.getText())
-        // if (ctx.typeType().literal().literalSeparator() !== null)
-        //   lit = ctx.typeType().literal().literalSeparator().getText()
+      } else if (ctx.aType() !== null && ctx.aType().literal() !== null) {
+        // const children = Object.values(ctx.aType().literal().literalSeparator()).map(child => child.getText())
+        // if (ctx.aType().literal().literalSeparator() !== null)
+        //   lit = ctx.aType().literal().literalSeparator().getText()
         // const regStringLimitDoubleQuote = /^".*"$/
         // const regStringLimitSingleQuote = /^'.*'$/
         // const regStringLimitBackQuote = /^`.*`$/
-        // const literal = ctx.typeType().literal().getText()
+        // const literal = ctx.aType().literal().getText()
 
         this.currentTypeDecl = {
           declarationType: "type",
           name: ctx.Identifier().getText(),
           type: {
             whichType: "literal",
-            value: eval(ctx.typeType().literal().getText())
+            value: eval(ctx.aType().literal().getText())
           },
           exported
         }
@@ -91,7 +91,7 @@ class AstExtractor extends TypeOnlyListener {
         //     type: {
         //       whichType: "literal",
         //       stringDelim: "\"",
-        //       value: eval(ctx.typeType().literal().getText())
+        //       value: eval(ctx.aType().literal().getText())
         //     },
         //     exported
         //   }
@@ -102,7 +102,7 @@ class AstExtractor extends TypeOnlyListener {
         //     type: {
         //       whichType: "literal",
         //       stringDelim: "'",
-        //       value: eval(ctx.typeType().literal().getText())
+        //       value: eval(ctx.aType().literal().getText())
         //     },
         //     exported
         //   }
@@ -113,7 +113,7 @@ class AstExtractor extends TypeOnlyListener {
         //     type: {
         //       whichType: "literal",
         //       stringDelim: "`",
-        //       value: eval(ctx.typeType().literal().getText())
+        //       value: eval(ctx.aType().literal().getText())
         //     },
         //     exported
         //   }
@@ -124,7 +124,7 @@ class AstExtractor extends TypeOnlyListener {
         //     type: {
         //       whichType: "literal",
         //       stringDelim: "",
-        //       value: eval(ctx.typeType().literal().getText())
+        //       value: eval(ctx.aType().literal().getText())
         //     },
         //     exported
         //   }
@@ -134,13 +134,13 @@ class AstExtractor extends TypeOnlyListener {
         this.currentTypeDecl = {
           declarationType: "type",
           name: ctx.Identifier().getText(),
-          type: ctx.typeType().getText(),
+          type: ctx.aType().getText(),
           exported
         }
       }
     }
     this.ast.declarations.push(this.currentTypeDecl)
-    // const children = Object.values(ctx.typeType().interfaceSimple().interfaceBody().property()).map(child => child.getText())
+    // const children = Object.values(ctx.aType().anonymousInterface().interfaceBody().property()).map(child => child.getText())
 
     console.log("enter type decl", ctx.getText())
   }
@@ -165,7 +165,7 @@ class AstExtractor extends TypeOnlyListener {
       const optional = !!ctx.QuestionMark()
       const readonly = !!ctx.ReadOnly()
 
-      if (!!ctx.typeType().interfaceSimple()) {
+      if (!!ctx.aType().anonymousInterface()) {
         cur.entries.push({
           entryType: "property",
           name: ctx.propertyName().getText(),
@@ -176,15 +176,15 @@ class AstExtractor extends TypeOnlyListener {
           optional,
           readonly
         })
-      } else if (!!ctx.typeType().functionType()) {
-        if (ctx.typeType().functionType().params() !== undefined) {
+      } else if (!!ctx.aType().functionType()) {
+        if (ctx.aType().functionType().params() !== undefined) {
           cur.entries.push({
             entryType: "property",
             name: ctx.propertyName().getText(),
             type: {
               whichType: "function",
               parameters: this.interfaceParams,
-              returnValue: ctx.typeType().functionType().Identifier().getText()
+              returnValue: ctx.aType().functionType().Identifier().getText()
             },
             optional,
             readonly
@@ -196,7 +196,7 @@ class AstExtractor extends TypeOnlyListener {
             type: {
               whichType: "function",
               parameters: [],
-              returnValue: ctx.typeType().functionType().Identifier().getText()
+              returnValue: ctx.aType().functionType().Identifier().getText()
             },
             optional,
             readonly
@@ -206,7 +206,7 @@ class AstExtractor extends TypeOnlyListener {
         cur.entries.push({
           entryType: "property",
           name: ctx.propertyName().getText(),
-          type: ctx.typeType().getText(),
+          type: ctx.aType().getText(),
           optional,
           readonly
         })
@@ -231,7 +231,7 @@ class AstExtractor extends TypeOnlyListener {
       type: {
         whichType: "function",
         parameters: this.interfaceParams,
-        returnValue: ctx.typeType().getText()
+        returnValue: ctx.aType().getText()
       },
       optional,
       readonly
@@ -243,7 +243,7 @@ class AstExtractor extends TypeOnlyListener {
     // const cur = this.currentInterfaces[this.currentInterfaces.length - 1]
     this.interfaceParams.push({
       name: ctx.Identifier().getText(),
-      type: ctx.typeType().getText()
+      type: ctx.aType().getText()
     })
     console.log("enter Params", this.interfaceParams)
   }
