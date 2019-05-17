@@ -10,6 +10,7 @@ node_modules
 /src/TestExtractor.js
 /src/test-test.js
 /src/parse-test.js
-/Test.g4
+/TestParser.g4
+/TestLexer.g4
 /src/.antlr/Test*
 /src/tmp

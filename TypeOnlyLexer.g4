@@ -1,70 +1,8 @@
-grammar TypeOnly;
+lexer grammar TypeOnlyLexer;
 
-// Parser Rules
-
-defs: separator* elements;
-elements: element*;
-element: namedInterface | namedType;
-
-// literal: literalSeparator NumberLiteral literalSeparator;
-literal:
-  literalSeparator* TemplateStringLiteral* NullLiteral
-  | BooleanLiteral
-  | StringLiteral
-  | BigIntLiteral
-  | NumberLiteral
-  | TemplateStringLiteral
-  | numericLiteral TemplateStringLiteral* literalSeparator*;
-numericLiteral:
-  DecimalLiteral
-  | HexIntegerLiteral
-  | OctalIntegerLiteral
-  | OctalIntegerLiteral2
-  | BinaryIntegerLiteral;
-literalSeparator: '"' | '\'' | '`';
-// literalType: Number | String | BooleanLiteral | NullLiteral | Undefined | Symbol; NamedInterface
-namedInterface:
-  Export? WS? Interface WS? Identifier WS? extend? separator* anonymousInterface interfaceSeparator*
-    ;
-anonymousInterface:
-  OpenBrace separator* (
-    (property | functionProperty) propertySeparator*
-  )* CloseBrace;
-interfaceSeparator: WS | NewLine | SemiColon | Comma;
-extend: (Extends WS? typeName ( WS? Comma WS? typeName)*);
-// interfaceBody: ( property propertySeparator*)*;
-
-// NamedType
-namedType:
-  Export? WS? Type WS? Identifier WS? Assign WS? aType interfaceSeparator*;
-
-propertySeparator: NewLine | SemiColon | Comma;
-property:
-  ReadOnly? WS? propertyName WS? QuestionMark? WS? Colon WS? aType;
-functionProperty:
-  ReadOnly? WS? propertyName WS? QuestionMark? OpenBracket WS? params* CloseBracket WS? Colon WS?
-    aType;
-// propertyFunction: functionType1 | functionType2; functionType1: ; functionType2: ;
-aType: Identifier | literal | anonymousInterface | functionType;
-functionType:
-  OpenBracket WS? params* CloseBracket WS? Assign MoreThan WS? Identifier;
-params: Identifier WS? Colon WS? aType propertySeparator*;
-// primitiveType: Identifier | anonymousInterface;
-typeName: Identifier;
-propertyName: Identifier | JsKeyword;
-separator: NewLine | WS;
-
-// identifierName: Identifier | reservedWord; reservedWord: futureReservedWord | ( NullLiteral |
-// BooleanLiteral);
-
-// futureReservedWord: Extends | Export | Interface | Type; reservedWords: If | For | While | Do |
-// Break | Continue | Finally | Import | Extends | Export | Interface | NullLiteral |
-// BooleanLiteral;
-
-// Lexer Rules
-
-// RegularExpressionLiteral: '/' RegularExpressionFirstChar RegularExpressionChar* '/'
-// IdentifierPart*; Punctuation
+/*
+ * Symbols
+ */
 OpenBrace: '{';
 CloseBrace: '}';
 Colon: ':';
@@ -76,10 +14,11 @@ OpenBracket: '(';
 CloseBracket: ')';
 MoreThan: '>';
 
-// Literals
+/*
+ * Literals
+ */
 NullLiteral: 'null';
 BooleanLiteral: 'true' | 'false';
-// StringLit: [a-zA-Z]+;
 NumberLiteral: [0-9]+;
 BigIntLiteral: [0-9]+ 'n';
 DecimalLiteral:
@@ -91,7 +30,9 @@ OctalIntegerLiteral: '0' [0-7]+;
 OctalIntegerLiteral2: '0' [oO] [0-7]+;
 BinaryIntegerLiteral: '0' [bB] [01]+;
 
-// Keywords
+/*
+ * Keywords
+ */
 While: 'while';
 Do: 'do';
 Break: 'break';
@@ -102,7 +43,6 @@ Private: 'private';
 Import: 'import';
 If: 'if';
 For: 'for';
-
 JsKeyword:
   If
   | For
@@ -114,37 +54,39 @@ JsKeyword:
   | Private
   | Import;
 
-// Keywords
+/*
+ * ReservedWords
+ */
 Interface: 'interface';
 Type: 'type';
 Export: 'export';
 Extends: 'extends';
-// String: 'string'; Number: 'number';
 ReadOnly: 'readonly';
 
+// Identifier
 Identifier: IdentifierStart IdentifierPart*;
 
+/*
+ * StringLiteral
+ */
 StringLiteral: (
     '"' DoubleStringCharacter* '"'
     | '\'' SingleStringCharacter* '\''
   );
 TemplateStringLiteral: '`' ('\\`' | ~'`')* '`';
 
-// Identifier: ( Underscore | UnicodeLetter | Dollar | Underscore Dollar | Dollar Underscore )
-// (UnicodeLetter | Underscore)*;
-
 // New line
 NewLine: ('\r'? '\n' | '\r');
-
 // Comments
 MultiLineComment: '/*' .*? '*/' -> channel(HIDDEN);
 SingleLineComment:
   '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
-
 // WhiteSpaces
 WS: [\t\u000B\u000C\u0020\u00A0]+ -> channel(HIDDEN);
 
-// Fragments
+/*
+ * Fragments
+ */
 fragment DoubleStringCharacter:
   ~["\\\r\n]
   | '\\' EscapeSequence;
