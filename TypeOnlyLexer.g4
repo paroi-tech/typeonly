@@ -1,7 +1,7 @@
 lexer grammar TypeOnlyLexer;
 
 /*
- * Symbols
+ * Symbols, Operators
  */
 OpenBrace: '{';
 CloseBrace: '}';
@@ -12,22 +12,20 @@ Assign: '=';
 QuestionMark: '?';
 OpenBracket: '(';
 CloseBracket: ')';
-MoreThan: '>';
+Arrow: '=>';
 
 /*
  * Literals
  */
-NullLiteral: 'null';
 BooleanLiteral: 'true' | 'false';
-NumberLiteral: [0-9]+;
+IntegerLiteral: '0' | [1-9] [0-9]*;
 BigIntLiteral: [0-9]+ 'n';
 DecimalLiteral:
-  DecimalIntegerLiteral '.' [0-9]* ExponentPart?
-  | '.' [0-9]+ ExponentPart?
-  | DecimalIntegerLiteral ExponentPart?;
+  IntegerLiteral '.' [0-9]* ExponentPart?
+  | '.' [0-9]* ExponentPart?
+  | IntegerLiteral ExponentPart?;
 HexIntegerLiteral: '0' [xX] HexDigit+;
-OctalIntegerLiteral: '0' [0-7]+;
-OctalIntegerLiteral2: '0' [oO] [0-7]+;
+OctalIntegerLiteral: '0' [oO] [0-7]+;
 BinaryIntegerLiteral: '0' [bB] [01]+;
 
 /*
@@ -75,13 +73,12 @@ StringLiteral: (
   );
 TemplateStringLiteral: '`' ('\\`' | ~'`')* '`';
 
-// New line
-NewLine: ('\r'? '\n' | '\r');
 // Comments
 MultiLineComment: '/*' .*? '*/' -> channel(HIDDEN);
 SingleLineComment:
   '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
 // WhiteSpaces
+NewLine: ('\r'? '\n' | '\r')+;
 WS: [\t\u000B\u000C\u0020\u00A0]+ -> channel(HIDDEN);
 
 /*
@@ -111,7 +108,6 @@ fragment UnicodeEscapeSequence:
 fragment SingleEscapeCharacter: ['"\\bfnrtv];
 fragment EscapeCharacter: SingleEscapeCharacter | [0-9] | [xu];
 fragment HexDigit: [0-9a-fA-F];
-fragment DecimalIntegerLiteral: '0' | [1-9] [0-9]*;
 fragment ExponentPart: [eE] [+-]? [0-9]+;
 fragment IdentifierStart:
   UnicodeLetter

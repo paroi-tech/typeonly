@@ -4,60 +4,55 @@ options {
   tokenVocab = TypeOnlyLexer;
 }
 
-defs: separator* elements;
-elements: element*;
-element: namedInterface | namedType;
+declarations: NewLine? (namedInterface | namedType)*;
 
 /*
  * NamedInterface
  */
 namedInterface:
-  Export? WS? Interface WS? Identifier WS? extend? separator* anonymousInterface interfaceSeparator*
-    ;
-extend: (Extends WS? typeName ( WS? Comma WS? typeName)*);
+  Export? WS? Interface WS? Identifier WS? interfaceExtends? NewLine? anonymousInterface typeSep*;
+interfaceExtends: (
+    Extends WS? typeName ( WS? Comma WS? typeName)*
+  );
 anonymousInterface:
-  OpenBrace separator* (
+  OpenBrace NewLine? (
     (property | functionProperty) propertySeparator*
   )* CloseBrace;
 property:
   ReadOnly? WS? propertyName WS? QuestionMark? WS? Colon WS? aType;
 functionProperty:
-  ReadOnly? WS? propertyName WS? QuestionMark? OpenBracket WS? params* CloseBracket WS? Colon WS?
-    aType;
+  ReadOnly? WS? propertyName WS? QuestionMark? OpenBracket WS? functionParameters* CloseBracket WS?
+    Colon WS? aType;
 propertySeparator: NewLine | SemiColon | Comma;
 propertyName: Identifier | JsKeyword;
 typeName: Identifier;
-separator: NewLine | WS;
 
 /*
  * NamedType
  */
 namedType:
-  Export? WS? Type WS? Identifier WS? Assign WS? aType interfaceSeparator*;
+  Export? WS? Type WS? Identifier WS? Assign WS? aType typeSep*;
 
 /*
  * Common rules for NamedInterface and NamedType
  */
 aType: Identifier | literal | anonymousInterface | functionType;
 functionType:
-  OpenBracket WS? params* CloseBracket WS? Assign MoreThan WS? Identifier;
-params: Identifier WS? Colon WS? aType propertySeparator*;
-interfaceSeparator: WS | NewLine | SemiColon | Comma;
+  OpenBracket WS? functionParameters* CloseBracket WS? Arrow WS? Identifier;
+functionParameters:
+  Identifier WS? Colon WS? aType propertySeparator*;
+typeSep: WS | NewLine | SemiColon | Comma;
 
 /*
  * Literal
  */
 literal:
-  TemplateStringLiteral* NullLiteral
-  | BooleanLiteral
   | StringLiteral
-  | BigIntLiteral
-  | NumberLiteral
   | TemplateStringLiteral
-  | numericLiteral TemplateStringLiteral*;
-numericLiteral:
-  DecimalLiteral
+  | BooleanLiteral
+  | BigIntLiteral
+  | IntegerLiteral
+  | DecimalLiteral
   | HexIntegerLiteral
   | OctalIntegerLiteral
-  | OctalIntegerLiteral2
   | BinaryIntegerLiteral;

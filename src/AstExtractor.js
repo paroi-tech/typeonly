@@ -4,15 +4,15 @@ const { TypeOnlyParserListener } = require("../antlr-parser/TypeOnlyParserListen
 
 class AstExtractor extends TypeOnlyParserListener {
 
-  enterDefs(ctx) {
+  enterDeclarations(ctx) {
     this.ast = {
       declarations: []
     }
-    // console.log("enter defs", ctx.getText())
+    // console.log("enter declarations", ctx.getText())
   }
 
-  exitDefs(ctx) {
-    console.log("exit defs", ctx.getText())
+  exitDeclarations(ctx) {
+    // console.log("exit declarations", ctx.getText())
   }
 
   enterNamedInterface(ctx) {
@@ -23,10 +23,10 @@ class AstExtractor extends TypeOnlyParserListener {
     this.currentInterfaces = []
     this.interfaceParams = []
     const exported = ctx.Export() !== null
-    const extds = []
-    if (ctx.extend() !== null) {
-      const extend = Object.values(ctx.extend().typeName()).map(child => child.getText())
-      extds.push(...extend)
+    const interfaceExtends = []
+    if (ctx.interfaceExtends() !== null) {
+      const names = Object.values(ctx.interfaceExtends().typeName()).map(child => child.getText())
+      interfaceExtends.push(...names)
     }
 
     const currentNamedInterface = {
@@ -35,7 +35,7 @@ class AstExtractor extends TypeOnlyParserListener {
       name: ctx.Identifier().getText(),
       entries: [],
       exported,
-      extends: extds
+      extends: interfaceExtends
     }
 
     this.currentInterfaces.push(currentNamedInterface)
@@ -43,13 +43,13 @@ class AstExtractor extends TypeOnlyParserListener {
     const keys = Object.keys(ctx.children).length
     // constObject.keys(ctx).length
 
-    console.log("enter interface", ctx.getText())
+    // console.log("enter interface", ctx.getText())
   }
 
   exitNamedInterface(ctx) {
     const decl = this.currentInterfaces.pop()
     this.ast.declarations.push(decl)
-    console.log("exit interface", ctx.getText(), Object.keys(this.currentInterfaces.entries).length)
+    // console.log("exit interface", ctx.getText(), Object.keys(this.currentInterfaces.entries).length)
   }
 
   // AstNamedType
@@ -83,6 +83,7 @@ class AstExtractor extends TypeOnlyParserListener {
           name: ctx.Identifier().getText(),
           type: {
             whichType: "literal",
+            // tslint:disable-next-line: no-eval
             value: eval(ctx.aType().literal().getText())
           },
           exported
@@ -146,7 +147,7 @@ class AstExtractor extends TypeOnlyParserListener {
     this.ast.declarations.push(this.currentNamedType)
     // const children = Object.values(ctx.aType().anonymousInterface().interfaceBody().property()).map(child => child.getText())
 
-    console.log("enter type decl", ctx.getText())
+    // console.log("enter type decl", ctx.getText())
   }
 
   exitNamedType(ctx) {
@@ -181,7 +182,7 @@ class AstExtractor extends TypeOnlyParserListener {
           readonly
         })
       } else if (!!ctx.aType().functionType()) {
-        if (ctx.aType().functionType().params() !== undefined) {
+        if (ctx.aType().functionType().functionParameters() !== undefined) {
           cur.entries.push({
             entryType: "property",
             name: ctx.propertyName().getText(),
@@ -223,12 +224,12 @@ class AstExtractor extends TypeOnlyParserListener {
     // }
 
     // console.log("enter property", ctx.parentCtx.getText())
-    console.log("enter property", ctx.getText())
+    // console.log("enter property", ctx.getText())
   }
 
   exitProperty(ctx) {
 
-    console.log("exit property", ctx.propertyName().getText())
+    // console.log("exit property", ctx.propertyName().getText())
   }
 
   enterFunctionProperty(ctx) {
@@ -249,17 +250,17 @@ class AstExtractor extends TypeOnlyParserListener {
   }
   exitFunctionProperty(ctx) { }
 
-  enterParams(ctx) {
+  enterFunctionParameters(ctx) {
     // const cur = this.currentInterfaces[this.currentInterfaces.length - 1]
     this.interfaceParams.push({
       name: ctx.Identifier().getText(),
       type: ctx.aType().getText()
     })
-    console.log("enter Params", this.interfaceParams)
-  }
-  exitParams(ctx) {
+    // console.log("enter Params", this.interfaceParams)
   }
 
+  // exitFunctionParameters(ctx) {
+  // }
 }
 
 exports.AstExtractor = AstExtractor

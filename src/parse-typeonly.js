@@ -22,7 +22,7 @@ function parseTypeOnlyToAst(source) {
   parser.removeErrorListeners()
   parser.addErrorListener(errorListener)
 
-  const tree = parser.defs()
+  const tree = parser.declarations()
 
   const extractor = new AstExtractor()
   ParseTreeWalker.DEFAULT.walk(extractor, tree)

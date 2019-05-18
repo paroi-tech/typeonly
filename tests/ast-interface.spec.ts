@@ -4,14 +4,15 @@ import { parseTypeOnlyToAst } from "../src/parse-typeonly"
 describe("AST Specification for Interfaces", () => {
   test("weird spaces do not matter", () => {
     const input = `
-interface    I1
 
-{
+   interface    I1
+
+ {
 
   sd : string
 
 df:string
-}
+ }
 
       `
     const ast = parseTypeOnlyToAst(input)
