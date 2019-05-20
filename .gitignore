@@ -7,10 +7,4 @@ node_modules
 /antlr-*.jar
 /antlr-parser
 
-/src/TestExtractor.js
-/src/test-test.js
-/src/parse-test.js
-/TestParser.g4
-/TestLexer.g4
-/src/.antlr/Test*
 /src/tmp

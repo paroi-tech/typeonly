@@ -37,7 +37,7 @@ interface I1 {
     const input = `interface I1 ${makeInterface(deep)}`
     const ast = parseTypeOnlyToAst(input)
     let parent = ast.declarations[0] as AstInterface
-    for (let i = 0; i < deep; ++i) {
+    for (let i = 0; i < deep - 1; ++i) {
       const child = parent.entries[0] as AstProperty
       parent = child.type as AstInterface
       expect(typeof parent).toBe("object")

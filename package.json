@@ -6,6 +6,7 @@
   "author": "tomko.team",
   "scripts": {
     "antlr": "java -cp \"antlr-4.7.2-complete.jar\" org.antlr.v4.Tool -Dlanguage=JavaScript TypeOnlyLexer.g4 TypeOnlyParser.g4 -o antlr-parser",
+    "rick_antlr": "java -cp \"antlr-4.7.2-complete.jar\" org.antlr.v4.Tool -Dlanguage=JavaScript src/tmp/TestLexer.g4 src/tmp/TestParser.g4 -o antlr-parser",
     "clear": "rimraf 'dist/*' 'antlr-parser/*'",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",

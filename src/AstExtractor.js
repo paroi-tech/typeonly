@@ -1,7 +1,5 @@
 const { TypeOnlyParserListener } = require("../antlr-parser/TypeOnlyParserListener")
 
-// const jsKeyWords = new Set(["if", "for"])
-
 class AstExtractor extends TypeOnlyParserListener {
 
   enterDeclarations(ctx) {
@@ -16,20 +14,14 @@ class AstExtractor extends TypeOnlyParserListener {
   }
 
   enterNamedInterface(ctx) {
-    this.test = []
-    // const typeName = ctx.Identifier().getText()
-    // if (jsKeyWords.has(typeName))
-    //   throw new Error(`Reserved word: ${typeName}`)
-    this.currentInterfaces = []
-    this.interfaceParams = []
+    this.functionParameters = []
     const exported = ctx.Export() !== null
     const interfaceExtends = []
     if (ctx.interfaceExtends() !== null) {
       const names = Object.values(ctx.interfaceExtends().typeName()).map(child => child.getText())
       interfaceExtends.push(...names)
     }
-
-    const currentNamedInterface = {
+    this.currentNamedInterface = {
       declarationType: "interface",
       whichType: "interface",
       name: ctx.Identifier().getText(),
@@ -37,178 +29,250 @@ class AstExtractor extends TypeOnlyParserListener {
       exported,
       extends: interfaceExtends
     }
-
-    this.currentInterfaces.push(currentNamedInterface)
-
-    const keys = Object.keys(ctx.children).length
-    // constObject.keys(ctx).length
+    this.interfaceStack = []
 
     // console.log("enter interface", ctx.getText())
   }
-
   exitNamedInterface(ctx) {
-    const decl = this.currentInterfaces.pop()
-    this.ast.declarations.push(decl)
-    // console.log("exit interface", ctx.getText(), Object.keys(this.currentInterfaces.entries).length)
+    // const decl = this.currentInterfaces.pop()
+    // this.ast.declarations.push(decl)
+
+    this.ast.declarations.push(this.currentNamedInterface)
+
+    if (this.interfaceStack.length > 0)
+      throw new Error("InterfaceStack should be empty")
+
+    // console.log("exit interface", ctx.getText())
   }
+
+
+  enterAnonymousInterface(ctx) {
+    if (this.interfaceStack) {
+      if (this.interfaceStack.length === 0) {
+        this.interfaceStack.push(this.currentNamedInterface)
+      } else {
+        const interf = {
+          whichType: "interface",
+          entries: []
+        }
+        this.interfaceStack.push(interf)
+
+        this.callNextType(interf)
+      }
+    }
+
+    if (this.namedTypeStack) {
+      if (this.namedTypeStack.length === 0) {
+        this.namedTypeStack.push(this.currentNamedType)
+      } else {
+        const interf = {
+          whichType: "interface",
+          entries: []
+        }
+        this.namedTypeStack.push(interf)
+
+        this.callNextType(interf)
+      }
+    }
+
+    // console.log("enter interface Simple", ctx.getText())
+  }
+  exitAnonymousInterface(ctx) {
+    if (this.interfaceStack) {
+      if (this.interfaceStack.length === 0)
+        throw new Error("InterfaceStack should not be empty")
+      this.interfaceStack.pop()
+    }
+
+
+    if (this.namedTypeStack) {
+      if (this.namedTypeStack.length === 0)
+        throw new Error("NamedStack should not be empty")
+      this.namedTypeStack.pop()
+    }
+
+
+    // console.log("exit interface Simple", ctx.getText())
+  }
+
 
   // AstNamedType
   enterNamedType(ctx) {
-    // const reg = /^".*"$|^'.*'$|^`.*`$/
-    let lit
+    // this.currentNamedInterface = {
+    //   declarationType: "interface",
+    //   whichType: "interface",
+    //   name: ctx.Identifier().getText(),
+    //   entries: [],
+    //   exported,
+    //   extends: interfaceExtends
+    // }
+    // this.interfaceStack = []
+
     const exported = ctx.Export() !== null
-    // const aType = ctx.aType().getText()
-    if (ctx.aType() !== null) {
-      if (ctx.aType().anonymousInterface() !== null) {
-        this.currentNamedType = {
-          declarationType: "type",
-          name: ctx.Identifier().getText(),
-          type: {
-            whichType: "interface",
-            entries: []
-          },
-          exported
-        }
-      } else if (ctx.aType() !== null && ctx.aType().literal() !== null) {
-        // const children = Object.values(ctx.aType().literal().literalSeparator()).map(child => child.getText())
-        // if (ctx.aType().literal().literalSeparator() !== null)
-        //   lit = ctx.aType().literal().literalSeparator().getText()
-        // const regStringLimitDoubleQuote = /^".*"$/
-        // const regStringLimitSingleQuote = /^'.*'$/
-        // const regStringLimitBackQuote = /^`.*`$/
-        // const literal = ctx.aType().literal().getText()
+    const namedType = {
+      declarationType: "type",
+      name: ctx.Identifier().getText(),
+      exported
+    }
 
-        this.currentNamedType = {
-          declarationType: "type",
-          name: ctx.Identifier().getText(),
-          type: {
-            whichType: "literal",
-            // tslint:disable-next-line: no-eval
-            value: eval(ctx.aType().literal().getText())
-          },
-          exported
-        }
+    if (ctx.aType().anonymousInterface()) {
+      // If NamedInterface property type is an anonymousInterface
+      this.namedTypeStack = []
+      namedType.type = {
+        whichType: "interface",
+        entries: [],
+      }
+      this.currentNamedType = namedType
+      // this.namedTypeStack.push(this.currentNamedType)
 
-        // if (regStringLimitDoubleQuote.test(literal)) {
-        //   this.currentnamedType = {
-        //     declarationType: "type",
-        //     name: ctx.Identifier().getText(),
-        //     type: {
-        //       whichType: "literal",
-        //       stringDelim: "\"",
-        //       value: eval(ctx.aType().literal().getText())
-        //     },
-        //     exported
-        //   }
-        // } else if (regStringLimitSingleQuote.test(literal)) {
-        //   this.currentnamedType = {
-        //     declarationType: "type",
-        //     name: ctx.Identifier().getText(),
-        //     type: {
-        //       whichType: "literal",
-        //       stringDelim: "'",
-        //       value: eval(ctx.aType().literal().getText())
-        //     },
-        //     exported
-        //   }
-        // } else if (regStringLimitBackQuote.test(literal)) {
-        //   this.currentnamedType = {
-        //     declarationType: "type",
-        //     name: ctx.Identifier().getText(),
-        //     type: {
-        //       whichType: "literal",
-        //       stringDelim: "`",
-        //       value: eval(ctx.aType().literal().getText())
-        //     },
-        //     exported
-        //   }
-        // } else {
-        //   this.currentnamedType = {
-        //     declarationType: "type",
-        //     name: ctx.Identifier().getText(),
-        //     type: {
-        //       whichType: "literal",
-        //       stringDelim: "",
-        //       value: eval(ctx.aType().literal().getText())
-        //     },
-        //     exported
-        //   }
-        // }
-
-      } else {
-        this.currentNamedType = {
-          declarationType: "type",
-          name: ctx.Identifier().getText(),
-          type: ctx.aType().getText(),
-          exported
+    } else if (ctx.aType().functionType()) {
+      // If NamedInterface property type is a functionType
+      this.namedTypeStack = []
+      namedType.type = {
+        entryType: "property",
+        name: ctx.propertyName().getText(),
+        type: {
+          whichType: "function",
+          parameters: this.functionParameters,
+          returnValue: ctx.aType().functionType().Identifier().getText()
         }
       }
+      this.currentNamedType = namedType
+
+    } else if (ctx.aType().literal()) {
+      namedType.type = {
+        whichType: "literal",
+        value: eval(ctx.aType().literal().getText())
+        // stringDelim?: "\"" | "'" | "`"
+      }
+      this.currentNamedType = namedType
+      this.ast.declarations.push(this.currentNamedType)
+    } else {
+      namedType.type = ctx.aType().Identifier().getText()
+      this.currentNamedType = namedType
+      this.ast.declarations.push(this.currentNamedType)
     }
-    this.ast.declarations.push(this.currentNamedType)
-    // const children = Object.values(ctx.aType().anonymousInterface().interfaceBody().property()).map(child => child.getText())
 
-    // console.log("enter type decl", ctx.getText())
+    // if (ctx.aType().Identifier()) {
+    //   namedType.type = ctx.aType().Identifier().getText()
+    //   this.currentNamedType = namedType
+    //   this.namedTypeStack.push(this.currentNamedType)
+    // }
+
+
+    // if (ctx.aType().anonymousInterface()) {
+    //   namedType.type.push({
+    //     whichType: "interface",
+    //     entries: []
+    //   })
+    //   this.currentNamedType = namedType
+
+    // } else if (ctx.aType().functionType()) {
+    //   namedType.type.push({
+    //     whichType: "function",
+    //     parameters: AstParameter[],
+    //     returnValue: AstType
+    //   })
+    //   this.currentNamedType = namedType
+
+    // } else if (ctx.aType().literal()) {
+    //   namedType.type.push({
+    //     whichType: "literal",
+    //     value: eval(ctx.aType().literal().getText()),
+    //     // stringDelim?: "\"" | "'" | "`"
+    //   })
+    //   this.currentNamedType = namedType
+
+    // } else {
+    //   this.currentNamedType = {
+    //     declarationType: "type",
+    //     name: ctx.Identifier().getText(),
+    //     type: AstType,
+    //     exported
+    //   }
+    // }
+
+
+    // if (ctx.aType().anonymousInterface()) {
+    //   this.currentNamedType = {
+    //     declarationType: "type",
+    //     name: ctx.Identifier().getText(),
+    //     type: {
+    //       whichType: "interface",
+    //       entries: []
+    //     },
+    //     exported
+    //   }
+    // } else if (ctx.aType().literal()) {
+    //   this.currentNamedType = {
+    //     declarationType: "type",
+    //     name: ctx.Identifier().getText(),
+    //     type: {
+    //       whichType: "literal",
+    //       value: eval(ctx.aType().literal().getText())
+    //     },
+    //     exported
+    //   }
+
+    // } else {
+    //   this.currentNamedType = {
+    //     declarationType: "type",
+    //     name: ctx.Identifier().getText(),
+    //     type: ctx.aType().getText(),
+    //     exported
+    //   }
+    // }
+
+    // console.log("enter namedType decl", this.namedTypeStack.length)
   }
-
   exitNamedType(ctx) {
-    // console.log("exit type decl", ctx.getText())
-  }
+    if (this.namedTypeStack) {
+      this.ast.declarations.push(this.currentNamedType)
 
-  enterAnonymousInterface(ctx) {
-    // console.log("enter interface Simple", ctx.getText())
-  }
+      if (this.namedTypeStack.length > 0)
+        throw new Error("NamedStack should be empty")
+    }
 
-  exitAnonymousInterface(ctx) {
-    // console.log("exit interface Simple", ctx.getText())
+    // console.log("exit namedType decl", ctx.getText())
   }
 
 
   // AstProperty
   enterProperty(ctx) {
-    if (!!this.currentInterfaces) {
-      const cur = this.currentInterfaces[this.currentInterfaces.length - 1]
+    if (this.interfaceStack) {
+      // If property is NamedInterface property
+      const current = this.interfaceStack[this.interfaceStack.length - 1]
       const optional = !!ctx.QuestionMark()
       const readonly = !!ctx.ReadOnly()
 
-      if (!!ctx.aType().anonymousInterface()) {
-        cur.entries.push({
+      if (ctx.aType().anonymousInterface()) {
+        // If NamedInterface property type is an anonymousInterface
+        const property = {
+          entryType: "property",
+          name: ctx.propertyName().getText(),
+          optional,
+          readonly
+        }
+        current.entries.push(property)
+        // Add property type get from enterAnonymousInterface
+        this.setNextType(type => property.type = type)
+
+      } else if (ctx.aType().functionType()) {
+        // If NamedInterface property type is a functionType
+        current.entries.push({
           entryType: "property",
           name: ctx.propertyName().getText(),
           type: {
-            whichType: "interface",
-            entries: []
+            whichType: "function",
+            parameters: this.functionParameters,
+            returnValue: ctx.aType().functionType().Identifier().getText()
           },
           optional,
           readonly
         })
-      } else if (!!ctx.aType().functionType()) {
-        if (ctx.aType().functionType().functionParameters() !== undefined) {
-          cur.entries.push({
-            entryType: "property",
-            name: ctx.propertyName().getText(),
-            type: {
-              whichType: "function",
-              parameters: this.interfaceParams,
-              returnValue: ctx.aType().functionType().Identifier().getText()
-            },
-            optional,
-            readonly
-          })
-        } else {
-          cur.entries.push({
-            entryType: "property",
-            name: ctx.propertyName().getText(),
-            type: {
-              whichType: "function",
-              parameters: [],
-              returnValue: ctx.aType().functionType().Identifier().getText()
-            },
-            optional,
-            readonly
-          })
-        }
+
       } else {
-        cur.entries.push({
+        current.entries.push({
           entryType: "property",
           name: ctx.propertyName().getText(),
           type: ctx.aType().getText(),
@@ -218,30 +282,106 @@ class AstExtractor extends TypeOnlyParserListener {
       }
     }
 
-    // this.test = {
-    //   current : ctx.propertyName().getText(),
-    //   child :
-    // }
+    if (this.namedTypeStack) {
+      const current = this.namedTypeStack[this.namedTypeStack.length - 1]
+      const optional = !!ctx.QuestionMark()
+      const readonly = !!ctx.ReadOnly()
 
-    // console.log("enter property", ctx.parentCtx.getText())
-    // console.log("enter property", ctx.getText())
+      if (this.namedTypeStack.length === 1) {
+        if (ctx.aType().anonymousInterface()) {
+          // If NamedInterface property type is an anonymousInterface
+          const property = {
+            entryType: "property",
+            name: ctx.propertyName().getText(),
+            optional,
+            readonly
+          }
+          current.type.entries.push(property)
+          // Add property type get from enterAnonymousInterface
+          this.setNextType(type => property.type = type)
+
+        } else if (ctx.aType().functionType()) {
+          // If NamedInterface property type is a functionType
+          current.type.entries.push({
+            entryType: "property",
+            name: ctx.propertyName().getText(),
+            type: {
+              whichType: "function",
+              parameters: this.functionParameters,
+              returnValue: ctx.aType().functionType().Identifier().getText()
+            },
+            optional,
+            readonly
+          })
+
+        } else {
+          current.type.entries.push({
+            entryType: "property",
+            name: ctx.propertyName().getText(),
+            type: ctx.aType().getText(),
+            optional,
+            readonly
+          })
+        }
+
+      } else {
+        if (ctx.aType().anonymousInterface()) {
+          // If NamedInterface property type is an anonymousInterface
+          const property = {
+            entryType: "property",
+            name: ctx.propertyName().getText(),
+            optional,
+            readonly
+          }
+          current.entries.push(property)
+          // Add property type get from enterAnonymousInterface
+          this.setNextType(type => property.type = type)
+
+        } else if (ctx.aType().functionType()) {
+          // If NamedInterface property type is a functionType
+          current.entries.push({
+            entryType: "property",
+            name: ctx.propertyName().getText(),
+            type: {
+              whichType: "function",
+              parameters: this.functionParameters,
+              returnValue: ctx.aType().functionType().Identifier().getText()
+            },
+            optional,
+            readonly
+          })
+
+        } else {
+          current.entries.push({
+            entryType: "property",
+            name: ctx.propertyName().getText(),
+            type: ctx.aType().getText(),
+            optional,
+            readonly
+          })
+        }
+      }
+
+    }
+
+    // console.log("enter property", this.namedTypeStack.length)
   }
-
   exitProperty(ctx) {
 
-    // console.log("exit property", ctx.propertyName().getText())
+    // console.log("exit property", this.namedTypeStack.length)
   }
+
 
   enterFunctionProperty(ctx) {
     const optional = !!ctx.QuestionMark()
     const readonly = !!ctx.ReadOnly()
-    const cur = this.currentInterfaces[this.currentInterfaces.length - 1]
-    cur.entries.push({
+    const current = this.interfaceStack[this.interfaceStack.length - 1]
+    current.entries.push({
       entryType: "functionProperty",
       name: ctx.propertyName().getText(),
       type: {
         whichType: "function",
-        parameters: this.interfaceParams,
+        parameters: this.functionParameters,
         returnValue: ctx.aType().getText()
       },
       optional,
@@ -250,17 +390,30 @@ class AstExtractor extends TypeOnlyParserListener {
   }
   exitFunctionProperty(ctx) { }
 
+
   enterFunctionParameters(ctx) {
-    // const cur = this.currentInterfaces[this.currentInterfaces.length - 1]
-    this.interfaceParams.push({
+    this.functionParameters.push({
       name: ctx.Identifier().getText(),
       type: ctx.aType().getText()
     })
     // console.log("enter Params", this.interfaceParams)
   }
-
   // exitFunctionParameters(ctx) {
   // }
+
+  callNextType(type) {
+    if (!this.nextType)
+      throw new Error(`Unexpected type`)
+    this.nextType(type)
+    this.nextType = undefined
+  }
+
+  setNextType(cb) {
+    if (this.nextType)
+      throw new Error(`Missing type`)
+    this.nextType = cb
+  }
+
 }
 
 exports.AstExtractor = AstExtractor
