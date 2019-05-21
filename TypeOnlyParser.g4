@@ -36,6 +36,7 @@ namedType:
 /*
  * Common rules for NamedInterface and NamedType
  */
+//  TODO: Add CompositeType
 aType: Identifier | literal | anonymousInterface | functionType;
 functionType:
   OpenBracket WS? functionParameter* CloseBracket WS? Arrow WS? aType;
