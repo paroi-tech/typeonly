@@ -5,6 +5,7 @@ const stringDelim = ["'", "\"", "`"]
 class AstExtractor extends TypeOnlyParserListener {
 
   enterDeclarations(ctx) {
+    this.childTypes = new Map()
     this.ast = {
       declarations: []
     }
@@ -13,10 +14,13 @@ class AstExtractor extends TypeOnlyParserListener {
 
   exitDeclarations(ctx) {
     // console.log("exit declarations", ctx.getText())
+    const missingChildren = Array.from(this.childTypes.keys()).length
+    if (missingChildren > 0)
+      throw new Error(`Missing children: ${missingChildren}`)
   }
 
   enterNamedInterface(ctx) {
-    this.functionParameters = []
+    // this.functionParameters = []
     const exported = !!ctx.Export()
     const interfaceExtends = []
     if (ctx.interfaceExtends()) {
@@ -55,8 +59,9 @@ class AstExtractor extends TypeOnlyParserListener {
       }
       this.interfaceStack.push(interf)
 
-      this.callNextType(interf)
+      this.registerAstChild(interf, ctx.parentCtx)
     }
+    console.log("enter anoInterface", ctx.parentCtx.getText())
   }
 
   exitAnonymousInterface(ctx) {
@@ -77,7 +82,7 @@ class AstExtractor extends TypeOnlyParserListener {
     }
     this.currentNamedType = namedType
 
-    this.setNextType(type => namedType.type = type, ctx.aType())
+    this.setAstChildRegistration(type => namedType.type = type, ctx.aType())
 
     console.log("enter namedType decl")
   }
@@ -104,7 +109,7 @@ class AstExtractor extends TypeOnlyParserListener {
     }
     current.entries.push(property)
 
-    this.setNextType(type => property.type = type, ctx.aType())
+    this.setAstChildRegistration(type => property.type = type, ctx.aType())
 
     // console.log("enter property", this.namedTypeStack.length)
   }
@@ -122,33 +127,77 @@ class AstExtractor extends TypeOnlyParserListener {
     if (stringDelim.includes(firstChar)) {
       literal.stringDelim = firstChar
     }
-    this.callNextType(literal)
-
+    this.registerAstChild(literal, ctx.parentCtx)
+    console.log("enter literal", ctx.parentCtx.getText())
   }
 
   enterFunctionType(ctx) {
-    this.functionParameters = []
     const functionType = {
       whichType: "function",
-      parameters: this.functionParameters,
-      // TODO: A revoir
-      returnValue: ctx.Identifier().getText()
+      parameters: [],
     }
-    this.callNextType(functionType)
+
+    this.registerAstChild(functionType, ctx.parentCtx)
+
+    const functionParameters = ctx.functionParameter()
+    for (const param of functionParameters) {
+      this.setAstChildRegistration(type => {
+        functionType.parameters.push({
+          name: param.Identifier().getText(),
+          type
+        })
+      }, param.aType())
+    }
+
+    this.setAstChildRegistration(child => {
+      functionType.returnValue = child
+    }, ctx.aType())
+
+    // TODO: A revoir
+    // returnValue: ctx.Identifier().getText()
+
+    // this.functionParameters = []
+    // this.functionParameters
+    // const elements = []
+
+    // if (param.aType().Identifier() !== null) {
+    //   elements.push({
+    //     name: param.Identifier().getText(),
+    //     type: param.aType().Identifier().getText()
+    //   })
+    // } else if (param.aType().anonymousInterface() !== null){
+    //   elements.push({
+    //     name: param.Identifier().getText(),
+    //     type: {
+    //       whichType: "interface",
+    //       entries: []
+    //     }
+    //   })
+    // } else if (param.aType().functionType() !== null){
+    //   elements.push({
+    //     name: param.Identifier().getText(),
+    //     type: {
+    //       whichType: "interface",
+    //       entries: []
+    //     }
+    //   })
+    // }
+
+    console.log("enter function type", functionType)
   }
 
 
-  enterFunctionParameters(ctx) {
-    if (this.functionParameters) {
-      this.functionParameters.push({
-        name: ctx.Identifier().getText(),
-        type: ctx.aType().getText()
-      })
-    }
+  enterFunctionParameter(ctx) {
+    // if (this.functionParameters) {
+    //   this.functionParameters.push({
+    //     name: ctx.Identifier().getText(),
+    //     type: ctx.aType().getText()
+    //   })
+    // }
   }
 
   enterFunctionProperty(ctx) {
-    this.functionParameters = []
+    // this.functionParameters = []
     if (!this.interfaceStack || this.interfaceStack.length === 0)
       throw new Error("Missing interfaceStack")
 
@@ -161,7 +210,7 @@ class AstExtractor extends TypeOnlyParserListener {
       name: ctx.propertyName().getText(),
       type: {
         whichType: "function",
-        parameters: this.functionParameters,
+        // parameters: this.functionParameters,
         returnValue: ctx.aType().getText()
       },
       optional,
@@ -169,22 +218,22 @@ class AstExtractor extends TypeOnlyParserListener {
     }
     current.entries.push(functionProperty)
   }
-  exitFunctionProperty(ctx) { }
 
 
-  callNextType(type) {
-    if (!this.nextType)
-      throw new Error(`Unexpected type`)
-    this.nextType(type)
-    this.nextType = undefined
+  registerAstChild(astType, aType) {
+    const cb = this.childTypes.get(aType)
+    if (!cb)
+      throw new Error(`Unexpected child type: ${aType.getText()}`)
+    cb(astType)
+    this.childTypes.delete(aType)
   }
 
-  setNextType(cb, aType) {
-    if (this.nextType)
-      throw new Error(`Missing type`)
-    this.nextType = cb
+  setAstChildRegistration(cb, aType) {
+    if (this.childTypes.has(aType))
+      throw new Error(`Child type already defined for: ${aType.getText()}`)
+    this.childTypes.set(aType, cb)
     if (aType.Identifier())
-      this.callNextType(aType.getText())
+      this.registerAstChild(aType.getText(), aType)
   }
 
 }

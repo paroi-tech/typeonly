@@ -21,7 +21,7 @@ anonymousInterface:
 property:
   ReadOnly? WS? propertyName WS? QuestionMark? WS? Colon WS? aType;
 functionProperty:
-  ReadOnly? WS? propertyName WS? QuestionMark? OpenBracket WS? functionParameters* CloseBracket WS?
+  ReadOnly? WS? propertyName WS? QuestionMark? OpenBracket WS? functionParameter* CloseBracket WS?
     Colon WS? aType;
 propertySeparator: NewLine | SemiColon | Comma;
 propertyName: Identifier | JsKeyword;
@@ -38,8 +38,8 @@ namedType:
  */
 aType: Identifier | literal | anonymousInterface | functionType;
 functionType:
-  OpenBracket WS? functionParameters* CloseBracket WS? Arrow WS? Identifier;
-functionParameters:
+  OpenBracket WS? functionParameter* CloseBracket WS? Arrow WS? aType;
+functionParameter:
   Identifier WS? Colon WS? aType propertySeparator*;
 typeSep: WS | NewLine | SemiColon | Comma;
 
