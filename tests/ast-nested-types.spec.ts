@@ -16,13 +16,13 @@ interface I1 {
     expect(namedInterface.whichType).toBe("interface")
     expect(namedInterface.entries.length).toBe(1)
     const property = namedInterface.entries[0] as AstProperty
-    expect(property.entryType).toBe("property")
+    expect(property.whichEntry).toBe("property")
     expect(property.name).toBe("a")
     const subType = property.type as AstInterface
     expect(subType.whichType).toBe("interface")
     expect(subType.entries.length).toBe(1)
     const subProperty = subType.entries[0] as AstProperty
-    expect(subProperty.entryType).toBe("property")
+    expect(subProperty.whichEntry).toBe("property")
     expect(subProperty.name).toBe("b")
     expect(subProperty.type).toBe("string")
   })

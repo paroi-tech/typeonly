@@ -8,7 +8,7 @@ export type AstDeclaration = AstImport
   | AstStandaloneComment
 
 export interface AstImport extends AstCommentable {
-  declarationType: "import"
+  whichDeclaration: "import"
   from: string
   defaultName?: string
   namedMembers?: {
@@ -23,7 +23,7 @@ export interface AstInterface {
 }
 
 export interface AstNamedInterface extends AstInterface, AstCommentable {
-  declarationType: "interface"
+  whichDeclaration: "interface"
   name: string
   exported?: boolean
   extends?: string[]
@@ -36,7 +36,7 @@ export type AstInterfaceEntry = AstProperty
   | AstStandaloneInterfaceComment
 
 export interface AstProperty extends AstCommentable {
-  entryType: "property"
+  whichEntry: "property"
   name: string
   type: AstType
   optional?: boolean
@@ -44,7 +44,7 @@ export interface AstProperty extends AstCommentable {
 }
 
 export interface AstFunctionProperty extends AstCommentable {
-  entryType: "functionProperty"
+  whichEntry: "functionProperty"
   name: string
   type: AstFunctionType
   optional?: boolean
@@ -52,7 +52,7 @@ export interface AstFunctionProperty extends AstCommentable {
 }
 
 export interface AstIndexSignature extends AstCommentable {
-  entryType: "indexSignature"
+  whichEntry: "indexSignature"
   keyName: string
   keyType: "string" | "number"
   type: AstType
@@ -61,7 +61,7 @@ export interface AstIndexSignature extends AstCommentable {
 }
 
 export interface AstMappedIndexSignature extends AstCommentable {
-  entryType: "mappedIndexSignature"
+  whichEntry: "mappedIndexSignature"
   keyName: string
   keyInType: AstType
   type: AstType
@@ -70,7 +70,7 @@ export interface AstMappedIndexSignature extends AstCommentable {
 }
 
 export interface AstNamedType extends AstCommentable {
-  declarationType: "type"
+  whichDeclaration: "type"
   name: string
   type: AstType
   exported?: boolean
@@ -133,7 +133,7 @@ export interface AstInlineImportType {
 }
 
 export interface AstStandaloneComment {
-  declarationType: "comment"
+  whichDeclaration: "comment"
   /**
    * A multiline string.
    */
@@ -141,7 +141,7 @@ export interface AstStandaloneComment {
 }
 
 export interface AstStandaloneInterfaceComment {
-  entryType: "comment"
+  whichEntry: "comment"
   /**
    * A multiline string.
    */

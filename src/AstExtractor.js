@@ -27,7 +27,7 @@ class AstExtractor extends TypeOnlyParserListener {
       interfaceExtends.push(...names)
     }
     this.currentNamedInterface = {
-      declarationType: "interface",
+      whichDeclaration: "interface",
       whichType: "interface",
       name: ctx.Identifier().getText(),
       entries: [],
@@ -75,7 +75,7 @@ class AstExtractor extends TypeOnlyParserListener {
 
     const exported = !!ctx.Export()
     const namedType = {
-      declarationType: "type",
+      whichDeclaration: "type",
       name: ctx.Identifier().getText(),
       exported
     }
@@ -101,7 +101,7 @@ class AstExtractor extends TypeOnlyParserListener {
     const readonly = !!ctx.ReadOnly()
 
     const property = {
-      entryType: "property",
+      whichEntry: "property",
       name: ctx.propertyName().getText(),
       optional,
       readonly
@@ -165,7 +165,7 @@ class AstExtractor extends TypeOnlyParserListener {
     const readonly = !!ctx.ReadOnly()
 
     const functionProperty = {
-      entryType: "functionProperty",
+      whichEntry: "functionProperty",
       name: ctx.propertyName().getText(),
       type: {
         whichType: "function",
