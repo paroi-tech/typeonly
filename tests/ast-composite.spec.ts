@@ -39,6 +39,7 @@ describe("AST Specification for Composite Types", () => {
     `A | (B & C)`,
     `(A) | ((B & C))`,
     `(((A) | ((B & C))))`,
+    `A | B \n & \n C`,
   ]
   withParenthesis.forEach((inputType, index) => {
     test(`composite type with parenthesis #${index + 1}`, () => {
