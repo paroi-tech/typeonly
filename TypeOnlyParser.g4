@@ -4,53 +4,76 @@ options {
   tokenVocab = TypeOnlyLexer;
 }
 
-declarations: NewLine? (namedInterface | namedType)*;
+declarations: typeSep? declaration*;
+
+typeSep: (NewLine | SemiColon)+;
+
+declaration:
+  namedInterface typeSep?
+  | namedType (typeSep | EOF);
 
 /*
  * NamedInterface
  */
 namedInterface:
-  Export? WS? Interface WS? Identifier WS? interfaceExtends? NewLine? anonymousInterface typeSep*;
+  Export? WS? Interface WS? Identifier WS? interfaceExtends? NewLine? anonymousInterface;
+
 interfaceExtends: (
-    Extends WS? typeName ( WS? Comma WS? typeName)*
+    Extends WS? typeName (WS? Comma WS? typeName)*
   );
+
 anonymousInterface:
-  OpenBrace NewLine? (
-    (property | functionProperty) propertySeparator*
-  )* CloseBrace;
+  OpenBrace NewLine? interfaceEntries? CloseBrace;
+
+interfaceEntries:
+  interfaceEntry (propertySeparator interfaceEntry)* NewLine?;
+
+interfaceEntry: property | functionProperty;
+
 property:
   ReadOnly? WS? propertyName WS? QuestionMark? WS? Colon WS? aType;
+
 functionProperty:
-  ReadOnly? WS? propertyName WS? QuestionMark? OpenBracket WS? functionParameter* CloseBracket WS?
-    Colon WS? aType;
-propertySeparator: NewLine | SemiColon | Comma;
+  ReadOnly? WS? propertyName WS? QuestionMark? OpenBracket (
+    functionParameter (Comma functionParameter)*
+  )? CloseBracket WS? (Colon WS? aType)?;
+
+propertySeparator:
+  NewLine+
+  | NewLine* SemiColon NewLine*
+  | NewLine* Comma NewLine*;
+
 propertyName: Identifier | JsKeyword;
+
 typeName: Identifier;
 
 /*
  * NamedType
  */
-namedType:
-  Export? WS? Type WS? Identifier WS? Assign WS? aType typeSep*;
+namedType: Export? WS? Type WS? Identifier WS? Assign WS? aType;
 
 /*
  * Common rules for NamedInterface and NamedType
  */
 //  TODO: Add CompositeType
+
 aType:
-  // functionType | aType (BitAnd aType) | aType (BitOr aType)
+  OpenBracket (functionParameter (Comma functionParameter)*)? CloseBracket Arrow aType
+  | aType BitAnd aType
+  | aType BitOr aType
   | Identifier
   | literal
   | anonymousInterface
-  | functionType
   | typeWithParenthesis;
+
 typeWithParenthesis: OpenBracket aType CloseBracket;
-functionType:
-  OpenBracket WS? functionParameter* CloseBracket WS? Arrow WS? aType;
-functionParameter:
-  Identifier WS? Colon WS? aType propertySeparator*;
+
 // compositeType: aType (BitAnd aType)+ | aType (BitOr aType)+;
-typeSep: WS | NewLine | SemiColon | Comma;
+
+// functionType: OpenBracket (functionParameter (Comma functionParameter)*)? CloseBracket Arrow
+// aType;
+
+functionParameter: Identifier (Colon aType)?;
 
 /*
  * Literal

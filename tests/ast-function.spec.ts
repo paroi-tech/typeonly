@@ -8,7 +8,6 @@ describe("AST Specification for Function Types", () => {
     const namedType = ast.declarations[0] as AstNamedType
     expect(namedType.type).toEqual({
       whichType: "function",
-      parameters: [],
       returnValue: "void"
     } as AstFunctionType)
   })
@@ -40,11 +39,10 @@ describe("AST Specification for Function Types", () => {
     const fnType = namedType.type as AstFunctionType
     const emptyFnType: AstFunctionType = {
       whichType: "function",
-      parameters: [],
       returnValue: "void"
     }
     expect(fnType.returnValue).toEqual(emptyFnType)
-    expect(fnType.parameters[0].type).toEqual(emptyFnType)
+    expect(fnType.parameters![0].type).toEqual(emptyFnType)
   })
 
   test(`function with nested types and parenthesis`, () => {
@@ -54,10 +52,9 @@ describe("AST Specification for Function Types", () => {
     const fnType = namedType.type as AstFunctionType
     const emptyFnType: AstFunctionType = {
       whichType: "function",
-      parameters: [],
       returnValue: "void"
     }
     expect(fnType.returnValue).toEqual(emptyFnType)
-    expect(fnType.parameters[0].type).toEqual(emptyFnType)
+    expect(fnType.parameters![0].type).toEqual(emptyFnType)
   })
 })

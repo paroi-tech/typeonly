@@ -112,12 +112,12 @@ export interface AstArrayType {
 export interface AstGenericType {
   whichType: "generic"
   name: string
-  parameters: AstType[]
+  parameters?: AstType[]
 }
 
 export interface AstFunctionType {
   whichType: "function"
-  parameters: AstParameter[]
+  parameters?: AstParameter[]
   returnValue: AstType
 }
 

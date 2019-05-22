@@ -14,35 +14,32 @@ class AstExtractor extends TypeOnlyParserListener {
 
   exitDeclarations(ctx) {
     // console.log("exit declarations", ctx.getText())
-    const missingChildren = Array.from(this.childTypes.keys()).length
-    if (missingChildren > 0)
-      throw new Error(`Missing children: ${missingChildren}`)
+    this.checkMissingChildren()
   }
 
   enterNamedInterface(ctx) {
-    const exported = !!ctx.Export()
-    const interfaceExtends = []
-    if (ctx.interfaceExtends()) {
-      const names = Object.values(ctx.interfaceExtends().typeName()).map(child => child.getText())
-      interfaceExtends.push(...names)
-    }
     this.currentNamedInterface = {
       whichDeclaration: "interface",
       whichType: "interface",
       name: ctx.Identifier().getText(),
-      entries: [],
-      exported,
-      extends: interfaceExtends
+    }
+    if (ctx.Export())
+      namedType.exported = true
+    if (ctx.interfaceExtends()) {
+      const names = Object.values(ctx.interfaceExtends().typeName()).map(child => child.getText())
+      this.currentNamedInterface.extends = names
     }
 
     // console.log("enter interface", ctx.getText())
   }
+
   exitNamedInterface(ctx) {
     this.ast.declarations.push(this.currentNamedInterface)
     if (this.interfaceStack.length > 0)
       throw new Error("InterfaceStack should be empty")
 
     // console.log("exit interface", ctx.getText())
+    this.checkMissingChildren()
   }
 
 
@@ -54,13 +51,12 @@ class AstExtractor extends TypeOnlyParserListener {
     else {
       const interf = {
         whichType: "interface",
-        entries: []
       }
       this.interfaceStack.push(interf)
 
       this.registerAstChild(interf, ctx.parentCtx)
     }
-    console.log("enter anoInterface", ctx.parentCtx.getText())
+    // console.log("enter anoInterface", ctx.parentCtx.getText())
   }
 
   exitAnonymousInterface(ctx) {
@@ -72,24 +68,24 @@ class AstExtractor extends TypeOnlyParserListener {
 
   // AstNamedType
   enterNamedType(ctx) {
-
-    const exported = !!ctx.Export()
     const namedType = {
       whichDeclaration: "type",
       name: ctx.Identifier().getText(),
-      exported
     }
+    if (ctx.Export())
+      namedType.exported = true
     this.currentNamedType = namedType
 
     this.setAstChildRegistration(type => namedType.type = type, ctx.aType())
 
-    console.log("enter namedType decl", ctx.getText())
+    // console.log("enter namedType decl", ctx.getText())
   }
+
   exitNamedType(ctx) {
     this.ast.declarations.push(this.currentNamedType)
     // console.log("exit namedType decl", ctx.getText())
+    this.checkMissingChildren()
   }
-
 
   // AstProperty
   enterProperty(ctx) {
@@ -106,12 +102,15 @@ class AstExtractor extends TypeOnlyParserListener {
       optional,
       readonly
     }
+    if (!current.entries)
+      current.entries = []
     current.entries.push(property)
 
     this.setAstChildRegistration(type => property.type = type, ctx.aType())
 
     // console.log("enter property", this.namedTypeStack.length)
   }
+
   exitProperty(ctx) {
 
     // console.log("exit property", this.namedTypeStack.length)
@@ -128,20 +127,29 @@ class AstExtractor extends TypeOnlyParserListener {
       literal.stringDelim = firstChar
     }
     this.registerAstChild(literal, ctx.parentCtx)
-    console.log("enter literal", ctx.parentCtx.getText())
+    // console.log("enter literal", ctx.parentCtx.getText())
   }
 
-  enterFunctionType(ctx) {
+  enterAType(ctx) {
+    if (ctx.OpenBracket()) {
+      console.log("## open bracket -> function type")
+      this.processFunctionType(ctx)
+    }
+  }
+
+  processFunctionType(ctx) {
+    // console.log("====>", ctx.getText(), "===")
     const functionType = {
       whichType: "function",
-      parameters: [],
     }
 
-    this.registerAstChild(functionType, ctx.parentCtx)
+    this.registerAstChild(functionType, ctx)
 
     const functionParameters = ctx.functionParameter()
     for (const param of functionParameters) {
       this.setAstChildRegistration(type => {
+        if (!functionType.parameters)
+          functionType.parameters = []
         functionType.parameters.push({
           name: param.Identifier().getText(),
           type
@@ -151,9 +159,9 @@ class AstExtractor extends TypeOnlyParserListener {
 
     this.setAstChildRegistration(child => {
       functionType.returnValue = child
-    }, ctx.aType())
+    }, ctx.aType()[0])
 
-    console.log("enter function type", ctx.aType().getText())
+    // console.log("enter function type", ctx.aType().getText())
   }
 
   enterTypeWithParenthesis(ctx) {
@@ -182,7 +190,7 @@ class AstExtractor extends TypeOnlyParserListener {
     //   test = ctx.aType().functionType().aType().getText()
     // }
     // if(ctx.aType().typeWithParenthesis().)
-    console.log("enter type with parenthesis", ctx.children[1].getText())
+    // console.log("enter type with parenthesis", ctx.children[1].getText())
   }
 
   enterFunctionProperty(ctx) {
@@ -198,7 +206,6 @@ class AstExtractor extends TypeOnlyParserListener {
       name: ctx.propertyName().getText(),
       type: {
         whichType: "function",
-        parameters: []
       },
       optional,
       readonly
@@ -208,12 +215,16 @@ class AstExtractor extends TypeOnlyParserListener {
     const functionParameters = ctx.functionParameter()
     for (const param of functionParameters) {
       this.setAstChildRegistration(type => {
+        if (!functionProperty.type.parameters)
+          functionProperty.type.parameters = []
         functionProperty.type.parameters.push({
           name: param.Identifier().getText(),
           type
         })
       }, param.aType())
     }
+    if (!current.entries)
+      current.entries = []
     current.entries.push(functionProperty)
 
     this.setAstChildRegistration(child => {
@@ -238,6 +249,11 @@ class AstExtractor extends TypeOnlyParserListener {
       this.registerAstChild(aType.getText(), aType)
   }
 
+  checkMissingChildren() {
+    const missingChildren = Array.from(this.childTypes.keys()).length
+    if (missingChildren > 0)
+      throw new Error(`Missing children: ${missingChildren}`)
+  }
 }
 
 exports.AstExtractor = AstExtractor

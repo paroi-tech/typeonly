@@ -11,7 +11,7 @@ describe("AST Specification for Interfaces (part 2)", () => {
       expect(prop.name).toBe("a")
       const propType = prop.type as AstFunctionType
       expect(propType.whichType).toBe("function")
-      expect(propType.parameters).toEqual(parameters)
+      expect(propType.parameters).toEqual(parameters.length === 0 ? undefined : parameters)
       expect(propType.returnValue).toBe(returnValue)
     })
   }
