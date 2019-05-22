@@ -1,10 +1,7 @@
 import { AstNamedType } from "../src/ast"
 import { parseTypeOnlyToAst } from "../src/parse-typeonly"
 
-const stringDelim = ["'", "`", "\""]
-
 describe("AST Specification for Literal Types", () => {
-
 
   const validStringLiterals = [`"abc"`, `"a\\"b"`, `'a\\'b'`]
   validStringLiterals.forEach(literal => {
@@ -14,6 +11,7 @@ describe("AST Specification for Literal Types", () => {
       const namedType = ast.declarations[0] as AstNamedType
       expect(namedType.type).toEqual({
         whichType: "literal",
+        // tslint:disable-next-line: no-eval
         value: eval(literal),
         stringDelim: literal[0]
       })
