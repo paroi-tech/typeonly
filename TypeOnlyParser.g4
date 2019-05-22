@@ -37,11 +37,19 @@ namedType:
  * Common rules for NamedInterface and NamedType
  */
 //  TODO: Add CompositeType
-aType: Identifier | literal | anonymousInterface | functionType;
+aType:
+  // functionType | aType (BitAnd aType) | aType (BitOr aType)
+  | Identifier
+  | literal
+  | anonymousInterface
+  | functionType
+  | typeWithParenthesis;
+typeWithParenthesis: OpenBracket aType CloseBracket;
 functionType:
   OpenBracket WS? functionParameter* CloseBracket WS? Arrow WS? aType;
 functionParameter:
   Identifier WS? Colon WS? aType propertySeparator*;
+// compositeType: aType (BitAnd aType)+ | aType (BitOr aType)+;
 typeSep: WS | NewLine | SemiColon | Comma;
 
 /*

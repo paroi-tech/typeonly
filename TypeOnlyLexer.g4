@@ -13,6 +13,8 @@ QuestionMark: '?';
 OpenBracket: '(';
 CloseBracket: ')';
 Arrow: '=>';
+BitOr: '|';
+BitAnd: '&';
 
 /*
  * Literals

@@ -5,10 +5,10 @@ const { parseTypeOnlyToAst } = require("./parse-typeonly")
 // const test = `
 // type T1 = "ZD"
 // `
-
-const test = `interface I1 {
-  a(f: a: (p1: T1, p2: T2) => void): number
-}`
+// (((p1: (() => void)) => (() => void)))
+// const test = `type T1 = (p1: () => void) => () => void`
+// const test = `type T1 = number | string | number | string`
+const test = `type T1 = (((p1: (() => void)) => (() => void)))`
 
 // Function
 // const test = `interface I1 {

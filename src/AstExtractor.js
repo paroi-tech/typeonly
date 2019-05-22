@@ -83,7 +83,7 @@ class AstExtractor extends TypeOnlyParserListener {
 
     this.setAstChildRegistration(type => namedType.type = type, ctx.aType())
 
-    console.log("enter namedType decl")
+    console.log("enter namedType decl", ctx.getText())
   }
   exitNamedType(ctx) {
     this.ast.declarations.push(this.currentNamedType)
@@ -153,7 +153,36 @@ class AstExtractor extends TypeOnlyParserListener {
       functionType.returnValue = child
     }, ctx.aType())
 
-    console.log("enter function type", functionType)
+    console.log("enter function type", ctx.aType().getText())
+  }
+
+  enterTypeWithParenthesis(ctx) {
+    // const functionType = {
+    //   whichType: "function",
+    //   parameters: [],
+    // }
+
+    // this.registerAstChild(functionType, ctx.parentCtx)
+
+    // const functionParameters = ctx.functionParameter()
+    // for (const param of functionParameters) {
+    //   this.setAstChildRegistration(type => {
+    //     functionType.parameters.push({
+    //       name: param.Identifier().getText(),
+    //       type
+    //     })
+    //   }, param.aType())
+    // }
+
+    // this.setAstChildRegistration(child => {
+    //   functionType.returnValue = child
+    // }, ctx.aType())
+    // let test
+    // if (ctx.aType().functionType() !== null) {
+    //   test = ctx.aType().functionType().aType().getText()
+    // }
+    // if(ctx.aType().typeWithParenthesis().)
+    console.log("enter type with parenthesis", ctx.children[1].getText())
   }
 
   enterFunctionProperty(ctx) {
