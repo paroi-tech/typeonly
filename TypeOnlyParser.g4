@@ -6,7 +6,7 @@ options {
 
 declarations: typeSep? declaration*;
 
-typeSep: (NewLine | SemiColon)+;
+typeSep: (NEW_LINE | SEMI_COLON)+;
 
 declaration:
   namedInterface typeSep?
@@ -16,41 +16,41 @@ declaration:
  * NamedInterface
  */
 namedInterface:
-  Export? WS? Interface WS? Identifier WS? interfaceExtends? NewLine? anonymousInterface;
+  EXPORT? WS? INTERFACE WS? IDENTIFIER WS? interfaceExtends? NEW_LINE? anonymousInterface;
 
 interfaceExtends: (
-    Extends WS? typeName (WS? Comma WS? typeName)*
+    EXTENDS WS? typeName (WS? COMMA WS? typeName)*
   );
 
 anonymousInterface:
-  OpenBrace NewLine? interfaceEntries? CloseBrace;
+  OPEN_BRACE NEW_LINE? interfaceEntries? CLOSE_BRACE;
 
 interfaceEntries:
-  interfaceEntry (propertySeparator interfaceEntry)* NewLine?;
+  interfaceEntry (propertySeparator interfaceEntry)* NEW_LINE?;
 
 interfaceEntry: property | functionProperty;
 
 property:
-  ReadOnly? WS? propertyName WS? QuestionMark? WS? Colon WS? aType;
+  READ_ONLY? WS? propertyName WS? QUESTION_MARK? WS? COLON WS? aType;
 
 functionProperty:
-  ReadOnly? WS? propertyName WS? QuestionMark? OpenBracket (
-    functionParameter (Comma functionParameter)*
-  )? CloseBracket WS? (Colon WS? aType)?;
+  READ_ONLY? WS? propertyName WS? QUESTION_MARK? OPEN_BRACKET (
+    functionParameter (COMMA functionParameter)*
+  )? CLOSE_BRACKET WS? (COLON WS? aType)?;
 
 propertySeparator:
-  NewLine+
-  | NewLine* SemiColon NewLine*
-  | NewLine* Comma NewLine*;
+  NEW_LINE+
+  | NEW_LINE* SEMI_COLON NEW_LINE*
+  | NEW_LINE* COMMA NEW_LINE*;
 
-propertyName: Identifier | JsKeyword;
+propertyName: IDENTIFIER | JS_KEYWORD;
 
-typeName: Identifier;
+typeName: IDENTIFIER;
 
 /*
  * NamedType
  */
-namedType: Export? WS? Type WS? Identifier WS? Assign WS? aType;
+namedType: EXPORT? WS? TYPE WS? IDENTIFIER WS? ASSIGN WS? aType;
 
 /*
  * Common rules for NamedInterface and NamedType
@@ -58,33 +58,33 @@ namedType: Export? WS? Type WS? Identifier WS? Assign WS? aType;
 //  TODO: Add CompositeType
 
 aType:
-  OpenBracket (functionParameter (Comma functionParameter)*)? CloseBracket Arrow aType
-  | aType BitAnd aType
-  | aType BitOr aType
-  | Identifier
+  OPEN_BRACKET (functionParameter (COMMA functionParameter)*)? CLOSE_BRACKET ARROW aType
+  | aType INTERSECTION aType
+  | aType UNION aType
+  | IDENTIFIER
   | literal
   | anonymousInterface
   | typeWithParenthesis;
 
-typeWithParenthesis: OpenBracket aType CloseBracket;
+typeWithParenthesis: OPEN_BRACKET aType CLOSE_BRACKET;
 
-// compositeType: aType (BitAnd aType)+ | aType (BitOr aType)+;
+// compositeType: aType (INTERSECTION aType)+ | aType (UNION aType)+;
 
-// functionType: OpenBracket (functionParameter (Comma functionParameter)*)? CloseBracket Arrow
+// functionType: OPEN_BRACKET (functionParameter (COMMA functionParameter)*)? CLOSE_BRACKET ARROW
 // aType;
 
-functionParameter: Identifier (Colon aType)?;
+functionParameter: IDENTIFIER (COLON aType)?;
 
 /*
  * Literal
  */
 literal:
-  | StringLiteral
-  | TemplateStringLiteral
-  | BooleanLiteral
-  | BigIntLiteral
-  | IntegerLiteral
-  | DecimalLiteral
-  | HexIntegerLiteral
-  | OctalIntegerLiteral
-  | BinaryIntegerLiteral;
+  | STRING_LITERAL
+  | TEMPLATE_STRING_LITERAL
+  | BOOLEAN_LITERAL
+  | BIG_INT_LITERAL
+  | INTEGER_LITERAL
+  | DECIMAL_LITERAL
+  | HEX_INTEGER_LITERAL
+  | OCTAL_INTEGER_LITERAL
+  | BINARY_INTEGER_LITERAL;

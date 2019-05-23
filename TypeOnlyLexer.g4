@@ -3,127 +3,131 @@ lexer grammar TypeOnlyLexer;
 /*
  * Symbols, Operators
  */
-OpenBrace: '{';
-CloseBrace: '}';
-Colon: ':';
-SemiColon: ';';
-Comma: ',';
-Assign: '=';
-QuestionMark: '?';
-OpenBracket: '(';
-CloseBracket: ')';
-Arrow: '=>';
-BitOr: '|';
-BitAnd: '&';
+OPEN_BRACE: '{';
+CLOSE_BRACE: '}';
+COLON: ':';
+SEMI_COLON: ';';
+COMMA: ',';
+ASSIGN: '=';
+QUESTION_MARK: '?';
+OPEN_BRACKET: '(';
+CLOSE_BRACKET: ')';
+ARROW: '=>';
+UNION: '|';
+INTERSECTION: '&';
 
 /*
  * Literals
  */
-BooleanLiteral: 'true' | 'false';
-IntegerLiteral: '0' | [1-9] [0-9]*;
-BigIntLiteral: [0-9]+ 'n';
-DecimalLiteral:
-  IntegerLiteral '.' [0-9]* ExponentPart?
-  | '.' [0-9]* ExponentPart?
-  | IntegerLiteral ExponentPart?;
-HexIntegerLiteral: '0' [xX] HexDigit+;
-OctalIntegerLiteral: '0' [oO] [0-7]+;
-BinaryIntegerLiteral: '0' [bB] [01]+;
+BOOLEAN_LITERAL: 'true' | 'false';
+INTEGER_LITERAL: '0' | [1-9] [0-9]*;
+BIG_INT_LITERAL: [0-9]+ 'n';
+DECIMAL_LITERAL:
+  INTEGER_LITERAL '.' [0-9]* EXPONENT_PART?
+  | '.' [0-9]* EXPONENT_PART?
+  | INTEGER_LITERAL EXPONENT_PART?;
+HEX_INTEGER_LITERAL: '0' [xX] HEX_DIGIT+;
+OCTAL_INTEGER_LITERAL: '0' [oO] [0-7]+;
+BINARY_INTEGER_LITERAL: '0' [bB] [01]+;
 
 /*
  * Keywords
  */
-While: 'while';
-Do: 'do';
-Break: 'break';
-Continue: 'continue';
-Finally: 'finally';
-Public: 'public';
-Private: 'private';
-Import: 'import';
-If: 'if';
-For: 'for';
-JsKeyword:
-  If
-  | For
-  | While
-  | Do
-  | Break
-  | Continue
-  | Finally
-  | Private
-  | Import;
+WHILE: 'while';
+DO: 'do';
+BREAK: 'break';
+CONTINUE: 'continue';
+FINALLY: 'finally';
+PUBLIC: 'public';
+PRIVATE: 'private';
+IMPORT: 'import';
+IF: 'if';
+FOR: 'for';
+JS_KEYWORD:
+  IF
+  | FOR
+  | WHILE
+  | DO
+  | BREAK
+  | CONTINUE
+  | FINALLY
+  | PRIVATE
+  | IMPORT;
 
 /*
  * ReservedWords
  */
-Interface: 'interface';
-Type: 'type';
-Export: 'export';
-Extends: 'extends';
-ReadOnly: 'readonly';
+INTERFACE: 'interface';
+TYPE: 'type';
+EXPORT: 'export';
+EXTENDS: 'extends';
+READ_ONLY: 'readonly';
 
 // Identifier
-Identifier: IdentifierStart IdentifierPart*;
+IDENTIFIER: IDENTIFIER_START IDENTIFIER_PART*;
 
 /*
- * StringLiteral
+ * STRING_LITERAL
  */
-StringLiteral: (
-    '"' DoubleStringCharacter* '"'
-    | '\'' SingleStringCharacter* '\''
+STRING_LITERAL: (
+    '"' DOUBLE_STRING_CHARACTER* '"'
+    | '\'' SINGLE_STRING_CHARACTER* '\''
   );
-TemplateStringLiteral: '`' ('\\`' | ~'`')* '`';
+TEMPLATE_STRING_LITERAL: '`' ('\\`' | ~'`')* '`';
 
 // Comments
-MultiLineComment: '/*' .*? '*/' -> channel(HIDDEN);
-SingleLineComment:
+MULTI_LINE_COMMENT: '/*' .*? '*/' -> channel(HIDDEN);
+SINGLE_LINE_COMMENT:
   '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
 // WhiteSpaces
-NewLine: ('\r'? '\n' | '\r')+;
+NEW_LINE: ('\r'? '\n' | '\r')+;
 WS: [\t\u000B\u000C\u0020\u00A0]+ -> channel(HIDDEN);
 
 /*
  * Fragments
  */
-fragment DoubleStringCharacter:
+fragment DOUBLE_STRING_CHARACTER:
   ~["\\\r\n]
-  | '\\' EscapeSequence;
+  | '\\' ESCAPE_SEQUENCE;
 
-fragment SingleStringCharacter:
+fragment SINGLE_STRING_CHARACTER:
   ~['\\\r\n]
-  | '\\' EscapeSequence;
-fragment EscapeSequence:
-  CharacterEscapeSequence
+  | '\\' ESCAPE_SEQUENCE;
+fragment ESCAPE_SEQUENCE:
+  CHARACTER_ESCAPE_SEQUENCE
   | '0' // no digit ahead! TODO
-  | HexEscapeSequence
-  | UnicodeEscapeSequence
-  | ExtendedUnicodeEscapeSequence;
-fragment HexEscapeSequence: 'x' HexDigit HexDigit;
-fragment CharacterEscapeSequence:
-  SingleEscapeCharacter
-  | NonEscapeCharacter;
-fragment NonEscapeCharacter: ~['"\\bfnrtv0-9xu\r\n];
-fragment ExtendedUnicodeEscapeSequence: 'u' '{' HexDigit+ '}';
-fragment UnicodeEscapeSequence:
-  'u' HexDigit HexDigit HexDigit HexDigit;
-fragment SingleEscapeCharacter: ['"\\bfnrtv];
-fragment EscapeCharacter: SingleEscapeCharacter | [0-9] | [xu];
-fragment HexDigit: [0-9a-fA-F];
-fragment ExponentPart: [eE] [+-]? [0-9]+;
-fragment IdentifierStart:
-  UnicodeLetter
+  | HEX_ESCAPE_SEQUENCE
+  | UNICODE_ESCAPE_SEQUENCE
+  | EXTENDED_UNICODE_ESCAPE_SEQUENCE;
+fragment HEX_ESCAPE_SEQUENCE: 'x' HEX_DIGIT HEX_DIGIT;
+fragment CHARACTER_ESCAPE_SEQUENCE:
+  SINGLE_ESCAPE_CHARACTER
+  | NON_ESCAPE_CHARACTER;
+fragment NON_ESCAPE_CHARACTER: ~['"\\bfnrtv0-9xu\r\n];
+fragment EXTENDED_UNICODE_ESCAPE_SEQUENCE:
+  'u' '{' HEX_DIGIT+ '}';
+fragment UNICODE_ESCAPE_SEQUENCE:
+  'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT;
+fragment SINGLE_ESCAPE_CHARACTER: ['"\\bfnrtv];
+fragment EscapeCharacter:
+  SINGLE_ESCAPE_CHARACTER
+  | [0-9]
+  | [xu];
+fragment HEX_DIGIT: [0-9a-fA-F];
+fragment EXPONENT_PART: [eE] [+-]? [0-9]+;
+fragment IDENTIFIER_START:
+  UNICODE_LETTER
   | [$_]
-  | '\\' UnicodeEscapeSequence;
+  | '\\' UNICODE_ESCAPE_SEQUENCE;
 
-fragment IdentifierPart:
-  IdentifierStart
-  | UnicodeCombiningMark
-  | UnicodeDigit
-  | UnicodeConnectorPunctuation
+fragment IDENTIFIER_PART:
+  IDENTIFIER_START
+  | UNICODE_COMBINING_MARK
+  | UNICODE_DIGIT
+  | UNICODE_CONNECTOR_PUNCTUATION
   | ZWNJ
   | ZWJ;
-fragment UnicodeLetter:
+fragment UNICODE_LETTER:
   [\u0041-\u005A]
   | [\u0061-\u007A]
   | [\u00AA]
@@ -385,7 +389,7 @@ fragment UnicodeLetter:
   | [\uFFCA-\uFFCF]
   | [\uFFD2-\uFFD7]
   | [\uFFDA-\uFFDC];
-fragment UnicodeCombiningMark:
+fragment UNICODE_COMBINING_MARK:
   [\u0300-\u034E]
   | [\u0360-\u0362]
   | [\u0483-\u0486]
@@ -486,7 +490,7 @@ fragment UnicodeCombiningMark:
   | [\u3099-\u309A]
   | [\uFB1E]
   | [\uFE20-\uFE23];
-fragment UnicodeDigit:
+fragment UNICODE_DIGIT:
   [\u0030-\u0039]
   | [\u0660-\u0669]
   | [\u06F0-\u06F9]
@@ -507,7 +511,7 @@ fragment UnicodeDigit:
   | [\u17E0-\u17E9]
   | [\u1810-\u1819]
   | [\uFF10-\uFF19];
-fragment UnicodeConnectorPunctuation:
+fragment UNICODE_CONNECTOR_PUNCTUATION:
   [\u005F]
   | [\u203F-\u2040]
   | [\u30FB]
@@ -517,16 +521,10 @@ fragment UnicodeConnectorPunctuation:
   | [\uFF65];
 fragment ZWNJ: '\u200C';
 fragment ZWJ: '\u200D';
-fragment RegularExpressionFirstChar:
-  ~[*\r\n\u2028\u2029\\/[]
-  | RegularExpressionBackslashSequence
-  | '[' RegularExpressionClassChar* ']';
-fragment RegularExpressionChar:
-  ~[\r\n\u2028\u2029\\/[]
-  | RegularExpressionBackslashSequence
-  | '[' RegularExpressionClassChar* ']';
-fragment RegularExpressionClassChar:
-  ~[\r\n\u2028\u2029\]\\]
-  | RegularExpressionBackslashSequence;
-fragment RegularExpressionBackslashSequence:
-  '\\' ~[\r\n\u2028\u2029];
+
+// fragment RegularExpressionFirstChar: ~[*\r\n\u2028\u2029\\/[] |
+// RegularExpressionBackslashSequence | '[' RegularExpressionClassChar* ']'; fragment
+// RegularExpressionChar: ~[\r\n\u2028\u2029\\/[] | RegularExpressionBackslashSequence | '['
+// RegularExpressionClassChar* ']'; fragment RegularExpressionClassChar: ~[\r\n\u2028\u2029\]\\] |
+// RegularExpressionBackslashSequence; fragment RegularExpressionBackslashSequence: '\\'
+// ~[\r\n\u2028\u2029];

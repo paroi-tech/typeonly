@@ -37,7 +37,7 @@ df:string
     })
   })
 
-  test("declarations can be separated with semicolon or newline or nothing", () => {
+  test("declarations can be separated with SEMI_COLON or newline or nothing", () => {
     const input = `
 interface I1 {}interface I2{} interface I3{}
 interface I4{}; interface I5{};
@@ -47,7 +47,7 @@ interface I4{}; interface I5{};
     expect(ast.declarations.length).toBe(6)
   })
 
-  test("property separator can be a coma, a semicolon or a new line", () => {
+  test("property separator can be a coma, a SEMI_COLON or a new line", () => {
     const input = `
 interface I1 {
   a: string,

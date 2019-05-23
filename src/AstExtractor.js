@@ -21,9 +21,9 @@ class AstExtractor extends TypeOnlyParserListener {
     this.currentNamedInterface = {
       whichDeclaration: "interface",
       whichType: "interface",
-      name: ctx.Identifier().getText(),
+      name: ctx.IDENTIFIER().getText(),
     }
-    if (ctx.Export())
+    if (ctx.EXPORT())
       namedType.exported = true
     if (ctx.interfaceExtends()) {
       const names = Object.values(ctx.interfaceExtends().typeName()).map(child => child.getText())
@@ -70,20 +70,20 @@ class AstExtractor extends TypeOnlyParserListener {
   enterNamedType(ctx) {
     const namedType = {
       whichDeclaration: "type",
-      name: ctx.Identifier().getText(),
+      name: ctx.IDENTIFIER().getText(),
     }
-    if (ctx.Export())
+    if (ctx.EXPORT())
       namedType.exported = true
     this.currentNamedType = namedType
 
     this.setAstChildRegistration(type => namedType.type = type, ctx.aType())
 
-    // console.log("enter namedType decl", ctx.getText())
+    console.log("enter namedType decl", ctx.getText())
   }
 
   exitNamedType(ctx) {
     this.ast.declarations.push(this.currentNamedType)
-    // console.log("exit namedType decl", ctx.getText())
+    console.log("exit namedType decl", ctx.getText())
     this.checkMissingChildren()
   }
 
@@ -93,8 +93,8 @@ class AstExtractor extends TypeOnlyParserListener {
       throw new Error("Missing interfaceStack")
 
     const current = this.interfaceStack[this.interfaceStack.length - 1]
-    const optional = !!ctx.QuestionMark()
-    const readonly = !!ctx.ReadOnly()
+    const optional = !!ctx.QUESTION_MARK()
+    const readonly = !!ctx.READ_ONLY()
 
     const property = {
       whichEntry: "property",
@@ -116,7 +116,6 @@ class AstExtractor extends TypeOnlyParserListener {
     // console.log("exit property", this.namedTypeStack.length)
   }
 
-  // TODO: enterCompositeType to manage it
   enterLiteral(ctx) {
     const literal = {
       whichType: "literal",
@@ -131,10 +130,36 @@ class AstExtractor extends TypeOnlyParserListener {
   }
 
   enterAType(ctx) {
-    if (ctx.OpenBracket()) {
-      console.log("## open bracket -> function type")
+    if (ctx.OPEN_BRACKET()) {
+      console.log("## open bracket -> function type== ", ctx.getText())
       this.processFunctionType(ctx)
+    } else if (ctx.UNION() || ctx.INTERSECTION()) {
+      this.processCompositeType(ctx)
     }
+  }
+
+  processCompositeType(ctx) {
+    const compositeType = {
+      whichType: "composite",
+      op: ctx.INTERSECTION() ? "intersection" : "union",
+      types: []
+    }
+    const aTypes = ctx.aType()
+    aTypes.forEach((aType, index) => {
+      console.log("### enter iteration, index:", index, "for:", ctx.getText())
+      this.setAstChildRegistration(
+        astType => {
+          compositeType.types[index] = astType
+          console.log("### register child of composite, index:", index, "for:", ctx.getText())
+        },
+        aType
+      )
+      console.log("### end of iteration, index:", index, "for:", ctx.getText())
+    })
+    this.registerAstChild(compositeType, ctx)
+
+    console.log("## CompositeType === ", aTypes.map(child => child.getText()).join(", "))
+    console.log("## CompositeType == ", ctx.getText(), "ast== ", compositeType)
   }
 
   processFunctionType(ctx) {
@@ -151,10 +176,11 @@ class AstExtractor extends TypeOnlyParserListener {
         if (!functionType.parameters)
           functionType.parameters = []
         functionType.parameters.push({
-          name: param.Identifier().getText(),
+          name: param.IDENTIFIER().getText(),
           type
         })
       }, param.aType())
+
     }
 
     this.setAstChildRegistration(child => {
@@ -165,32 +191,11 @@ class AstExtractor extends TypeOnlyParserListener {
   }
 
   enterTypeWithParenthesis(ctx) {
-    // const functionType = {
-    //   whichType: "function",
-    //   parameters: [],
-    // }
+    this.setAstChildRegistration(child => {
+      this.registerAstChild(child, ctx.parentCtx)
+    }, ctx.aType())
 
-    // this.registerAstChild(functionType, ctx.parentCtx)
-
-    // const functionParameters = ctx.functionParameter()
-    // for (const param of functionParameters) {
-    //   this.setAstChildRegistration(type => {
-    //     functionType.parameters.push({
-    //       name: param.Identifier().getText(),
-    //       type
-    //     })
-    //   }, param.aType())
-    // }
-
-    // this.setAstChildRegistration(child => {
-    //   functionType.returnValue = child
-    // }, ctx.aType())
-    // let test
-    // if (ctx.aType().functionType() !== null) {
-    //   test = ctx.aType().functionType().aType().getText()
-    // }
-    // if(ctx.aType().typeWithParenthesis().)
-    // console.log("enter type with parenthesis", ctx.children[1].getText())
+    console.log("enter type with parenthesis", ctx.getText())
   }
 
   enterFunctionProperty(ctx) {
@@ -198,8 +203,8 @@ class AstExtractor extends TypeOnlyParserListener {
       throw new Error("Missing interfaceStack")
 
     const current = this.interfaceStack[this.interfaceStack.length - 1]
-    const optional = !!ctx.QuestionMark()
-    const readonly = !!ctx.ReadOnly()
+    const optional = !!ctx.QUESTION_MARK()
+    const readonly = !!ctx.READ_ONLY()
 
     const functionProperty = {
       whichEntry: "functionProperty",
@@ -218,7 +223,7 @@ class AstExtractor extends TypeOnlyParserListener {
         if (!functionProperty.type.parameters)
           functionProperty.type.parameters = []
         functionProperty.type.parameters.push({
-          name: param.Identifier().getText(),
+          name: param.IDENTIFIER().getText(),
           type
         })
       }, param.aType())
@@ -245,7 +250,7 @@ class AstExtractor extends TypeOnlyParserListener {
     if (this.childTypes.has(aType))
       throw new Error(`Child type already defined for: ${aType.getText()}`)
     this.childTypes.set(aType, cb)
-    if (aType.Identifier())
+    if (aType.IDENTIFIER())
       this.registerAstChild(aType.getText(), aType)
   }
 
