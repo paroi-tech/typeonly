@@ -11,7 +11,8 @@ const { parseTypeOnlyToAst } = require("./parse-typeonly")
 // const test = `type T1 = (p1: () => void) => () => void`
 // const test = `type T1 = (((p1: (() => void)) => (() => void)))`
 // const test = `type T1=[number,[number[]],boolean ]`
-const test = `type T1 = {a:number}[]`
+// const test = `type T1 = {a:number}[]`
+const test = `type T1 =G<number, string>`
 
 
 // Function

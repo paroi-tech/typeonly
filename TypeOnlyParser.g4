@@ -64,7 +64,12 @@ aType:
   | literal
   | anonymousInterface
   | typeWithParenthesis
-  | tupleType;
+  | tupleType
+  | genericType;
+
+// TODO: Ask to Mr Thomas if is true: Array can have null type and must have OPEN_BRACKET CLOSE_BRACKET at the end
+genericType:
+  IDENTIFIER LESS_THAN (aType (COMMA aType)*)? MORE_THAN;
 tupleType: OPEN_HOOK (aType (COMMA aType)*)? CLOSE_HOOK;
 typeWithParenthesis: OPEN_BRACKET aType CLOSE_BRACKET;
 functionParameter: IDENTIFIER (COLON aType)?;

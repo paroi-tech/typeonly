@@ -148,6 +148,43 @@ class AstExtractor extends TypeOnlyParserListener {
     console.log("enter Tuple type", ctx.getText())
   }
 
+  enterGenericType(ctx) {
+    if (ctx.IDENTIFIER().getText() === "Array" && ctx.aType().length === 1) {
+      const arrayType = {
+        whichType: "array"
+      }
+      this.registerAstChild(arrayType, ctx.parentCtx)
+      this.setAstChildRegistration(
+        astType => {
+          arrayType.itemType = astType
+
+        }, ctx.aType()[0])
+
+    } else {
+      const genericType = {
+        whichType: "generic",
+        name: ctx.IDENTIFIER().getText(),
+      }
+      this.registerAstChild(genericType, ctx.parentCtx)
+
+      const parameters = ctx.aType()
+      if (parameters !== null) {
+        parameters.forEach((param, index) => {
+          this.setAstChildRegistration(
+            astType => {
+              if (!genericType.parameters)
+                genericType.parameters = []
+              genericType.parameters[index] = astType
+            },
+            param
+          )
+        })
+      }
+    }
+
+    console.log("enter generic type", ctx.getText())
+  }
+
   enterAType(ctx) {
     if (ctx.OPEN_BRACKET()) {
       console.log("## open bracket -> function type== ", ctx.getText())

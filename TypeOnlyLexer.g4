@@ -17,6 +17,8 @@ UNION: '|';
 INTERSECTION: '&';
 OPEN_HOOK: '[';
 CLOSE_HOOK: ']';
+LESS_THAN: '<';
+MORE_THAN: '>';
 
 /*
  * Literals
