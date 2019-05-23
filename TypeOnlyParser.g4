@@ -55,31 +55,25 @@ namedType: EXPORT? WS? TYPE WS? IDENTIFIER WS? ASSIGN WS? aType;
 /*
  * Common rules for NamedInterface and NamedType
  */
-//  TODO: Add CompositeType
-
 aType:
   OPEN_BRACKET (functionParameter (COMMA functionParameter)*)? CLOSE_BRACKET ARROW aType
   | aType INTERSECTION aType
   | aType UNION aType
+  | aType OPEN_HOOK CLOSE_HOOK
   | IDENTIFIER
   | literal
   | anonymousInterface
-  | typeWithParenthesis;
-
+  | typeWithParenthesis
+  | tupleType;
+tupleType: OPEN_HOOK (aType (COMMA aType)*)? CLOSE_HOOK;
 typeWithParenthesis: OPEN_BRACKET aType CLOSE_BRACKET;
-
-// compositeType: aType (INTERSECTION aType)+ | aType (UNION aType)+;
-
-// functionType: OPEN_BRACKET (functionParameter (COMMA functionParameter)*)? CLOSE_BRACKET ARROW
-// aType;
-
 functionParameter: IDENTIFIER (COLON aType)?;
 
 /*
  * Literal
  */
 literal:
-  | STRING_LITERAL
+  STRING_LITERAL
   | TEMPLATE_STRING_LITERAL
   | BOOLEAN_LITERAL
   | BIG_INT_LITERAL

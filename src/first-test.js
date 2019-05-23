@@ -7,9 +7,11 @@ const { parseTypeOnlyToAst } = require("./parse-typeonly")
 // `
 // (((p1: (() => void)) => (() => void)))
 // const test = `type T1 = (p1: () => void) => () => void`
-const test = `type T1 = (boolean | string) & number`
+// const test = `type T1 = (boolean | string) & number`
 // const test = `type T1 = (p1: () => void) => () => void`
 // const test = `type T1 = (((p1: (() => void)) => (() => void)))`
+// const test = `type T1=[number,[number[]],boolean ]`
+const test = `type T1 = {a:number}[]`
 
 
 // Function

@@ -15,6 +15,8 @@ CLOSE_BRACKET: ')';
 ARROW: '=>';
 UNION: '|';
 INTERSECTION: '&';
+OPEN_HOOK: '[';
+CLOSE_HOOK: ']';
 
 /*
  * Literals
@@ -69,10 +71,9 @@ IDENTIFIER: IDENTIFIER_START IDENTIFIER_PART*;
 /*
  * STRING_LITERAL
  */
-STRING_LITERAL: (
-    '"' DOUBLE_STRING_CHARACTER* '"'
-    | '\'' SINGLE_STRING_CHARACTER* '\''
-  );
+STRING_LITERAL:
+  '"' DOUBLE_STRING_CHARACTER* '"'
+  | '\'' SINGLE_STRING_CHARACTER* '\'';
 TEMPLATE_STRING_LITERAL: '`' ('\\`' | ~'`')* '`';
 
 // Comments

@@ -129,13 +129,47 @@ class AstExtractor extends TypeOnlyParserListener {
     // console.log("enter literal", ctx.parentCtx.getText())
   }
 
+  enterTupleType(ctx) {
+    const tupleType = {
+      whichType: "tuple",
+      itemTypes: []
+    }
+    this.registerAstChild(tupleType, ctx.parentCtx)
+
+    const itemTypes = ctx.aType()
+    itemTypes.forEach((itemType, index) => {
+      this.setAstChildRegistration(
+        astType => {
+          tupleType.itemTypes[index] = astType
+        },
+        itemType
+      )
+    })
+    console.log("enter Tuple type", ctx.getText())
+  }
+
   enterAType(ctx) {
     if (ctx.OPEN_BRACKET()) {
       console.log("## open bracket -> function type== ", ctx.getText())
       this.processFunctionType(ctx)
     } else if (ctx.UNION() || ctx.INTERSECTION()) {
       this.processCompositeType(ctx)
+    } else if (ctx.OPEN_HOOK()) {
+      this.processArrayType(ctx)
+      console.log("enter ArrayType", ctx.aType()[0].getText())
     }
+  }
+
+  processArrayType(ctx) {
+    const arrayType = {
+      whichType: "array"
+    }
+    this.registerAstChild(arrayType, ctx)
+    this.setAstChildRegistration(
+      astType => {
+        arrayType.itemType = astType
+
+      }, ctx.aType()[0])
   }
 
   processCompositeType(ctx) {
@@ -171,17 +205,19 @@ class AstExtractor extends TypeOnlyParserListener {
     this.registerAstChild(functionType, ctx)
 
     const functionParameters = ctx.functionParameter()
-    for (const param of functionParameters) {
-      this.setAstChildRegistration(type => {
-        if (!functionType.parameters)
-          functionType.parameters = []
-        functionType.parameters.push({
-          name: param.IDENTIFIER().getText(),
-          type
-        })
-      }, param.aType())
-
-    }
+    functionParameters.forEach((param, index) => {
+      this.setAstChildRegistration(
+        astType => {
+          if (!functionType.parameters)
+            functionType.parameters = []
+          functionType.parameters[index] = {
+            name: param.IDENTIFIER().getText(),
+            type: astType
+          }
+        },
+        param.aType()
+      )
+    })
 
     this.setAstChildRegistration(child => {
       functionType.returnValue = child
@@ -218,16 +254,20 @@ class AstExtractor extends TypeOnlyParserListener {
     // this.registerAstChild(functionProperty, ctx.parentCtx)
 
     const functionParameters = ctx.functionParameter()
-    for (const param of functionParameters) {
-      this.setAstChildRegistration(type => {
-        if (!functionProperty.type.parameters)
-          functionProperty.type.parameters = []
-        functionProperty.type.parameters.push({
-          name: param.IDENTIFIER().getText(),
-          type
-        })
-      }, param.aType())
-    }
+    functionParameters.forEach((param, index) => {
+      this.setAstChildRegistration(
+        astType => {
+          if (!functionProperty.type.parameters)
+            functionProperty.type.parameters = []
+          functionProperty.type.parameters[index] = {
+            name: param.IDENTIFIER().getText(),
+            type: astType
+          }
+        },
+        param.aType()
+      )
+    })
+
     if (!current.entries)
       current.entries = []
     current.entries.push(functionProperty)
