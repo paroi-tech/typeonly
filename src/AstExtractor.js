@@ -6,6 +6,7 @@ class AstExtractor extends TypeOnlyParserListener {
 
   enterDeclarations(ctx) {
     this.childTypes = new Map()
+    this.compositeMap = new Map()
     this.ast = {
       declarations: []
     }
@@ -78,12 +79,12 @@ class AstExtractor extends TypeOnlyParserListener {
 
     this.setAstChildRegistration(type => namedType.type = type, ctx.aType())
 
-    console.log("enter namedType decl", ctx.getText())
+    // console.log("enter namedType decl", ctx.getText())
   }
 
   exitNamedType(ctx) {
     this.ast.declarations.push(this.currentNamedType)
-    console.log("exit namedType decl", ctx.getText())
+    // console.log("exit namedType decl", ctx.getText())
     this.checkMissingChildren()
   }
 
@@ -145,7 +146,7 @@ class AstExtractor extends TypeOnlyParserListener {
         itemType
       )
     })
-    console.log("enter Tuple type", ctx.getText())
+    // console.log("enter Tuple type", ctx.getText())
   }
 
   enterGenericType(ctx) {
@@ -182,18 +183,24 @@ class AstExtractor extends TypeOnlyParserListener {
       }
     }
 
-    console.log("enter generic type", ctx.getText())
+    // console.log("enter generic type", ctx.getText())
   }
 
   enterAType(ctx) {
     if (ctx.OPEN_BRACKET()) {
-      console.log("## open bracket -> function type== ", ctx.getText())
+      // console.log("## open bracket -> function type== ", ctx.getText())
       this.processFunctionType(ctx)
     } else if (ctx.UNION() || ctx.INTERSECTION()) {
       this.processCompositeType(ctx)
     } else if (ctx.OPEN_HOOK()) {
       this.processArrayType(ctx)
-      console.log("enter ArrayType", ctx.aType()[0].getText())
+      // console.log("enter ArrayType", ctx.aType()[0].getText())
+    }
+  }
+
+  exitAType(ctx) {
+    if (ctx.UNION() || ctx.INTERSECTION()) {
+      this.processEndOfCompositeType(ctx)
     }
   }
 
@@ -217,20 +224,43 @@ class AstExtractor extends TypeOnlyParserListener {
     }
     const aTypes = ctx.aType()
     aTypes.forEach((aType, index) => {
-      console.log("### enter iteration, index:", index, "for:", ctx.getText())
+      // console.log("### enter iteration, index:", index, "for:", ctx.getText())
       this.setAstChildRegistration(
         astType => {
           compositeType.types[index] = astType
-          console.log("### register child of composite, index:", index, "for:", ctx.getText())
+          // console.log("### register child of composite, index:", index, "for:", ctx.getText())
         },
         aType
       )
-      console.log("### end of iteration, index:", index, "for:", ctx.getText())
+      // console.log("### end of iteration, index:", index, "for:", ctx.getText())
     })
     this.registerAstChild(compositeType, ctx)
+    this.compositeMap.set(ctx, compositeType)
 
-    console.log("## CompositeType === ", aTypes.map(child => child.getText()).join(", "))
-    console.log("## CompositeType == ", ctx.getText(), "ast== ", compositeType)
+    // console.log("## CompositeType === ", aTypes.map(child => child.getText()).join(", "))
+    // console.log("## CompositeType == ", ctx.getText(), "ast== ", compositeType)
+  }
+
+  processEndOfCompositeType(ctx) {
+    const compositeType = this.compositeMap.get(ctx)
+    if (!compositeType)
+      throw new Error("Missing composite type")
+    this.compositeMap.delete(ctx)
+    const [left, right] = compositeType.types
+    const mergeLeft = typeof left !== "string" && left.whichType === "composite" && left.op === compositeType.op
+    const mergeRight = typeof right !== "string" && right.whichType === "composite" && right.op === compositeType.op
+    if (mergeLeft || mergeRight) {
+      const types = []
+      if (mergeLeft)
+        types.push(...left.types)
+      else
+        types.push(left)
+      if (mergeRight)
+        types.push(...right.types)
+      else
+        types.push(right)
+      compositeType.types = types
+    }
   }
 
   processFunctionType(ctx) {
@@ -268,7 +298,7 @@ class AstExtractor extends TypeOnlyParserListener {
       this.registerAstChild(child, ctx.parentCtx)
     }, ctx.aType())
 
-    console.log("enter type with parenthesis", ctx.getText())
+    // console.log("enter type with parenthesis", ctx.getText())
   }
 
   enterFunctionProperty(ctx) {
@@ -335,6 +365,9 @@ class AstExtractor extends TypeOnlyParserListener {
     const missingChildren = Array.from(this.childTypes.keys()).length
     if (missingChildren > 0)
       throw new Error(`Missing children: ${missingChildren}`)
+    const remainingComposite = Array.from(this.compositeMap.keys()).length
+    if (remainingComposite > 0)
+      throw new Error(`Remaining composite: ${remainingComposite}`)
   }
 }
 
