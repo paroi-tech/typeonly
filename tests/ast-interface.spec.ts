@@ -2,23 +2,6 @@ import { AstNamedInterface, AstProperty } from "../src/ast"
 import { parseTypeOnlyToAst } from "../src/parse-typeonly"
 
 describe("AST Specification for Interfaces", () => {
-  test("weird spaces do not matter", () => {
-    const input = `
-
-   interface    I1
-
- {
-
-  sd : string
-
-df:string
- }
-
-      `
-    const ast = parseTypeOnlyToAst(input)
-    expect(ast.declarations.length).toBe(1)
-  })
-
   const validIdentifiers = ["Abc12", "$_ab12", "_", "$", "əe"]
   validIdentifiers.forEach(identifier => {
     test(`valid identifier: ${identifier}`, () => {
@@ -37,7 +20,7 @@ df:string
     })
   })
 
-  test("declarations can be separated with SEMI_COLON or newline or nothing", () => {
+  test("declarations can be separated with semicolon or newline or nothing", () => {
     const input = `
 interface I1 {}interface I2{} interface I3{}
 interface I4{}; interface I5{};
@@ -47,7 +30,7 @@ interface I4{}; interface I5{};
     expect(ast.declarations.length).toBe(6)
   })
 
-  test("property separator can be a coma, a SEMI_COLON or a new line", () => {
+  test("property separator can be a coma, a semicolon or a new line", () => {
     const input = `
 interface I1 {
   a: string,

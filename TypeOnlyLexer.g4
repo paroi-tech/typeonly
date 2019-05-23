@@ -83,7 +83,7 @@ MULTI_LINE_COMMENT: '/*' .*? '*/' -> channel(HIDDEN);
 SINGLE_LINE_COMMENT:
   '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
 // WhiteSpaces
-NEW_LINE: ('\r'? '\n' | '\r')+;
+NL: ('\r'? '\n' | '\r')+;
 WS: [\t\u000B\u000C\u0020\u00A0]+ -> channel(HIDDEN);
 
 /*

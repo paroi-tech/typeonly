@@ -16,7 +16,7 @@ type T1 = [string, number, boolean]
     })
   })
 
-  test("NamedType which has tuple which has identifier and interface as itemTypes", () => {
+  test("a tuple with identifiers and an interface", () => {
     const input = `
 type T2 = [string, {a: number, b: string}, boolean]
 `
@@ -49,9 +49,10 @@ type T2 = [string, {a: number, b: string}, boolean]
     })
   })
 
-  test("NamedType which has tuple as Type which has itemTypes separated by comma or newline or comma an newline", () => {
+  test("a tuple with a newline", () => {
     const input = `
 type T3 = [string, number,boolean
+  ,
   dfdfd]
 `
     const ast = parseTypeOnlyToAst(input)

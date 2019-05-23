@@ -6,7 +6,7 @@ options {
 
 declarations: typeSep? declaration*;
 
-typeSep: (NEW_LINE | SEMI_COLON)+;
+typeSep: (NL | SEMI_COLON)+;
 
 declaration:
   namedInterface typeSep?
@@ -16,32 +16,28 @@ declaration:
  * NamedInterface
  */
 namedInterface:
-  EXPORT? WS? INTERFACE WS? IDENTIFIER WS? interfaceExtends? NEW_LINE? anonymousInterface;
+  (EXPORT NL?)? INTERFACE IDENTIFIER (NL? interfaceExtends)? NL? anonymousInterface;
 
-interfaceExtends: (
-    EXTENDS WS? typeName (WS? COMMA WS? typeName)*
-  );
+interfaceExtends:
+  EXTENDS NL? typeName (NL? COMMA NL? typeName)*;
 
 anonymousInterface:
-  OPEN_BRACE NEW_LINE? interfaceEntries? CLOSE_BRACE;
+  OPEN_BRACE (NL? interfaceEntries)? NL? CLOSE_BRACE;
 
 interfaceEntries:
-  interfaceEntry (propertySeparator interfaceEntry)* NEW_LINE?;
+  interfaceEntry (propertySeparator interfaceEntry)*;
 
 interfaceEntry: property | functionProperty;
 
 property:
-  READ_ONLY? WS? propertyName WS? QUESTION_MARK? WS? COLON WS? aType;
+  (READ_ONLY NL?)? propertyName (NL? QUESTION_MARK)? NL? COLON NL? aType;
 
 functionProperty:
-  READ_ONLY? WS? propertyName WS? QUESTION_MARK? OPEN_BRACKET (
-    functionParameter (COMMA functionParameter)*
-  )? CLOSE_BRACKET WS? (COLON WS? aType)?;
+  (READ_ONLY NL?)? propertyName (NL? QUESTION_MARK)? NL? OPEN_BRACKET (
+    NL? functionParameter (NL? COMMA NL? functionParameter)*
+  )? NL? CLOSE_BRACKET (NL? COLON NL? aType)?;
 
-propertySeparator:
-  NEW_LINE+
-  | NEW_LINE* SEMI_COLON NEW_LINE*
-  | NEW_LINE* COMMA NEW_LINE*;
+propertySeparator: NL | NL? SEMI_COLON+ NL? | NL? COMMA NL?;
 
 propertyName: IDENTIFIER | JS_KEYWORD;
 
@@ -50,16 +46,18 @@ typeName: IDENTIFIER;
 /*
  * NamedType
  */
-namedType: EXPORT? WS? TYPE WS? IDENTIFIER WS? ASSIGN WS? aType;
+namedType: (EXPORT NL?)? TYPE IDENTIFIER NL? ASSIGN NL? aType;
 
 /*
  * Common rules for NamedInterface and NamedType
  */
 aType:
-  OPEN_BRACKET (functionParameter (COMMA functionParameter)*)? CLOSE_BRACKET ARROW aType
-  | aType INTERSECTION aType
-  | aType UNION aType
-  | aType OPEN_HOOK CLOSE_HOOK
+  OPEN_BRACKET (
+    NL? functionParameter (NL? COMMA NL? functionParameter)*
+  )? NL? CLOSE_BRACKET NL? ARROW NL? aType
+  | aType NL? INTERSECTION NL? aType
+  | aType NL? UNION NL? aType
+  | aType NL? OPEN_HOOK NL? CLOSE_HOOK
   | IDENTIFIER
   | literal
   | anonymousInterface
@@ -69,10 +67,11 @@ aType:
 
 // TODO: Ask to Mr Thomas if is true: Array can have null type and must have OPEN_BRACKET CLOSE_BRACKET at the end
 genericType:
-  IDENTIFIER LESS_THAN (aType (COMMA aType)*)? MORE_THAN;
-tupleType: OPEN_HOOK (aType (COMMA aType)*)? CLOSE_HOOK;
-typeWithParenthesis: OPEN_BRACKET aType CLOSE_BRACKET;
-functionParameter: IDENTIFIER (COLON aType)?;
+  IDENTIFIER NL? LESS_THAN (NL? aType (NL? COMMA NL? aType)*)? NL? MORE_THAN;
+tupleType:
+  OPEN_HOOK (NL? aType (NL? COMMA NL? aType)*)? NL? CLOSE_HOOK;
+typeWithParenthesis: OPEN_BRACKET NL? aType NL? CLOSE_BRACKET;
+functionParameter: IDENTIFIER (NL? COLON NL? aType)?;
 
 /*
  * Literal

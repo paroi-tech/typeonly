@@ -25,7 +25,7 @@ class AstExtractor extends TypeOnlyParserListener {
       name: ctx.IDENTIFIER().getText(),
     }
     if (ctx.EXPORT())
-      namedType.exported = true
+      this.currentNamedInterface.exported = true
     if (ctx.interfaceExtends()) {
       const names = Object.values(ctx.interfaceExtends().typeName()).map(child => child.getText())
       this.currentNamedInterface.extends = names
