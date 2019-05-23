@@ -362,12 +362,10 @@ class AstExtractor extends TypeOnlyParserListener {
   }
 
   checkMissingChildren() {
-    const missingChildren = Array.from(this.childTypes.keys()).length
-    if (missingChildren > 0)
-      throw new Error(`Missing children: ${missingChildren}`)
-    const remainingComposite = Array.from(this.compositeMap.keys()).length
-    if (remainingComposite > 0)
-      throw new Error(`Remaining composite: ${remainingComposite}`)
+    if (this.childTypes.size > 0)
+      throw new Error(`Missing children: ${this.childTypes.size}`)
+    if (this.compositeMap.size > 0)
+      throw new Error(`Remaining composite: ${this.compositeMap.size}`)
   }
 }
 
