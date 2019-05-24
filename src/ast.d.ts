@@ -120,7 +120,7 @@ export interface AstArrayType {
 export interface AstGenericType {
   whichType: "generic"
   name: string
-  parameterTypes?: AstType[]
+  parameterTypes: AstType[]
 }
 
 export interface AstFunctionType {

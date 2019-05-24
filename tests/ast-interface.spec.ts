@@ -41,7 +41,7 @@ interface I1 {
 `
     const ast = parseTypeOnlyToAst(input)
     const namedInterface = ast.declarations[0] as AstNamedInterface
-    expect(namedInterface.entries.length).toBe(4)
+    expect(namedInterface.entries!.length).toBe(4)
   })
 
   test("inline interface", () => {
@@ -50,7 +50,7 @@ interface I1 { a: string, b: string; c: string }
 `
     const ast = parseTypeOnlyToAst(input)
     const namedInterface = ast.declarations[0] as AstNamedInterface
-    expect(namedInterface.entries.length).toBe(3)
+    expect(namedInterface.entries!.length).toBe(3)
   })
 
   const validTypeNames = {
@@ -67,7 +67,7 @@ interface I1 { a: string, b: string; c: string }
         }`
         const ast = parseTypeOnlyToAst(input)
         const namedInterface = ast.declarations[0] as AstNamedInterface
-        const property = namedInterface.entries[0] as AstProperty
+        const property = namedInterface.entries![0] as AstProperty
         expect(property.type).toBe(typeName)
       })
     }
@@ -92,7 +92,7 @@ interface I1 {
       `
     const ast = parseTypeOnlyToAst(input)
     const namedInterface = ast.declarations[0] as AstNamedInterface
-    const prop = namedInterface.entries[0] as AstProperty
+    const prop = namedInterface.entries![0] as AstProperty
     expect(prop.optional).toBe(true)
   })
 })

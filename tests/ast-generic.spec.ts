@@ -13,7 +13,7 @@ type T1 = G<number, string>
     expect(namedType.type).toEqual({
       whichType: "generic",
       name: "G",
-      parameters: [
+      parametersTypes: [
         "number",
         "string"
       ]

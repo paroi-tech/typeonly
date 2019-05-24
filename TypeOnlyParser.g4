@@ -16,7 +16,9 @@ declaration:
  * NamedInterface
  */
 namedInterface:
-  (EXPORT NL?)? INTERFACE IDENTIFIER (NL? interfaceExtends)? NL? anonymousInterface;
+  (EXPORT NL?)? INTERFACE IDENTIFIER (NL? genericDecl)? (
+    NL? interfaceExtends
+  )? NL? anonymousInterface;
 
 interfaceExtends:
   EXTENDS NL? typeName (NL? COMMA NL? typeName)*;
@@ -33,7 +35,9 @@ property:
   (READONLY NL?)? propertyName (NL? QUESTION_MARK)? NL? COLON NL? aType;
 
 functionProperty:
-  (READONLY NL?)? propertyName (NL? QUESTION_MARK)? NL? OPEN_PARENTHESE (
+  (READONLY NL?)? propertyName (NL? QUESTION_MARK)? NL? (
+    NL? genericDecl
+  )? OPEN_PARENTHESE (
     NL? functionParameter (NL? COMMA NL? functionParameter)*
   )? NL? CLOSE_PARENTHESE (NL? COLON NL? aType)?;
 
@@ -46,28 +50,41 @@ typeName: IDENTIFIER;
 /*
  * NamedType
  */
-namedType: (EXPORT NL?)? TYPE IDENTIFIER NL? ASSIGN NL? aType;
+namedType: (EXPORT NL?)? TYPE IDENTIFIER NL? (NL? genericDecl)? ASSIGN NL? aType;
 
 /*
  * Common rules for NamedInterface and NamedType
  */
 aType:
-  OPEN_PARENTHESE (
-    NL? functionParameter (NL? COMMA NL? functionParameter)*
-  )? NL? CLOSE_PARENTHESE NL? ARROW NL? aType
-  | aType NL? INTERSECTION NL? aType
-  | aType NL? UNION NL? aType
-  | aType NL? OPEN_BRACKET NL? CLOSE_BRACKET
+  inlineImportType
   | IDENTIFIER
   | literal
+  | tupleType
+  | KEYOF aType
+  | aType NL? OPEN_BRACKET NL? CLOSE_BRACKET
   | anonymousInterface
   | typeWithParenthesis
-  | tupleType
-  | genericType;
+  | aType NL? INTERSECTION NL? aType
+  | aType NL? UNION NL? aType
+  | genericType
+  | (NL? genericDecl)? OPEN_PARENTHESE (
+    NL? functionParameter (NL? COMMA NL? functionParameter)*
+  )? NL? CLOSE_PARENTHESE NL? ARROW NL? aType;
 
-// TODO: Ask to Mr Thomas if is true: Array can have null type and must have OPEN_PARENTHESE CLOSE_PARENTHESE at the end
+genericDecl: LESS_THAN genericParameter+ MORE_THAN;
+genericParameter:
+  IDENTIFIER (EXTENDS extendsType = aType)? (
+    ASSIGN defaultType = aType
+  )?;
 genericType:
-  IDENTIFIER NL? LESS_THAN (NL? aType (NL? COMMA NL? aType)*)? NL? MORE_THAN;
+  IDENTIFIER NL? LESS_THAN NL? aType (NL? COMMA NL? aType)* NL? MORE_THAN;
+inlineImportType:
+  IMPORT OPEN_PARENTHESE literal CLOSE_PARENTHESE DOT IDENTIFIER;
+
+// genericType: IDENTIFIER NL? LESS_THAN NL? aType (NL? COMMA NL? aType)* NL? MORE_THAN;
+// genericType: IDENTIFIER NL? LESS_THAN NL? genericParameter (NL? COMMA NL? genericParameter)* NL?
+// MORE_THAN; genericParameter: IDENTIFIER (EXTENDS extendsType = aType)? (ASSIGN defaultType =
+// aType)?
 tupleType:
   OPEN_BRACKET (NL? aType (NL? COMMA NL? aType)*)? NL? CLOSE_BRACKET;
 typeWithParenthesis:

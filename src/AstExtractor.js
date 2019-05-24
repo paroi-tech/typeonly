@@ -29,6 +29,8 @@ class AstExtractor extends TypeOnlyParserListener {
       this.currentNamedInterface.extends = names
     }
 
+    this.proccessGenericParameter(ctx, this.currentNamedInterface)
+
     // console.log("enter interface", ctx.getText())
   }
 
@@ -77,7 +79,10 @@ class AstExtractor extends TypeOnlyParserListener {
       namedType.exported = true
     this.currentNamedType = namedType
 
+    console.log("ZE", ctx.aType().getText(), "==", namedType.type)
     this.setAstChildRegistration(type => namedType.type = type, ctx.aType())
+
+    this.proccessGenericParameter(ctx, namedType)
 
     // console.log("enter namedType decl", ctx.getText())
   }
@@ -155,7 +160,8 @@ class AstExtractor extends TypeOnlyParserListener {
   enterGenericType(ctx) {
     if (ctx.IDENTIFIER().getText() === "Array" && ctx.aType().length === 1) {
       const arrayType = {
-        whichType: "array"
+        whichType: "array",
+        genericSyntax: true
       }
       this.registerAstChild(arrayType, ctx.parentCtx)
       this.setAstChildRegistration(
@@ -168,6 +174,7 @@ class AstExtractor extends TypeOnlyParserListener {
       const genericType = {
         whichType: "generic",
         name: ctx.IDENTIFIER().getText(),
+        parametersTypes: []
       }
       this.registerAstChild(genericType, ctx.parentCtx)
 
@@ -176,9 +183,7 @@ class AstExtractor extends TypeOnlyParserListener {
         parameters.forEach((param, index) => {
           this.setAstChildRegistration(
             astType => {
-              if (!genericType.parameters)
-                genericType.parameters = []
-              genericType.parameters[index] = astType
+              genericType.parametersTypes[index] = astType
             },
             param
           )
@@ -198,6 +203,9 @@ class AstExtractor extends TypeOnlyParserListener {
     } else if (ctx.OPEN_BRACKET()) {
       this.processArrayType(ctx)
       // console.log("enter ArrayType", ctx.aType()[0].getText())
+    } else if (ctx.KEYOF()) {
+      this.processKeyOf(ctx)
+      console.log("enter keyof", ctx.aType()[0].getText())
     }
   }
 
@@ -205,6 +213,19 @@ class AstExtractor extends TypeOnlyParserListener {
     if (ctx.UNION() || ctx.INTERSECTION()) {
       this.processEndOfCompositeType(ctx)
     }
+  }
+
+  processKeyOf(ctx) {
+    const keyofType = {
+      whichType: "keyof"
+    }
+
+    this.registerAstChild(keyofType, ctx)
+    this.setAstChildRegistration(
+      astType => {
+        keyofType.type = astType
+
+      }, ctx.aType()[0])
   }
 
   processArrayType(ctx) {
@@ -293,6 +314,8 @@ class AstExtractor extends TypeOnlyParserListener {
       functionType.returnType = child
     }, ctx.aType()[0])
 
+    this.proccessGenericParameter(ctx, functionType)
+
     // console.log("enter function type", ctx.aType().getText())
   }
 
@@ -345,11 +368,56 @@ class AstExtractor extends TypeOnlyParserListener {
     this.setAstChildRegistration(child => {
       functionProperty.type.returnType = child
     }, ctx.aType())
+
+    this.proccessGenericParameter(ctx, functionProperty)
   }
 
+  enterInlineImportType(ctx) {
+    const inlineImportType = {
+      whichType: "inlineImport",
+      from: ctx.literal().getText(),
+      exportedName: ctx.IDENTIFIER().getText()
+    }
+
+    // this.setAstChildRegistration(type => inlineImportType.type = type, ctx)
+
+
+    console.log("Inline Import", ctx.getText(), "==", inlineImportType)
+    this.registerAstChild(inlineImportType, ctx)
+
+    // this.registerAstChild(inlineImportType, ctx.parentCtx)
+
+    console.log("Inline Import", ctx.IDENTIFIER().getText())
+  }
+
+  proccessGenericParameter(ctx, ast) {
+    if (ctx.genericDecl()) {
+      const generic = []
+      const genericParameters = ctx.genericDecl().genericParameter()
+      genericParameters.forEach((param, index) => {
+        generic[index] = {
+          name: param.IDENTIFIER().getText()
+        }
+        if (param.extendsType) {
+          this.setAstChildRegistration(astType => {
+            generic[index].extendsType = astType
+          }, param.extendsType)
+        }
+        if (param.defaultType) {
+          this.setAstChildRegistration(astType => {
+            generic[index].defaultType = astType
+          }, param.defaultType)
+        }
+
+      })
+
+      ast.generic = generic
+    }
+  }
 
   registerAstChild(astType, aType) {
     const cb = this.childTypes.get(aType)
+    console.log("callback", aType.getText())
     if (!cb)
       throw new Error(`Unexpected child type: ${aType.getText()} ==== ${cb}`)
     cb(astType)
@@ -357,9 +425,11 @@ class AstExtractor extends TypeOnlyParserListener {
   }
 
   setAstChildRegistration(cb, aType) {
+    console.log("setAstChild", aType.getText())
     if (this.childTypes.has(aType))
       throw new Error(`Child type already defined for: ${aType.getText()}`)
     this.childTypes.set(aType, cb)
+    console.log("checkMap", this.childTypes.get(aType))
     if (aType.IDENTIFIER())
       this.registerAstChild(aType.getText(), aType)
   }

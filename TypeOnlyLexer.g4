@@ -19,6 +19,7 @@ OPEN_BRACKET: '[';
 CLOSE_BRACKET: ']';
 LESS_THAN: '<';
 MORE_THAN: '>';
+DOT: '.';
 
 /*
  * Literals
@@ -66,6 +67,7 @@ TYPE: 'type';
 EXPORT: 'export';
 EXTENDS: 'extends';
 READONLY: 'readonly';
+KEYOF: 'keyof';
 
 // Identifier
 IDENTIFIER: IDENTIFIER_START IDENTIFIER_PART*;
