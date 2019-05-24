@@ -196,16 +196,17 @@ class AstExtractor extends TypeOnlyParserListener {
 
   enterAType(ctx) {
     if (ctx.OPEN_PARENTHESE()) {
-      // console.log("## open bracket -> function type== ", ctx.getText())
+      console.log("##&& function type== ", ctx.getText())
       this.processFunctionType(ctx)
     } else if (ctx.UNION() || ctx.INTERSECTION()) {
+      console.log("##&& open composite== ", ctx.getText())
       this.processCompositeType(ctx)
     } else if (ctx.OPEN_BRACKET()) {
+      console.log("##&& enter ArrayType", ctx.aType()[0].getText())
       this.processArrayType(ctx)
-      // console.log("enter ArrayType", ctx.aType()[0].getText())
     } else if (ctx.KEYOF()) {
+      console.log("##&& enter keyof", ctx.aType()[0].getText())
       this.processKeyOf(ctx)
-      console.log("enter keyof", ctx.aType()[0].getText())
     }
   }
 
@@ -262,7 +263,6 @@ class AstExtractor extends TypeOnlyParserListener {
     this.compositeMap.set(ctx, compositeType)
 
     // console.log("## CompositeType === ", aTypes.map(child => child.getText()).join(", "))
-    // console.log("## CompositeType == ", ctx.getText(), "ast== ", compositeType)
   }
 
   processEndOfCompositeType(ctx) {
@@ -288,7 +288,6 @@ class AstExtractor extends TypeOnlyParserListener {
   }
 
   processFunctionType(ctx) {
-    // console.log("====>", ctx.getText(), "===")
     const functionType = {
       whichType: "function",
     }
@@ -338,21 +337,17 @@ class AstExtractor extends TypeOnlyParserListener {
     const functionProperty = {
       whichEntry: "functionProperty",
       name: ctx.propertyName().getText(),
-      type: {
-        whichType: "function",
-      },
       optional,
       readonly
     }
-    // this.registerAstChild(functionProperty, ctx.parentCtx)
 
     const functionParameters = ctx.functionParameter()
     functionParameters.forEach((param, index) => {
       this.setAstChildRegistration(
         astType => {
-          if (!functionProperty.type.parameters)
-            functionProperty.type.parameters = []
-          functionProperty.type.parameters[index] = {
+          if (!functionProperty.parameters)
+            functionProperty.parameters = []
+          functionProperty.parameters[index] = {
             name: param.IDENTIFIER().getText(),
             type: astType
           }
@@ -365,9 +360,11 @@ class AstExtractor extends TypeOnlyParserListener {
       current.entries = []
     current.entries.push(functionProperty)
 
-    this.setAstChildRegistration(child => {
-      functionProperty.type.returnType = child
-    }, ctx.aType())
+    if (ctx.aType()) {
+      this.setAstChildRegistration(child => {
+        functionProperty.returnType = child
+      }, ctx.aType())
+    }
 
     this.proccessGenericParameter(ctx, functionProperty)
   }
@@ -375,19 +372,13 @@ class AstExtractor extends TypeOnlyParserListener {
   enterInlineImportType(ctx) {
     const inlineImportType = {
       whichType: "inlineImport",
-      from: ctx.literal().getText(),
+      from: ctx.stringLiteral().getText(),
       exportedName: ctx.IDENTIFIER().getText()
     }
 
-    // this.setAstChildRegistration(type => inlineImportType.type = type, ctx)
+    this.registerAstChild(inlineImportType, ctx.parentCtx)
 
-
-    console.log("Inline Import", ctx.getText(), "==", inlineImportType)
-    this.registerAstChild(inlineImportType, ctx)
-
-    // this.registerAstChild(inlineImportType, ctx.parentCtx)
-
-    console.log("Inline Import", ctx.IDENTIFIER().getText())
+    // console.log("Inline Import", ctx.IDENTIFIER().getText())
   }
 
   proccessGenericParameter(ctx, ast) {
@@ -408,7 +399,6 @@ class AstExtractor extends TypeOnlyParserListener {
             generic[index].defaultType = astType
           }, param.defaultType)
         }
-
       })
 
       ast.generic = generic
@@ -417,15 +407,13 @@ class AstExtractor extends TypeOnlyParserListener {
 
   registerAstChild(astType, aType) {
     const cb = this.childTypes.get(aType)
-    console.log("callback", aType.getText())
     if (!cb)
-      throw new Error(`Unexpected child type: ${aType.getText()} ==== ${cb}`)
+      throw new Error(`Unexpected child type: ${aType.getText()}`)
     cb(astType)
     this.childTypes.delete(aType)
   }
 
   setAstChildRegistration(cb, aType) {
-    console.log("setAstChild", aType.getText())
     if (this.childTypes.has(aType))
       throw new Error(`Child type already defined for: ${aType.getText()}`)
     this.childTypes.set(aType, cb)

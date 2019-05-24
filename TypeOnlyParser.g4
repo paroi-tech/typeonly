@@ -79,12 +79,10 @@ genericParameter:
 genericType:
   IDENTIFIER NL? LESS_THAN NL? aType (NL? COMMA NL? aType)* NL? MORE_THAN;
 inlineImportType:
-  IMPORT OPEN_PARENTHESE literal CLOSE_PARENTHESE DOT IDENTIFIER;
+  IMPORT OPEN_PARENTHESE stringLiteral CLOSE_PARENTHESE DOT IDENTIFIER;
 
-// genericType: IDENTIFIER NL? LESS_THAN NL? aType (NL? COMMA NL? aType)* NL? MORE_THAN;
-// genericType: IDENTIFIER NL? LESS_THAN NL? genericParameter (NL? COMMA NL? genericParameter)* NL?
-// MORE_THAN; genericParameter: IDENTIFIER (EXTENDS extendsType = aType)? (ASSIGN defaultType =
-// aType)?
+stringLiteral: STRING_LITERAL | TEMPLATE_STRING_LITERAL;
+
 tupleType:
   OPEN_BRACKET (NL? aType (NL? COMMA NL? aType)*)? NL? CLOSE_BRACKET;
 typeWithParenthesis:
