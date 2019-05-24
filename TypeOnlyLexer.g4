@@ -10,13 +10,13 @@ SEMI_COLON: ';';
 COMMA: ',';
 ASSIGN: '=';
 QUESTION_MARK: '?';
-OPEN_BRACKET: '(';
-CLOSE_BRACKET: ')';
+OPEN_PARENTHESE: '(';
+CLOSE_PARENTHESE: ')';
 ARROW: '=>';
 UNION: '|';
 INTERSECTION: '&';
-OPEN_HOOK: '[';
-CLOSE_HOOK: ']';
+OPEN_BRACKET: '[';
+CLOSE_BRACKET: ']';
 LESS_THAN: '<';
 MORE_THAN: '>';
 
@@ -65,7 +65,7 @@ INTERFACE: 'interface';
 TYPE: 'type';
 EXPORT: 'export';
 EXTENDS: 'extends';
-READ_ONLY: 'readonly';
+READONLY: 'readonly';
 
 // Identifier
 IDENTIFIER: IDENTIFIER_START IDENTIFIER_PART*;
@@ -79,7 +79,7 @@ STRING_LITERAL:
 TEMPLATE_STRING_LITERAL: '`' ('\\`' | ~'`')* '`';
 
 // Comments
-MULTI_LINE_COMMENT: '/*' .*? '*/' -> channel(HIDDEN);
+MULTILINE_COMMENT: '/*' .*? '*/' -> channel(HIDDEN);
 SINGLE_LINE_COMMENT:
   '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
 // WhiteSpaces

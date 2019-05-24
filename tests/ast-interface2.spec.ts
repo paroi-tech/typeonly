@@ -2,29 +2,41 @@ import { AstFunctionProperty, AstFunctionType, AstNamedInterface, AstProperty } 
 import { parseTypeOnlyToAst } from "../src/parse-typeonly"
 
 describe("AST Specification for Interfaces (part 2)", () => {
-  const testFunctionAsProperty = (input: string, whichEntry: string, parameters: any[], returnValue: string) => {
-    test(`a function as ${whichEntry}, ${parameters.length === 0 ? "no parameter" : `with ${parameters.length} parameters`}`, () => {
+  const testFunctionAsProperty = (input: string, parameters: any[], returnType: string) => {
+    test(`a function as property, ${parameters.length === 0 ? "no parameter" : `with ${parameters.length} parameters`}`, () => {
       const ast = parseTypeOnlyToAst(input)
-      const namedInterface = ast.declarations[0] as AstNamedInterface
-      const prop = namedInterface.entries[0] as AstProperty
-      expect(prop.whichEntry).toBe(whichEntry)
+      const namedInterface = ast.declarations![0] as AstNamedInterface
+      const prop = namedInterface.entries![0] as AstProperty
+      expect(prop.whichEntry).toBe("property")
       expect(prop.name).toBe("a")
       const propType = prop.type as AstFunctionType
       expect(propType.whichType).toBe("function")
       expect(propType.parameters).toEqual(parameters.length === 0 ? undefined : parameters)
-      expect(propType.returnValue).toBe(returnValue)
+      expect(propType.returnType).toBe(returnType)
     })
   }
 
-  testFunctionAsProperty(`
+  const testFunctionProperty = (input: string, parameters: any[], returnType: string) => {
+    test(`a function as functionProperty, ${parameters.length === 0 ? "no parameter" : `with ${parameters.length} parameters`}`, () => {
+      const ast = parseTypeOnlyToAst(input)
+      const namedInterface = ast.declarations![0] as AstNamedInterface
+      const prop = namedInterface.entries![0] as AstFunctionProperty
+      expect(prop.whichEntry).toBe("functionProperty")
+      expect(prop.name).toBe("a")
+      expect(prop.parameters).toEqual(parameters.length === 0 ? undefined : parameters)
+      expect(prop.returnType).toBe(returnType)
+    })
+  }
+
+  testFunctionProperty(`
 interface I1 {
   a(): number
-}`, "functionProperty", [], "number")
+}`, [], "number")
 
   testFunctionAsProperty(`
 interface I1 {
   a: () => number
-}`, "property", [], "number")
+}`, [], "number")
 
   const parameters = [
     {
@@ -37,14 +49,14 @@ interface I1 {
     }
   ]
 
-  testFunctionAsProperty(`
+  testFunctionProperty(`
 interface I1 {
   a(p1: T1, p2: T2): void
-}`, "functionProperty", parameters, "void")
+}`, parameters, "void")
 
   testFunctionAsProperty(`
 interface I1 {
   a: (p1: T1, p2: T2) => void
-}`, "property", parameters, "void")
+}`, parameters, "void")
 
 })

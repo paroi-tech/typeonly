@@ -7,9 +7,7 @@ class AstExtractor extends TypeOnlyParserListener {
   enterDeclarations(ctx) {
     this.childTypes = new Map()
     this.compositeMap = new Map()
-    this.ast = {
-      declarations: []
-    }
+    this.ast = {}
     // console.log("enter declarations", ctx.getText())
   }
 
@@ -35,6 +33,8 @@ class AstExtractor extends TypeOnlyParserListener {
   }
 
   exitNamedInterface(ctx) {
+    if (!this.ast.declarations)
+      this.ast.declarations = []
     this.ast.declarations.push(this.currentNamedInterface)
     if (this.interfaceStack.length > 0)
       throw new Error("InterfaceStack should be empty")
@@ -83,6 +83,8 @@ class AstExtractor extends TypeOnlyParserListener {
   }
 
   exitNamedType(ctx) {
+    if (!this.ast.declarations)
+      this.ast.declarations = []
     this.ast.declarations.push(this.currentNamedType)
     // console.log("exit namedType decl", ctx.getText())
     this.checkMissingChildren()
@@ -95,7 +97,7 @@ class AstExtractor extends TypeOnlyParserListener {
 
     const current = this.interfaceStack[this.interfaceStack.length - 1]
     const optional = !!ctx.QUESTION_MARK()
-    const readonly = !!ctx.READ_ONLY()
+    const readonly = !!ctx.READONLY()
 
     const property = {
       whichEntry: "property",
@@ -120,6 +122,7 @@ class AstExtractor extends TypeOnlyParserListener {
   enterLiteral(ctx) {
     const literal = {
       whichType: "literal",
+      // tslint:disable-next-line: no-eval
       value: eval(ctx.getText())
     }
     const firstChar = ctx.getText()[0]
@@ -133,16 +136,16 @@ class AstExtractor extends TypeOnlyParserListener {
   enterTupleType(ctx) {
     const tupleType = {
       whichType: "tuple",
-      itemTypes: []
     }
+
     this.registerAstChild(tupleType, ctx.parentCtx)
 
     const itemTypes = ctx.aType()
+    if (itemTypes.length > 0)
+      tupleType.itemTypes = []
     itemTypes.forEach((itemType, index) => {
       this.setAstChildRegistration(
-        astType => {
-          tupleType.itemTypes[index] = astType
-        },
+        astType => tupleType.itemTypes[index] = astType,
         itemType
       )
     })
@@ -187,12 +190,12 @@ class AstExtractor extends TypeOnlyParserListener {
   }
 
   enterAType(ctx) {
-    if (ctx.OPEN_BRACKET()) {
+    if (ctx.OPEN_PARENTHESE()) {
       // console.log("## open bracket -> function type== ", ctx.getText())
       this.processFunctionType(ctx)
     } else if (ctx.UNION() || ctx.INTERSECTION()) {
       this.processCompositeType(ctx)
-    } else if (ctx.OPEN_HOOK()) {
+    } else if (ctx.OPEN_BRACKET()) {
       this.processArrayType(ctx)
       // console.log("enter ArrayType", ctx.aType()[0].getText())
     }
@@ -287,7 +290,7 @@ class AstExtractor extends TypeOnlyParserListener {
     })
 
     this.setAstChildRegistration(child => {
-      functionType.returnValue = child
+      functionType.returnType = child
     }, ctx.aType()[0])
 
     // console.log("enter function type", ctx.aType().getText())
@@ -307,7 +310,7 @@ class AstExtractor extends TypeOnlyParserListener {
 
     const current = this.interfaceStack[this.interfaceStack.length - 1]
     const optional = !!ctx.QUESTION_MARK()
-    const readonly = !!ctx.READ_ONLY()
+    const readonly = !!ctx.READONLY()
 
     const functionProperty = {
       whichEntry: "functionProperty",
@@ -340,7 +343,7 @@ class AstExtractor extends TypeOnlyParserListener {
     current.entries.push(functionProperty)
 
     this.setAstChildRegistration(child => {
-      functionProperty.type.returnValue = child
+      functionProperty.type.returnType = child
     }, ctx.aType())
   }
 

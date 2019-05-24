@@ -8,7 +8,7 @@ describe("AST Specification for Function Types", () => {
     const namedType = ast.declarations[0] as AstNamedType
     expect(namedType.type).toEqual({
       whichType: "function",
-      returnValue: "void"
+      returnType: "void"
     } as AstFunctionType)
   })
 
@@ -28,7 +28,7 @@ describe("AST Specification for Function Types", () => {
           type: "number",
         },
       ],
-      returnValue: "void"
+      returnType: "void"
     } as AstFunctionType)
   })
 
@@ -39,9 +39,9 @@ describe("AST Specification for Function Types", () => {
     const fnType = namedType.type as AstFunctionType
     const emptyFnType: AstFunctionType = {
       whichType: "function",
-      returnValue: "void"
+      returnType: "void"
     }
-    expect(fnType.returnValue).toEqual(emptyFnType)
+    expect(fnType.returnType).toEqual(emptyFnType)
     expect(fnType.parameters![0].type).toEqual(emptyFnType)
   })
 
@@ -52,9 +52,9 @@ describe("AST Specification for Function Types", () => {
     const fnType = namedType.type as AstFunctionType
     const emptyFnType: AstFunctionType = {
       whichType: "function",
-      returnValue: "void"
+      returnType: "void"
     }
-    expect(fnType.returnValue).toEqual(emptyFnType)
+    expect(fnType.returnType).toEqual(emptyFnType)
     expect(fnType.parameters![0].type).toEqual(emptyFnType)
   })
 })

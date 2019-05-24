@@ -3,6 +3,18 @@ import { parseTypeOnlyToAst } from "../src/parse-typeonly"
 
 describe("AST Specification for Tuples", () => {
 
+  test("empty tuple", () => {
+    const input = `
+type T1 = []
+`
+    const ast = parseTypeOnlyToAst(input)
+    const namedType = ast.declarations[0] as AstNamedType
+    expect(namedType.name).toBe("T1")
+    expect(namedType.type).toEqual({
+      whichType: "tuple"
+    })
+  })
+
   test("a tuple with identifiers", () => {
     const input = `
 type T1 = [string, number, boolean]

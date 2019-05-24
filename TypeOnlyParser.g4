@@ -30,12 +30,12 @@ interfaceEntries:
 interfaceEntry: property | functionProperty;
 
 property:
-  (READ_ONLY NL?)? propertyName (NL? QUESTION_MARK)? NL? COLON NL? aType;
+  (READONLY NL?)? propertyName (NL? QUESTION_MARK)? NL? COLON NL? aType;
 
 functionProperty:
-  (READ_ONLY NL?)? propertyName (NL? QUESTION_MARK)? NL? OPEN_BRACKET (
+  (READONLY NL?)? propertyName (NL? QUESTION_MARK)? NL? OPEN_PARENTHESE (
     NL? functionParameter (NL? COMMA NL? functionParameter)*
-  )? NL? CLOSE_BRACKET (NL? COLON NL? aType)?;
+  )? NL? CLOSE_PARENTHESE (NL? COLON NL? aType)?;
 
 propertySeparator: NL | NL? SEMI_COLON+ NL? | NL? COMMA NL?;
 
@@ -52,12 +52,12 @@ namedType: (EXPORT NL?)? TYPE IDENTIFIER NL? ASSIGN NL? aType;
  * Common rules for NamedInterface and NamedType
  */
 aType:
-  OPEN_BRACKET (
+  OPEN_PARENTHESE (
     NL? functionParameter (NL? COMMA NL? functionParameter)*
-  )? NL? CLOSE_BRACKET NL? ARROW NL? aType
+  )? NL? CLOSE_PARENTHESE NL? ARROW NL? aType
   | aType NL? INTERSECTION NL? aType
   | aType NL? UNION NL? aType
-  | aType NL? OPEN_HOOK NL? CLOSE_HOOK
+  | aType NL? OPEN_BRACKET NL? CLOSE_BRACKET
   | IDENTIFIER
   | literal
   | anonymousInterface
@@ -65,12 +65,13 @@ aType:
   | tupleType
   | genericType;
 
-// TODO: Ask to Mr Thomas if is true: Array can have null type and must have OPEN_BRACKET CLOSE_BRACKET at the end
+// TODO: Ask to Mr Thomas if is true: Array can have null type and must have OPEN_PARENTHESE CLOSE_PARENTHESE at the end
 genericType:
   IDENTIFIER NL? LESS_THAN (NL? aType (NL? COMMA NL? aType)*)? NL? MORE_THAN;
 tupleType:
-  OPEN_HOOK (NL? aType (NL? COMMA NL? aType)*)? NL? CLOSE_HOOK;
-typeWithParenthesis: OPEN_BRACKET NL? aType NL? CLOSE_BRACKET;
+  OPEN_BRACKET (NL? aType (NL? COMMA NL? aType)*)? NL? CLOSE_BRACKET;
+typeWithParenthesis:
+  OPEN_PARENTHESE NL? aType NL? CLOSE_PARENTHESE;
 functionParameter: IDENTIFIER (NL? COLON NL? aType)?;
 
 /*

@@ -1,5 +1,5 @@
 export interface Ast {
-  declarations: AstDeclaration[]
+  declarations?: AstDeclaration[]
 }
 
 export type AstDeclaration = AstImport
@@ -11,15 +11,18 @@ export interface AstImport extends AstCommentable {
   whichDeclaration: "import"
   from: string
   defaultName?: string
-  namedMembers?: {
-    [exportedName: string]: string
-  }
+  namedMembers?: AstImportNamedMember[]
   asNamespace?: string
+}
+
+export interface AstImportNamedMember {
+  name: string
+  as?: string
 }
 
 export interface AstInterface {
   whichType: "interface"
-  entries: AstInterfaceEntry[]
+  entries?: AstInterfaceEntry[]
 }
 
 export interface AstNamedInterface extends AstInterface, AstCommentable {
@@ -27,6 +30,7 @@ export interface AstNamedInterface extends AstInterface, AstCommentable {
   name: string
   exported?: boolean
   extends?: string[]
+  generic?: AstGenericParameter[]
 }
 
 export type AstInterfaceEntry = AstProperty
@@ -37,18 +41,20 @@ export type AstInterfaceEntry = AstProperty
 
 export interface AstProperty extends AstCommentable {
   whichEntry: "property"
-  name: string
-  type: AstType
   optional?: boolean
   readonly?: boolean
+  name: string
+  type: AstType
 }
 
 export interface AstFunctionProperty extends AstCommentable {
   whichEntry: "functionProperty"
-  name: string
-  type: AstFunctionType
   optional?: boolean
   readonly?: boolean
+  name: string
+  parameters?: AstFunctionParameter[]
+  returnType?: AstType
+  generic?: AstGenericParameter[]
 }
 
 export interface AstIndexSignature extends AstCommentable {
@@ -74,6 +80,7 @@ export interface AstNamedType extends AstCommentable {
   name: string
   type: AstType
   exported?: boolean
+  generic?: AstGenericParameter[]
 }
 
 export type AstType = string
@@ -84,6 +91,7 @@ export type AstType = string
   | AstArrayType
   | AstGenericType
   | AstFunctionType
+  | AstKeyofType
   | AstInlineImportType
 
 export interface AstLiteralType {
@@ -100,29 +108,35 @@ export interface AstCompositeType {
 
 export interface AstTupleType {
   whichType: "tuple"
-  itemTypes: AstType[]
+  itemTypes?: AstType[]
 }
 
 export interface AstArrayType {
   whichType: "array"
   itemType: AstType
-  shorthandSyntax?: boolean
+  genericSyntax?: boolean
 }
 
 export interface AstGenericType {
   whichType: "generic"
   name: string
-  parameters?: AstType[]
+  parameterTypes?: AstType[]
 }
 
 export interface AstFunctionType {
   whichType: "function"
-  parameters?: AstParameter[]
-  returnValue: AstType
+  parameters?: AstFunctionParameter[]
+  returnType: AstType
+  generic?: AstGenericParameter[]
 }
 
-export interface AstParameter {
+export interface AstFunctionParameter {
   name: string
+  type?: AstType
+}
+
+export interface AstKeyofType {
+  whichType: "keyof"
   type: AstType
 }
 
@@ -130,6 +144,12 @@ export interface AstInlineImportType {
   whichType: "inlineImport"
   from: string
   exportedName: string
+}
+
+export interface AstGenericParameter {
+  name: string
+  extendsType?: AstType
+  defaultType?: AstType
 }
 
 export interface AstStandaloneComment {
