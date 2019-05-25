@@ -36,7 +36,15 @@ OCTAL_INTEGER_LITERAL: '0' [oO] [0-7]+;
 BINARY_INTEGER_LITERAL: '0' [bB] [01]+;
 
 /*
- * Keywords
+ * STRING_LITERAL
+ */
+STRING_LITERAL:
+  '"' DOUBLE_STRING_CHARACTER* '"'
+  | '\'' SINGLE_STRING_CHARACTER* '\'';
+TEMPLATE_STRING_LITERAL: '`' ('\\`' | ~'`')* '`';
+
+/*
+ * Reserved Keywords
  */
 WHILE: 'while';
 DO: 'do';
@@ -48,6 +56,7 @@ PRIVATE: 'private';
 IMPORT: 'import';
 IF: 'if';
 FOR: 'for';
+
 JS_KEYWORD:
   IF
   | FOR
@@ -60,7 +69,7 @@ JS_KEYWORD:
   | IMPORT;
 
 /*
- * ReservedWords
+ * TypeOnly Keywords
  */
 INTERFACE: 'interface';
 TYPE: 'type';
@@ -72,21 +81,13 @@ KEYOF: 'keyof';
 // Identifier
 IDENTIFIER: IDENTIFIER_START IDENTIFIER_PART*;
 
-/*
- * STRING_LITERAL
- */
-STRING_LITERAL:
-  '"' DOUBLE_STRING_CHARACTER* '"'
-  | '\'' SINGLE_STRING_CHARACTER* '\'';
-TEMPLATE_STRING_LITERAL: '`' ('\\`' | ~'`')* '`';
-
 // Comments
 MULTILINE_COMMENT: '/*' .*? '*/' -> channel(HIDDEN);
-SINGLE_LINE_COMMENT:
-  '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN);
+SINGLE_LINE_COMMENT: '//' ~[\r\n]* -> channel(HIDDEN);
+
 // WhiteSpaces
 NL: ('\r'? '\n' | '\r')+;
-WS: [\t\u000B\u000C\u0020\u00A0]+ -> channel(HIDDEN);
+WS: [ \t]+ -> skip;
 
 /*
  * Fragments

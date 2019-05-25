@@ -8,7 +8,7 @@ describe("AST Specification for Tuples", () => {
 type T1 = []
 `
     const ast = parseTypeOnlyToAst(input)
-    const namedType = ast.declarations[0] as AstNamedType
+    const namedType = ast.declarations![0] as AstNamedType
     expect(namedType.name).toBe("T1")
     expect(namedType.type).toEqual({
       whichType: "tuple"
@@ -20,7 +20,7 @@ type T1 = []
 type T1 = [string, number, boolean]
 `
     const ast = parseTypeOnlyToAst(input)
-    const namedType = ast.declarations[0] as AstNamedType
+    const namedType = ast.declarations![0] as AstNamedType
     expect(namedType.name).toBe("T1")
     expect(namedType.type).toEqual({
       whichType: "tuple",
@@ -33,7 +33,7 @@ type T1 = [string, number, boolean]
 type T2 = [string, {a: number, b: string}, boolean]
 `
     const ast = parseTypeOnlyToAst(input)
-    const namedType = ast.declarations[0] as AstNamedType
+    const namedType = ast.declarations![0] as AstNamedType
     expect(namedType.name).toBe("T2")
     expect(namedType.type).toEqual({
       whichType: "tuple",
@@ -68,7 +68,7 @@ type T3 = [string, number,boolean
   dfdfd]
 `
     const ast = parseTypeOnlyToAst(input)
-    const namedType = ast.declarations[0] as AstNamedType
+    const namedType = ast.declarations![0] as AstNamedType
     expect(namedType.name).toBe("T3")
     expect(namedType.type).toEqual({
       whichType: "tuple",

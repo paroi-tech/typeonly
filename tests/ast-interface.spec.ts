@@ -7,7 +7,7 @@ describe("AST Specification for Interfaces", () => {
     test(`valid identifier: ${identifier}`, () => {
       const input = `interface ${identifier} {}`
       const ast = parseTypeOnlyToAst(input)
-      const namedInterface = ast.declarations[0] as AstNamedInterface
+      const namedInterface = ast.declarations![0] as AstNamedInterface
       expect(namedInterface.name).toBe(identifier)
     })
   })
@@ -40,7 +40,7 @@ interface I1 {
 }
 `
     const ast = parseTypeOnlyToAst(input)
-    const namedInterface = ast.declarations[0] as AstNamedInterface
+    const namedInterface = ast.declarations![0] as AstNamedInterface
     expect(namedInterface.entries!.length).toBe(4)
   })
 
@@ -49,7 +49,7 @@ interface I1 {
 interface I1 { a: string, b: string; c: string }
 `
     const ast = parseTypeOnlyToAst(input)
-    const namedInterface = ast.declarations[0] as AstNamedInterface
+    const namedInterface = ast.declarations![0] as AstNamedInterface
     expect(namedInterface.entries!.length).toBe(3)
   })
 
@@ -66,7 +66,7 @@ interface I1 { a: string, b: string; c: string }
           a: ${typeName}
         }`
         const ast = parseTypeOnlyToAst(input)
-        const namedInterface = ast.declarations[0] as AstNamedInterface
+        const namedInterface = ast.declarations![0] as AstNamedInterface
         const property = namedInterface.entries![0] as AstProperty
         expect(property.type).toBe(typeName)
       })
@@ -80,7 +80,7 @@ interface I1 extends I2, I3 {
 }
       `
     const ast = parseTypeOnlyToAst(input)
-    const namedInterface = ast.declarations[0] as AstNamedInterface
+    const namedInterface = ast.declarations![0] as AstNamedInterface
     expect(namedInterface.extends).toEqual(["I2", "I3"])
   })
 
@@ -91,7 +91,7 @@ interface I1 {
 }
       `
     const ast = parseTypeOnlyToAst(input)
-    const namedInterface = ast.declarations[0] as AstNamedInterface
+    const namedInterface = ast.declarations![0] as AstNamedInterface
     const prop = namedInterface.entries![0] as AstProperty
     expect(prop.optional).toBe(true)
   })

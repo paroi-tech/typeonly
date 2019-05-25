@@ -8,7 +8,7 @@ describe("AST Specification for Literal Types", () => {
     test(`valid string literal: ${literal}`, () => {
       const input = `type T1 = ${literal}`
       const ast = parseTypeOnlyToAst(input)
-      const namedType = ast.declarations[0] as AstNamedType
+      const namedType = ast.declarations![0] as AstNamedType
       expect(namedType.type).toEqual({
         whichType: "literal",
         // tslint:disable-next-line: no-eval
@@ -23,7 +23,7 @@ describe("AST Specification for Literal Types", () => {
     test(`valid literal: ${literal}`, () => {
       const input = `type T1 = ${literal}`
       const ast = parseTypeOnlyToAst(input)
-      const namedType = ast.declarations[0] as AstNamedType
+      const namedType = ast.declarations![0] as AstNamedType
       expect(namedType.type).toEqual({
         whichType: "literal",
         // tslint:disable-next-line: no-eval

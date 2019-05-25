@@ -24,7 +24,17 @@ function parseTypeOnlyToAst(source) {
 
   const tree = parser.declarations()
 
-  const extractor = new AstExtractor()
+  const extractor = new AstExtractor({
+    source,
+    tokenStream,
+    tokenTypes: {
+      SEMICOLON: TypeOnlyParser.SEMICOLON,
+      COMMA: TypeOnlyParser.COMMA,
+      MULTILINE_COMMENT: TypeOnlyParser.MULTILINE_COMMENT,
+      SINGLE_LINE_COMMENT: TypeOnlyParser.SINGLE_LINE_COMMENT,
+      NEWLINE: TypeOnlyParser.NL,
+    }
+  })
   ParseTreeWalker.DEFAULT.walk(extractor, tree)
 
   if (errors.length > 0)

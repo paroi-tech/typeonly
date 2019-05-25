@@ -8,7 +8,7 @@ describe("AST Specification for Generic", () => {
 type T1 = G<number, string>
 `
     const ast = parseTypeOnlyToAst(input)
-    const namedType = ast.declarations[0] as AstNamedType
+    const namedType = ast.declarations![0] as AstNamedType
     expect(namedType.name).toBe("T1")
     expect(namedType.type).toEqual({
       whichType: "generic",

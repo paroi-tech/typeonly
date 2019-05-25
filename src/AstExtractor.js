@@ -1,8 +1,14 @@
 const { TypeOnlyParserListener } = require("../antlr-parser/TypeOnlyParserListener")
+const { default: CommentGrabber } = require("../dist/CommentGrabber")
 
 const stringDelim = ["'", "\"", "`"]
 
 class AstExtractor extends TypeOnlyParserListener {
+
+  constructor(parsingContext) {
+    super()
+    this.comments = new CommentGrabber(parsingContext)
+  }
 
   enterDeclarations(ctx) {
     this.childTypes = new Map()
@@ -12,6 +18,8 @@ class AstExtractor extends TypeOnlyParserListener {
   }
 
   exitDeclarations(ctx) {
+    this.addStandaloneComments(this.comments.grabStandaloneCommentsAfterLast())
+
     // console.log("exit declarations", ctx.getText())
     this.checkMissingChildren()
   }
@@ -28,7 +36,6 @@ class AstExtractor extends TypeOnlyParserListener {
       const names = Object.values(ctx.interfaceExtends().typeName()).map(child => child.getText())
       this.currentNamedInterface.extends = names
     }
-
     this.proccessGenericParameter(ctx, this.currentNamedInterface)
 
     // console.log("enter interface", ctx.getText())
@@ -38,13 +45,36 @@ class AstExtractor extends TypeOnlyParserListener {
     if (!this.ast.declarations)
       this.ast.declarations = []
     this.ast.declarations.push(this.currentNamedInterface)
+
+    // this.addToEntriesStandaloneComments(this.comments.grabStandaloneCommentsAfterLast())
+    this.addStandaloneCommentsBefore(this.comments.grabCommentsOf(ctx), this.currentNamedInterface)
+
     if (this.interfaceStack.length > 0)
       throw new Error("InterfaceStack should be empty")
-
     // console.log("exit interface", ctx.getText())
     this.checkMissingChildren()
   }
 
+  addStandaloneCommentsBefore(grabbed, annotate) {
+    if (grabbed.standaloneCommentsBefore)
+      this.addStandaloneComments(grabbed.standaloneCommentsBefore)
+    if (grabbed.docComment)
+      annotate.docComment = grabbed.docComment
+    if (grabbed.inlineComments)
+      annotate.inlineComments = grabbed.inlineComments
+  }
+
+  addStandaloneComments(grabbedComments) {
+    if (grabbedComments.length === 0)
+      return
+    if (!this.ast.declarations)
+      this.ast.declarations = []
+    this.ast.declarations.push(...grabbedComments.map(({ text, syntax }) => ({
+      whichDeclaration: "comment",
+      text,
+      syntax
+    })))
+  }
 
   enterAnonymousInterface(ctx) {
     if (!this.interfaceStack)
@@ -79,7 +109,7 @@ class AstExtractor extends TypeOnlyParserListener {
       namedType.exported = true
     this.currentNamedType = namedType
 
-    console.log("ZE", ctx.aType().getText(), "==", namedType.type)
+    // console.log("ZE", ctx.aType().getText(), "==", namedType.type)
     this.setAstChildRegistration(type => namedType.type = type, ctx.aType())
 
     this.proccessGenericParameter(ctx, namedType)
@@ -196,16 +226,16 @@ class AstExtractor extends TypeOnlyParserListener {
 
   enterAType(ctx) {
     if (ctx.OPEN_PARENTHESE()) {
-      console.log("##&& function type== ", ctx.getText())
+      // console.log("##&& function type== ", ctx.getText())
       this.processFunctionType(ctx)
     } else if (ctx.UNION() || ctx.INTERSECTION()) {
-      console.log("##&& open composite== ", ctx.getText())
+      // console.log("##&& open composite== ", ctx.getText())
       this.processCompositeType(ctx)
     } else if (ctx.OPEN_BRACKET()) {
-      console.log("##&& enter ArrayType", ctx.aType()[0].getText())
+      // console.log("##&& enter ArrayType", ctx.aType()[0].getText())
       this.processArrayType(ctx)
     } else if (ctx.KEYOF()) {
-      console.log("##&& enter keyof", ctx.aType()[0].getText())
+      // console.log("##&& enter keyof", ctx.aType()[0].getText())
       this.processKeyOf(ctx)
     }
   }
@@ -417,7 +447,7 @@ class AstExtractor extends TypeOnlyParserListener {
     if (this.childTypes.has(aType))
       throw new Error(`Child type already defined for: ${aType.getText()}`)
     this.childTypes.set(aType, cb)
-    console.log("checkMap", this.childTypes.get(aType))
+    // console.log("checkMap", this.childTypes.get(aType))
     if (aType.IDENTIFIER())
       this.registerAstChild(aType.getText(), aType)
   }

@@ -157,7 +157,8 @@ export interface AstStandaloneComment {
   /**
    * A multiline string.
    */
-  blockComment: string
+  text: string
+  syntax: "inline" | "classic"
 }
 
 export interface AstStandaloneInterfaceComment {
@@ -165,13 +166,22 @@ export interface AstStandaloneInterfaceComment {
   /**
    * A multiline string.
    */
-  blockComment: string
+  text: string
+  syntax: "inline" | "classic"
 }
 
 export interface AstCommentable {
   /**
    * A multiline string.
    */
-  blockComment?: string
-  inlineComment?: string | string[]
+  docComment?: string
+  inlineComments?: AstInlineComment[]
+}
+
+export interface AstInlineComment {
+  /**
+   * A single line string.
+   */
+  text: string
+  syntax: "inline" | "classic"
 }

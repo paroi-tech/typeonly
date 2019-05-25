@@ -8,7 +8,7 @@ describe("AST Specification for Precedence", () => {
 type T1 = () => A[]
 `
     const ast = parseTypeOnlyToAst(input)
-    const namedType = ast.declarations[0] as AstNamedType
+    const namedType = ast.declarations![0] as AstNamedType
     const type = namedType.type as AstFunctionType
     expect(type.whichType).toBe("function")
     const returnType = type.returnType as AstArrayType
@@ -21,7 +21,7 @@ type T1 = () => A[]
 type T1 = () => A | B[]
 `
     const ast = parseTypeOnlyToAst(input)
-    const namedType = ast.declarations[0] as AstNamedType
+    const namedType = ast.declarations![0] as AstNamedType
     const type = namedType.type as AstFunctionType
     expect(type.whichType).toBe("function")
     const returnType = type.returnType as AstCompositeType
