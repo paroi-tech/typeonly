@@ -43,19 +43,18 @@ class AstExtractor extends TypeOnlyParserListener {
 
   exitNamedInterface(ctx) {
     // console.log("exit interface", ctx.getText())
-    if (!this.ast.declarations)
-      this.ast.declarations = []
-    this.ast.declarations.push(this.currentNamedInterface)
-
-    this.addStandaloneCommentsTo(this.comments.grabStandaloneCommentsAfterLast())
     this.addGrabbedCommentsResultTo(this.comments.grabCommentsOf(ctx), {
       annotate: this.currentNamedInterface,
     })
 
+    if (!this.ast.declarations)
+      this.ast.declarations = []
+    this.ast.declarations.push(this.currentNamedInterface)
+
+    this.currentNamedInterface = undefined
     if (this.interfaceStack.length > 0)
       throw new Error("InterfaceStack should be empty")
     this.checkMissingChildren()
-    this.currentNamedInterface = undefined
   }
 
   enterAnonymousInterface(ctx) {
@@ -77,7 +76,13 @@ class AstExtractor extends TypeOnlyParserListener {
   exitAnonymousInterface(ctx) {
     if (this.interfaceStack.length === 0)
       throw new Error("InterfaceStack should not be empty")
-    this.interfaceStack.pop()
+    const interf = this.interfaceStack.pop()
+
+    this.addStandaloneCommentsTo(
+      this.comments.grabStandaloneCommentsAfterLast(ctx),
+      "interface",
+      interf
+    )
   }
 
 
@@ -101,17 +106,16 @@ class AstExtractor extends TypeOnlyParserListener {
 
   exitNamedType(ctx) {
     // console.log("exit namedType decl", ctx.getText())
-    if (!this.ast.declarations)
-      this.ast.declarations = []
-    this.ast.declarations.push(this.currentNamedType)
-
-    this.addStandaloneCommentsTo(this.comments.grabStandaloneCommentsAfterLast())
     this.addGrabbedCommentsResultTo(this.comments.grabCommentsOf(ctx), {
       annotate: this.currentNamedType,
     })
 
-    this.checkMissingChildren()
+    if (!this.ast.declarations)
+      this.ast.declarations = []
+    this.ast.declarations.push(this.currentNamedType)
+
     this.currentNamedType = undefined
+    this.checkMissingChildren()
   }
 
   // AstProperty
