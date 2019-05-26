@@ -150,7 +150,6 @@ export default class CommentGrabber {
     const text = tokens
       .map(({ start, stop }) => formatInlineComment(source, start, stop, "asBlockLine"))
       .join("\n")
-      .trimRight()
     if (text)
       return { syntax: "inline", text }
   }
@@ -249,37 +248,44 @@ function keepWholeLineComments(tokens: AntlrToken[], NEWLINE: number, SL_COM: nu
 }
 
 function formatInlineComment(source: string, start: number, stop: number, mode?: "asBlockLine") {
+  const index = start + (source[start + 2] === " " ? 3 : 2)
   if (mode === "asBlockLine") {
-    const index = start + (source[start + 2] === " " ? 3 : 2)
     return source.substring(index, stop + 1).trimRight()
   } else
-    return source.substring(start + 2, stop + 1).trim()
+    return source.substring(index, stop + 1).trim()
 }
 
 function formatMultiLineComment(source: string, start: number, stop: number, mode?: "asInline")
   : { doc: boolean, text: string } {
-  start += 2
-  const length = stop - start - 1
+  const index = start + (source[start + 2] === " " ? 3 : 2)
+  const length = stop - index - 1
   if (length <= 0)
     return { doc: false, text: "" }
-  const doc = mode !== "asInline" && source[start] === "*"
-  const raw = source.substr(doc ? start + 1 : start, length)
+  const doc = mode !== "asInline" && source[start + 2] === "*"
+  const raw = source.substr(doc ? index + 1 : index, length)
 
   let lines = raw.split("\n")
-  const withPrefix = allLineHaveMultiLinePrefix(lines)
-  if (withPrefix) {
+  if (mode !== "asInline" && haveMultiLineCommentPrefix(lines)) {
     lines = lines.map(line => {
       const trimed = line.trim()
-      return trimed === "" ? "" : trimed.slice(1)
+      return trimed === "" ? "" : trimed.slice(trimed[1] === " " ? 2 : 1)
     })
-  } else
-    lines = lines.map(line => line.trimRight())
+    if (lines[0] === "")
+      lines.shift()
+    if (lines[lines.length - 1] === "")
+      lines.pop()
+  } else {
+    if (mode === "asInline")
+      lines = lines.map(line => line.trim())
+    else
+      lines = lines.map(line => line.trimRight())
+  }
 
   const text = lines.join(mode === "asInline" ? "; " : "\n")
   return { doc, text }
 }
 
-function allLineHaveMultiLinePrefix(lines: string[]) {
+function haveMultiLineCommentPrefix(lines: string[]) {
   const noPrefix = lines.find(line => {
     const trimed = line.trim()
     if (trimed === "")

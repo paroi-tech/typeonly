@@ -18,7 +18,7 @@ class AstExtractor extends TypeOnlyParserListener {
   }
 
   exitDeclarations(ctx) {
-    this.addStandaloneComments(this.comments.grabStandaloneCommentsAfterLast())
+    this.addStandaloneCommentsTo(this.comments.grabStandaloneCommentsAfterLast())
 
     // console.log("exit declarations", ctx.getText())
     this.checkMissingChildren()
@@ -42,38 +42,20 @@ class AstExtractor extends TypeOnlyParserListener {
   }
 
   exitNamedInterface(ctx) {
+    // console.log("exit interface", ctx.getText())
     if (!this.ast.declarations)
       this.ast.declarations = []
     this.ast.declarations.push(this.currentNamedInterface)
 
-    // this.addToEntriesStandaloneComments(this.comments.grabStandaloneCommentsAfterLast())
-    this.addStandaloneCommentsBefore(this.comments.grabCommentsOf(ctx), this.currentNamedInterface)
+    this.addStandaloneCommentsTo(this.comments.grabStandaloneCommentsAfterLast())
+    this.addGrabbedCommentsResultTo(this.comments.grabCommentsOf(ctx), {
+      annotate: this.currentNamedInterface,
+    })
 
     if (this.interfaceStack.length > 0)
       throw new Error("InterfaceStack should be empty")
-    // console.log("exit interface", ctx.getText())
     this.checkMissingChildren()
-  }
-
-  addStandaloneCommentsBefore(grabbed, annotate) {
-    if (grabbed.standaloneCommentsBefore)
-      this.addStandaloneComments(grabbed.standaloneCommentsBefore)
-    if (grabbed.docComment)
-      annotate.docComment = grabbed.docComment
-    if (grabbed.inlineComments)
-      annotate.inlineComments = grabbed.inlineComments
-  }
-
-  addStandaloneComments(grabbedComments) {
-    if (grabbedComments.length === 0)
-      return
-    if (!this.ast.declarations)
-      this.ast.declarations = []
-    this.ast.declarations.push(...grabbedComments.map(({ text, syntax }) => ({
-      whichDeclaration: "comment",
-      text,
-      syntax
-    })))
+    this.currentNamedInterface = undefined
   }
 
   enterAnonymousInterface(ctx) {
@@ -118,15 +100,23 @@ class AstExtractor extends TypeOnlyParserListener {
   }
 
   exitNamedType(ctx) {
+    // console.log("exit namedType decl", ctx.getText())
     if (!this.ast.declarations)
       this.ast.declarations = []
     this.ast.declarations.push(this.currentNamedType)
-    // console.log("exit namedType decl", ctx.getText())
+
+    this.addStandaloneCommentsTo(this.comments.grabStandaloneCommentsAfterLast())
+    this.addGrabbedCommentsResultTo(this.comments.grabCommentsOf(ctx), {
+      annotate: this.currentNamedType,
+    })
+
     this.checkMissingChildren()
+    this.currentNamedType = undefined
   }
 
   // AstProperty
   enterProperty(ctx) {
+    // console.log("enter property", this.namedTypeStack.length)
     if (!this.interfaceStack || this.interfaceStack.length === 0)
       throw new Error("Missing interfaceStack")
 
@@ -140,13 +130,16 @@ class AstExtractor extends TypeOnlyParserListener {
       optional,
       readonly
     }
+    this.addGrabbedCommentsResultTo(this.comments.grabCommentsOf(ctx), {
+      annotate: property,
+      standaloneBeforeTo: "interface",
+      parentInterface: current
+    })
     if (!current.entries)
       current.entries = []
     current.entries.push(property)
 
     this.setAstChildRegistration(type => property.type = type, ctx.aType())
-
-    // console.log("enter property", this.namedTypeStack.length)
   }
 
   exitProperty(ctx) {
@@ -386,6 +379,11 @@ class AstExtractor extends TypeOnlyParserListener {
       )
     })
 
+    this.addGrabbedCommentsResultTo(this.comments.grabCommentsOf(ctx), {
+      annotate: functionProperty,
+      standaloneBeforeTo: "interface",
+      parentInterface: current
+    })
     if (!current.entries)
       current.entries = []
     current.entries.push(functionProperty)
@@ -457,6 +455,40 @@ class AstExtractor extends TypeOnlyParserListener {
       throw new Error(`Missing children: ${this.childTypes.size}`)
     if (this.compositeMap.size > 0)
       throw new Error(`Remaining composite: ${this.compositeMap.size}`)
+  }
+
+  addGrabbedCommentsResultTo(result, { annotate, standaloneBeforeTo, parentInterface }) {
+    if (result.standaloneCommentsBefore)
+      this.addStandaloneCommentsTo(result.standaloneCommentsBefore, standaloneBeforeTo, parentInterface)
+    if (result.docComment)
+      annotate.docComment = result.docComment
+    if (result.inlineComments.length > 0)
+      annotate.inlineComments = result.inlineComments
+  }
+
+  addStandaloneCommentsTo(grabbedComments, to, parentInterface) {
+    if (grabbedComments.length === 0)
+      return
+    if (!to) {
+      if (!this.ast.declarations)
+        this.ast.declarations = []
+      this.ast.declarations.push(...grabbedComments.map(({ text, syntax }) => ({
+        whichDeclaration: "comment",
+        text,
+        syntax
+      })))
+    } else if (to === "interface") {
+      if (!parentInterface)
+        throw new Error(`Parameter 'parentInterface' is required when 'to' is set to 'interface'`)
+      if (!parentInterface.entries)
+        parentInterface.entries = []
+      parentInterface.entries.push(...grabbedComments.map(({ text, syntax }) => ({
+        whichEntry: "comment",
+        text,
+        syntax
+      })))
+    } else
+      throw new Error(`Invalid 'to' option: ${to}`)
   }
 }
 
