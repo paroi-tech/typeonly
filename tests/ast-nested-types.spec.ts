@@ -27,7 +27,7 @@ interface I1 {
     expect(subProperty.type).toBe("string")
   })
 
-  const deep = Math.round(Math.random() * 20)
+  const deep = Math.round(Math.random() * 20) + 1
   test(`a random number of nested interfaces (${deep})`, () => {
     const makeInterface = (deep: number) => {
       if (deep <= 0)

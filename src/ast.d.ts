@@ -92,6 +92,7 @@ export type AstType = string
   | AstGenericType
   | AstFunctionType
   | AstKeyofType
+  | AstMemberType
   | AstInlineImportType
 
 export interface AstLiteralType {
@@ -138,6 +139,12 @@ export interface AstFunctionParameter {
 export interface AstKeyofType {
   whichType: "keyof"
   type: AstType
+}
+
+export interface AstMemberType {
+  whichType: "member"
+  type: AstType
+  memberName: string | number
 }
 
 export interface AstInlineImportType {

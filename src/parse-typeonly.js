@@ -24,6 +24,18 @@ function parseTypeOnlyToAst(source) {
 
   const tree = parser.declarations()
 
+  if (errors.length > 0)
+    throw new Error(errors.join("\n"))
+
+  // console.log(debugTokensToText(tokenStream.tokens))
+  // function debugTokensToText(tokens) {
+  //   if (!tokens)
+  //     return "-no-tokens-"
+  //   return tokens.map(({ tokenIndex, type, start, stop }) => {
+  //     return `[${tokenIndex}] ${type}: ${source.substring(start, stop + 1).replace(/\n/g, "\u23ce")}`
+  //   }).join("\n")
+  // }
+
   const extractor = new AstExtractor({
     source,
     tokenStream,
@@ -36,9 +48,6 @@ function parseTypeOnlyToAst(source) {
     }
   })
   ParseTreeWalker.DEFAULT.walk(extractor, tree)
-
-  if (errors.length > 0)
-    throw new Error(errors.join("\n"))
 
   return extractor.ast
 }
