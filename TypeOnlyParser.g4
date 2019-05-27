@@ -59,6 +59,9 @@ functionProperty:
     NL? functionParameter (NL? COMMA NL? functionParameter)*
   )? NL? CLOSE_PARENTHESE (NL? COLON NL? aType)?;
 
+/*
+ * IndexSignature and MappedIndexSignature
+ */
 indexSignature:
   (READONLY NL?)? OPEN_BRACKET IDENTIFIER COLON signatureType CLOSE_BRACKET (
     NL? QUESTION_MARK

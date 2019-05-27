@@ -51,7 +51,7 @@ class AstExtractor extends TypeOnlyParserListener {
     if (!this.ast.declarations)
       this.ast.declarations = []
     this.ast.declarations.push(classicImport)
-    console.log("enter classicImport", ctx.member2().namedMember()[0].IDENTIFIER()[0].getText())
+    // console.log("enter classicImport", ctx.member2().namedMember()[0].IDENTIFIER()[0].getText())
   }
 
   enterNamespacedImport(ctx) {
@@ -65,7 +65,7 @@ class AstExtractor extends TypeOnlyParserListener {
     if (!this.ast.declarations)
       this.ast.declarations = []
     this.ast.declarations.push(namespacedImport)
-    console.log("enter namespacedImport", ctx.getText())
+    // console.log("enter namespacedImport", ctx.getText())
   }
 
   enterNamedInterface(ctx) {
@@ -122,23 +122,25 @@ class AstExtractor extends TypeOnlyParserListener {
       throw new Error("InterfaceStack should not be empty")
     const interf = this.interfaceStack.pop()
 
-    let mappedIndexSignatureNb = 0
-    let indexSignatureNb = 0
-    let otherPropertyNb = 0
-    for (const entry of interf.entries) {
-      if (entry.whichEntry === "mappedIndexSignature") {
-        ++mappedIndexSignatureNb
+    if (interf.entries && interf.entries.length > 1) {
+      let mappedIndexSignatureNb = 0
+      let indexSignatureNb = 0
+      let otherPropertyNb = 0
+      for (const entry of interf.entries) {
+        if (entry.whichEntry === "mappedIndexSignature") {
+          ++mappedIndexSignatureNb
+        }
+        if (entry.whichEntry === "indexSignature")
+          ++indexSignatureNb
+        if (entry.whichEntry !== "indexSignature" && entry.whichEntry !== "mappedIndexSignature") {
+          ++otherPropertyNb
+        }
       }
-      if (entry.whichEntry === "indexSignature")
-        ++indexSignatureNb
-      if (entry.whichEntry !== "indexSignature" && entry.whichEntry !== "mappedIndexSignature") {
-        ++otherPropertyNb
+      if (mappedIndexSignatureNb > 1 || (mappedIndexSignatureNb === 1 && otherPropertyNb > 0))
+        throw new Error("Synthax Error : An Interface must be have one property which is a mappedIndexSignature property")
+      if (indexSignatureNb > 1) {
+        throw new Error("Synthax Error: An Interface must be have one indexSignature property")
       }
-    }
-    if (mappedIndexSignatureNb > 1 || (mappedIndexSignatureNb === 1 && otherPropertyNb > 0))
-      throw new Error("Synthax Error : An Interface must be have one property which is a mappedIndexSignature property")
-    if (indexSignatureNb > 1) {
-      throw new Error("Synthax Error: An Interface must be have one indexSignature property")
     }
 
     this.addStandaloneCommentsTo(
@@ -239,7 +241,7 @@ class AstExtractor extends TypeOnlyParserListener {
     current.entries.push(indexSignature)
 
     this.setAstChildRegistration(type => indexSignature.type = type, ctx.aType())
-    console.log("enter IndexSignature", ctx.getText())
+    // console.log("enter IndexSignature", ctx.getText())
   }
 
   enterMappedIndexSignature(ctx) {
@@ -267,7 +269,7 @@ class AstExtractor extends TypeOnlyParserListener {
 
     this.setAstChildRegistration(type => mappedIndexSignature.keyInType = type, ctx.aType()[0])
     this.setAstChildRegistration(type => mappedIndexSignature.type = type, ctx.aType()[1])
-    console.log("enter MappedIndexSignature", ctx.getText())
+    // console.log("enter MappedIndexSignature", ctx.getText())
   }
 
   enterLiteral(ctx) {
@@ -348,10 +350,10 @@ class AstExtractor extends TypeOnlyParserListener {
       // console.log("##&& open composite== ", ctx.getText())
       this.processCompositeType(ctx)
     } else if (ctx.memberTypeBracket) {
-      console.log("##&& enter MemberType", ctx.memberName().getText())
+      // console.log("##&& enter MemberType", ctx.memberName().getText())
       this.processMemberType(ctx)
     } else if (ctx.OPEN_BRACKET()) {
-      console.log("##&& enter ArrayType", ctx.aType()[0].getText())
+      // console.log("##&& enter ArrayType", ctx.aType()[0].getText())
       this.processArrayType(ctx)
     } else if (ctx.KEYOF()) {
       // console.log("##&& enter keyof", ctx.aType()[0].getText())
