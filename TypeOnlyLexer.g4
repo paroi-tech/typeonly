@@ -77,6 +77,12 @@ EXPORT: 'export';
 EXTENDS: 'extends';
 READONLY: 'readonly';
 KEYOF: 'keyof';
+STRING: 'string';
+NUMBER: 'number';
+IN: 'in';
+AS: 'as';
+FROM: 'from';
+STAR: '*';
 
 // Identifier
 IDENTIFIER: IDENTIFIER_START IDENTIFIER_PART*;

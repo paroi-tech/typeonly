@@ -7,12 +7,21 @@ export type AstDeclaration = AstImport
   | AstNamedType
   | AstStandaloneComment
 
-export interface AstImport extends AstCommentable {
+type AstImport = AstClassicImport | AstNamespacedImport
+
+export interface AstClassicImport extends AstCommentable {
   whichDeclaration: "import"
+  whichImport: "classic"
   from: string
   defaultName?: string
   namedMembers?: AstImportNamedMember[]
-  asNamespace?: string
+}
+
+export interface AstNamespacedImport extends AstCommentable {
+  whichDeclaration: "import"
+  whichImport: "namespaced"
+  from: string
+  asNamespace: string
 }
 
 export interface AstImportNamedMember {
@@ -144,7 +153,12 @@ export interface AstKeyofType {
 export interface AstMemberType {
   whichType: "member"
   type: AstType
-  memberName: string | number
+  memberName: string | AstMemberNameLiteral
+}
+
+export interface AstMemberNameLiteral {
+  value: string | number
+  stringDelim?: "\"" | "'" | "`"
 }
 
 export interface AstInlineImportType {

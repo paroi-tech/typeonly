@@ -24,6 +24,50 @@ class AstExtractor extends TypeOnlyParserListener {
     this.checkMissingChildren()
   }
 
+  enterClassicImport(ctx) {
+    const classicImport = {
+      whichDeclaration: "import",
+      whichImport: "classic",
+      from: ctx.STRING_LITERAL().getText()
+    }
+    if (ctx.member1()) {
+      classicImport.defaultName = ctx.member1().IDENTIFIER().getText()
+    }
+    if (ctx.member2().namedMember()) {
+      const namedMembers = ctx.member2().namedMember()
+      const members = []
+      namedMembers.forEach((member, index) => {
+        const mb = {
+          name: member.IDENTIFIER()[0].getText()
+        }
+        if (member.IDENTIFIER()[1])
+          mb.as = member.IDENTIFIER()[1].getText()
+        members[index] = mb
+      })
+
+      classicImport.namedMembers = members
+    }
+
+    if (!this.ast.declarations)
+      this.ast.declarations = []
+    this.ast.declarations.push(classicImport)
+    console.log("enter classicImport", ctx.member2().namedMember()[0].IDENTIFIER()[0].getText())
+  }
+
+  enterNamespacedImport(ctx) {
+    const namespacedImport = {
+      whichDeclaration: "import",
+      whichImport: "namespaced",
+      from: ctx.STRING_LITERAL().getText(),
+      asNamespace: ctx.IDENTIFIER().getText()
+    }
+
+    if (!this.ast.declarations)
+      this.ast.declarations = []
+    this.ast.declarations.push(namespacedImport)
+    console.log("enter namespacedImport", ctx.getText())
+  }
+
   enterNamedInterface(ctx) {
     this.currentNamedInterface = {
       whichDeclaration: "interface",
@@ -77,6 +121,25 @@ class AstExtractor extends TypeOnlyParserListener {
     if (this.interfaceStack.length === 0)
       throw new Error("InterfaceStack should not be empty")
     const interf = this.interfaceStack.pop()
+
+    let mappedIndexSignatureNb = 0
+    let indexSignatureNb = 0
+    let otherPropertyNb = 0
+    for (const entry of interf.entries) {
+      if (entry.whichEntry === "mappedIndexSignature") {
+        ++mappedIndexSignatureNb
+      }
+      if (entry.whichEntry === "indexSignature")
+        ++indexSignatureNb
+      if (entry.whichEntry !== "indexSignature" && entry.whichEntry !== "mappedIndexSignature") {
+        ++otherPropertyNb
+      }
+    }
+    if (mappedIndexSignatureNb > 1 || (mappedIndexSignatureNb === 1 && otherPropertyNb > 0))
+      throw new Error("Synthax Error : An Interface must be have one property which is a mappedIndexSignature property")
+    if (indexSignatureNb > 1) {
+      throw new Error("Synthax Error: An Interface must be have one indexSignature property")
+    }
 
     this.addStandaloneCommentsTo(
       this.comments.grabStandaloneCommentsAfterLast(ctx),
@@ -149,6 +212,62 @@ class AstExtractor extends TypeOnlyParserListener {
   exitProperty(ctx) {
 
     // console.log("exit property", this.namedTypeStack.length)
+  }
+
+  enterIndexSignature(ctx) {
+    if (!this.interfaceStack || this.interfaceStack.length === 0)
+      throw new Error("Missing interfaceStack")
+
+    const current = this.interfaceStack[this.interfaceStack.length - 1]
+    const optional = !!ctx.QUESTION_MARK()
+    const readonly = !!ctx.READONLY()
+
+    const indexSignature = {
+      whichEntry: "indexSignature",
+      keyName: ctx.IDENTIFIER().getText(),
+      keyType: ctx.signatureType().getText(),
+      optional,
+      readonly
+    }
+    this.addGrabbedCommentsResultTo(this.comments.grabCommentsOf(ctx), {
+      annotate: indexSignature,
+      standaloneBeforeTo: "interface",
+      parentInterface: current
+    })
+    if (!current.entries)
+      current.entries = []
+    current.entries.push(indexSignature)
+
+    this.setAstChildRegistration(type => indexSignature.type = type, ctx.aType())
+    console.log("enter IndexSignature", ctx.getText())
+  }
+
+  enterMappedIndexSignature(ctx) {
+    if (!this.interfaceStack || this.interfaceStack.length === 0)
+      throw new Error("Missing interfaceStack")
+
+    const current = this.interfaceStack[this.interfaceStack.length - 1]
+    const optional = !!ctx.QUESTION_MARK()
+    const readonly = !!ctx.READONLY()
+
+    const mappedIndexSignature = {
+      whichEntry: "mappedIndexSignature",
+      keyName: ctx.IDENTIFIER().getText(),
+      optional,
+      readonly
+    }
+    this.addGrabbedCommentsResultTo(this.comments.grabCommentsOf(ctx), {
+      annotate: mappedIndexSignature,
+      standaloneBeforeTo: "interface",
+      parentInterface: current
+    })
+    if (!current.entries)
+      current.entries = []
+    current.entries.push(mappedIndexSignature)
+
+    this.setAstChildRegistration(type => mappedIndexSignature.keyInType = type, ctx.aType()[0])
+    this.setAstChildRegistration(type => mappedIndexSignature.type = type, ctx.aType()[1])
+    console.log("enter MappedIndexSignature", ctx.getText())
   }
 
   enterLiteral(ctx) {
@@ -228,8 +347,11 @@ class AstExtractor extends TypeOnlyParserListener {
     } else if (ctx.UNION() || ctx.INTERSECTION()) {
       // console.log("##&& open composite== ", ctx.getText())
       this.processCompositeType(ctx)
+    } else if (ctx.memberTypeBracket) {
+      console.log("##&& enter MemberType", ctx.memberName().getText())
+      this.processMemberType(ctx)
     } else if (ctx.OPEN_BRACKET()) {
-      // console.log("##&& enter ArrayType", ctx.aType()[0].getText())
+      console.log("##&& enter ArrayType", ctx.aType()[0].getText())
       this.processArrayType(ctx)
     } else if (ctx.KEYOF()) {
       // console.log("##&& enter keyof", ctx.aType()[0].getText())
@@ -252,6 +374,30 @@ class AstExtractor extends TypeOnlyParserListener {
     this.setAstChildRegistration(
       astType => {
         keyofType.type = astType
+
+      }, ctx.aType()[0])
+  }
+
+  processMemberType(ctx) {
+    const memberType = {
+      whichType: "member",
+    }
+    if (ctx.memberName().IDENTIFIER()) {
+      memberType.memberName = ctx.memberName().IDENTIFIER().getText()
+    } else {
+      const memberNameLiteral = {
+        value: eval(ctx.memberName().getText())
+      }
+      const firstChar = ctx.memberName().getText()[0]
+      if (stringDelim.includes(firstChar)) {
+        memberNameLiteral.stringDelim = firstChar
+      }
+      memberType.memberName = memberNameLiteral
+    }
+    this.registerAstChild(memberType, ctx)
+    this.setAstChildRegistration(
+      astType => {
+        memberType.type = astType
 
       }, ctx.aType()[0])
   }
@@ -450,7 +596,7 @@ class AstExtractor extends TypeOnlyParserListener {
       throw new Error(`Child type already defined for: ${aType.getText()}`)
     this.childTypes.set(aType, cb)
     // console.log("checkMap", this.childTypes.get(aType))
-    if (aType.IDENTIFIER())
+    if (aType.IDENTIFIER() || aType.signatureType())
       this.registerAstChild(aType.getText(), aType)
   }
 

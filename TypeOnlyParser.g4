@@ -9,8 +9,22 @@ declarations: typeSep? declaration*;
 typeSep: (NL | SEMI_COLON)+;
 
 declaration:
-  namedInterface typeSep?
+  namedImport typeSep?
+  | namedInterface typeSep?
   | namedType (typeSep | EOF);
+
+/*
+ * Import
+ */
+namedImport: classicImport | namespacedImport;
+classicImport:
+  IMPORT (( (member1 (NL? COMMA NL? member2)?) | member2) FROM)? STRING_LITERAL;
+member1: IDENTIFIER;
+member2:
+  OPEN_BRACE namedMember (NL? COMMA NL? namedMember)* CLOSE_BRACE;
+namedMember: IDENTIFIER (AS IDENTIFIER)?;
+
+namespacedImport: IMPORT STAR AS IDENTIFIER FROM STRING_LITERAL;
 
 /*
  * NamedInterface
@@ -29,7 +43,11 @@ anonymousInterface:
 interfaceEntries:
   interfaceEntry (propertySeparator interfaceEntry)*;
 
-interfaceEntry: property | functionProperty;
+interfaceEntry:
+  indexSignature
+  | property
+  | functionProperty
+  | mappedIndexSignature;
 
 property:
   (READONLY NL?)? propertyName (NL? QUESTION_MARK)? NL? COLON NL? aType;
@@ -40,6 +58,16 @@ functionProperty:
   )? OPEN_PARENTHESE (
     NL? functionParameter (NL? COMMA NL? functionParameter)*
   )? NL? CLOSE_PARENTHESE (NL? COLON NL? aType)?;
+
+indexSignature:
+  (READONLY NL?)? OPEN_BRACKET IDENTIFIER COLON signatureType CLOSE_BRACKET (
+    NL? QUESTION_MARK
+  )? COLON aType;
+signatureType: STRING | NUMBER;
+mappedIndexSignature:
+  (READONLY NL?)? OPEN_BRACKET IDENTIFIER IN aType CLOSE_BRACKET (
+    NL? QUESTION_MARK
+  )? COLON aType;
 
 propertySeparator: NL | NL? SEMI_COLON+ NL? | NL? COMMA NL?;
 
@@ -58,9 +86,11 @@ namedType: (EXPORT NL?)? TYPE IDENTIFIER NL? (NL? genericDecl)? ASSIGN NL? aType
 aType:
   inlineImportType
   | IDENTIFIER
+  | signatureType
   | literal
   | tupleType
   | KEYOF aType
+  | aType memberTypeBracket = OPEN_BRACKET memberName CLOSE_BRACKET
   | aType NL? OPEN_BRACKET NL? CLOSE_BRACKET
   | anonymousInterface
   | typeWithParenthesis
@@ -70,6 +100,8 @@ aType:
   | (NL? genericDecl)? OPEN_PARENTHESE (
     NL? functionParameter (NL? COMMA NL? functionParameter)*
   )? NL? CLOSE_PARENTHESE NL? ARROW NL? aType;
+
+memberName: STRING_LITERAL | INTEGER_LITERAL | IDENTIFIER;
 
 genericDecl: LESS_THAN genericParameter+ MORE_THAN;
 genericParameter:

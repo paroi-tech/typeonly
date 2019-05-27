@@ -24,9 +24,6 @@ function parseTypeOnlyToAst(source) {
 
   const tree = parser.declarations()
 
-  if (errors.length > 0)
-    throw new Error(errors.join("\n"))
-
   // console.log(debugTokensToText(tokenStream.tokens))
   // function debugTokensToText(tokens) {
   //   if (!tokens)
@@ -35,6 +32,9 @@ function parseTypeOnlyToAst(source) {
   //     return `[${tokenIndex}] ${type}: ${source.substring(start, stop + 1).replace(/\n/g, "\u23ce")}`
   //   }).join("\n")
   // }
+
+  if (errors.length > 0)
+    throw new Error(errors.join("\n"))
 
   const extractor = new AstExtractor({
     source,
