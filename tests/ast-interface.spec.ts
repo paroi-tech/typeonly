@@ -27,7 +27,7 @@ interface I4{}; interface I5{};
  interface I6{}
       `
     const ast = parseTypeOnlyToAst(input)
-    expect(ast.declarations.length).toBe(6)
+    expect(ast.declarations!.length).toBe(6)
   })
 
   test("property separator can be a coma, a semicolon or a new line", () => {

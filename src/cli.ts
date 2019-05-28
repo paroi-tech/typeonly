@@ -2,16 +2,21 @@
 import commandLineArgs = require("command-line-args")
 import commandLineUsage = require("command-line-usage")
 
-// class InvalidArgumentError extends Error {
+class InvalidArgumentError extends Error {
+  readonly causeCode = "invalidArgument"
+  constructor(message: string) {
+    super(message)
+  }
+}
 
-// }
+type OptionDefinition = commandLineUsage.OptionDefinition & commandLineArgs.OptionDefinition
 
-const optionDefinitions = [
+const optionDefinitions: OptionDefinition[] = [
   {
     name: "help",
     alias: "h",
     type: Boolean,
-    description: "Print this help message."
+    description: "Print this help message.",
   },
   {
     name: "output-dir",
@@ -54,11 +59,16 @@ function cli() {
     return
   }
 
-  // try {
-  //   proccessFile(options)
-  // } catch (error){
-  //   console.log(`Error: ${error.message}`)
-  // }
+  try {
+    proccessFile(options.src.file, options)
+  } catch (error) {
+    if (error.causeCode === "invalidArgument") {
+      console.error(`Error: ${error.message}`)
+      printHelp()
+    } else {
+      console.error(`Error: ${error.message}`)
+    }
+  }
 }
 
 function printHelp() {
@@ -93,4 +103,9 @@ function parseOptions(): object | undefined {
     console.log(`Error: ${error.message}`)
     printHelp()
   }
+}
+
+function proccessFile(file: string, options) {
+  if (!options.src)
+    throw new InvalidArgumentError("Missing Source File")
 }

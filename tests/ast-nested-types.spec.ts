@@ -11,7 +11,7 @@ interface I1 {
 }
       `
     const ast = parseTypeOnlyToAst(input)
-    expect(ast.declarations.length).toBe(1)
+    expect(ast.declarations!.length).toBe(1)
     const namedInterface = ast.declarations![0] as AstNamedInterface
     expect(namedInterface.whichType).toBe("interface")
     expect(namedInterface.entries!.length).toBe(1)

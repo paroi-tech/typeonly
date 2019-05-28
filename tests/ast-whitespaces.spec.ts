@@ -15,7 +15,7 @@ describe("AST Specification about White Spaces", () => {
 
       `
     const ast = parseTypeOnlyToAst(input)
-    expect(ast.declarations.length).toBe(1)
+    expect(ast.declarations!.length).toBe(1)
   })
 
 
