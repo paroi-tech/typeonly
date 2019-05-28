@@ -1,5 +1,5 @@
 import { AstInterface, AstNamedInterface, AstProperty } from "../src/ast"
-import { parseTypeOnlyToAst } from "../src/parse-typeonly"
+import { parseTypeOnlyToAst } from "../src/parser/parse-typeonly"
 
 describe("AST Specification for Nested Types", () => {
   test("an anonymous interface nested in a interface", () => {

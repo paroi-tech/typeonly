@@ -1,4 +1,4 @@
-import { parseTypeOnlyToAst } from "../src/parse-typeonly"
+import { parseTypeOnlyToAst } from "../src/parser/parse-typeonly"
 
 describe("AST Specification about White Spaces", () => {
   test("weird spaces do not matter", () => {

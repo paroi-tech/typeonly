@@ -1,5 +1,5 @@
 import { AstInlineComment, AstNamedInterface, AstNamedType, AstStandaloneComment } from "../src/ast"
-import { parseTypeOnlyToAst } from "../src/parse-typeonly"
+import { parseTypeOnlyToAst } from "../src/parser/parse-typeonly"
 
 describe("AST Specification for Comments", () => {
 

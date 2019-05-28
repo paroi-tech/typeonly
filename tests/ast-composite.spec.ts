@@ -1,5 +1,5 @@
 import { AstCompositeType, AstInterface, AstNamedType, AstProperty } from "../src/ast"
-import { parseTypeOnlyToAst } from "../src/parse-typeonly"
+import { parseTypeOnlyToAst } from "../src/parser/parse-typeonly"
 
 describe("AST Specification for Composite Types", () => {
   test(`composite type with identifiers`, () => {

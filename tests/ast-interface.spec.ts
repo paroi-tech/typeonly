@@ -1,5 +1,5 @@
 import { AstNamedInterface, AstProperty } from "../src/ast"
-import { parseTypeOnlyToAst } from "../src/parse-typeonly"
+import { parseTypeOnlyToAst } from "../src/parser/parse-typeonly"
 
 describe("AST Specification for Interfaces", () => {
   const validIdentifiers = ["Abc12", "$_ab12", "_", "$", "əe"]

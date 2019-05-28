@@ -1,6 +1,6 @@
 import { CommonTokenStream, InputStream, tree } from "antlr4"
-const { TypeOnlyLexer } = require("../antlr-parser/TypeOnlyLexer")
-const { TypeOnlyParser } = require("../antlr-parser/TypeOnlyParser")
+const { TypeOnlyLexer } = require("../../antlr-parser/TypeOnlyLexer")
+const { TypeOnlyParser } = require("../../antlr-parser/TypeOnlyParser")
 import AstExtractor from "./AstExtractor"
 
 export function parseTypeOnlyToAst(source: string) {
