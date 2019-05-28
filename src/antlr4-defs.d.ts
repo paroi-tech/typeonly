@@ -12,6 +12,7 @@ export interface AntlrTokenStream {
 export type ParseTree = AntlrRuleContext | AntlrTerminalNode
 
 export interface AntlrRuleContext {
+  [childName: string]: any
   parentCtx: AntlrRuleContext
   parser: AntlrParser
   ruleIndex: number

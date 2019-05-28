@@ -1,4 +1,4 @@
-export interface Ast {
+export interface TypeOnlyAst {
   declarations?: AstDeclaration[]
 }
 
@@ -7,7 +7,7 @@ export type AstDeclaration = AstImport
   | AstNamedType
   | AstStandaloneComment
 
-type AstImport = AstClassicImport | AstNamespacedImport
+export type AstImport = AstClassicImport | AstNamespacedImport
 
 export interface AstClassicImport extends AstCommentable {
   whichDeclaration: "import"
