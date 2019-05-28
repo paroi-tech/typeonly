@@ -74,7 +74,20 @@ mappedIndexSignature:
 
 propertySeparator: NL | NL? SEMI_COLON+ NL? | NL? COMMA NL?;
 
-propertyName: IDENTIFIER | JS_KEYWORD;
+propertyName: IDENTIFIER | JS_KEYWORD | typeOnlyKeywords;
+typeOnlyKeywords:
+  INTERFACE
+  | TYPE
+  | EXPORT
+  | EXTENDS
+  | READONLY
+  | KEYOF
+  | STRING
+  | NUMBER
+  | IN
+  | AS
+  | FROM
+  | IMPORT;
 
 typeName: IDENTIFIER;
 

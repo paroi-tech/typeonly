@@ -20,6 +20,7 @@ CLOSE_BRACKET: ']';
 LESS_THAN: '<';
 MORE_THAN: '>';
 DOT: '.';
+STAR: '*';
 
 /*
  * Literals
@@ -46,16 +47,15 @@ TEMPLATE_STRING_LITERAL: '`' ('\\`' | ~'`')* '`';
 /*
  * Reserved Keywords
  */
-WHILE: 'while';
-DO: 'do';
-BREAK: 'break';
-CONTINUE: 'continue';
-FINALLY: 'finally';
-PUBLIC: 'public';
-PRIVATE: 'private';
-IMPORT: 'import';
-IF: 'if';
-FOR: 'for';
+fragment WHILE: 'while';
+fragment DO: 'do';
+fragment BREAK: 'break';
+fragment CONTINUE: 'continue';
+fragment FINALLY: 'finally';
+fragment PUBLIC: 'public';
+fragment PRIVATE: 'private';
+fragment IF: 'if';
+fragment FOR: 'for';
 
 JS_KEYWORD:
   IF
@@ -65,8 +65,7 @@ JS_KEYWORD:
   | BREAK
   | CONTINUE
   | FINALLY
-  | PRIVATE
-  | IMPORT;
+  | PRIVATE;
 
 /*
  * TypeOnly Keywords
@@ -82,7 +81,7 @@ NUMBER: 'number';
 IN: 'in';
 AS: 'as';
 FROM: 'from';
-STAR: '*';
+IMPORT: 'import';
 
 // Identifier
 IDENTIFIER: IDENTIFIER_START IDENTIFIER_PART*;
