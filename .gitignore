@@ -7,4 +7,4 @@ node_modules
 /antlr-*.jar
 /antlr-parser
 
-/src/tmp
+/tmp

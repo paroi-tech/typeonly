@@ -1,4 +1,7 @@
-# typeonly
+# TypeOnly - `@paleo/typeonly`
+Parse TypeScript code with composite type and then generates a array of possible values
+
+## How to use the Command Line Interface
 
 
 ## Contribute
