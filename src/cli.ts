@@ -1,8 +1,9 @@
 #!/usr/bin/env node
+// import commandLineArgs = require("command-line-args")
 import commandLineArgs = require("command-line-args")
 import commandLineUsage = require("command-line-usage")
 import { existsSync, readFileSync, writeFileSync } from "fs"
-import { basename, dirname, extname } from "path"
+import { basename, dirname } from "path"
 import { TypeOnlyAst } from "./ast"
 import { parseTypeOnlyToAst } from "./parser/parse-typeonly"
 
@@ -57,7 +58,7 @@ function cli() {
   const options = parseOptions()
   if (!options)
     return
-  console.log(options["src"].toString())
+  // console.log(options["src"].toString())
   // if (options.) {
   //   console.log(Object.keys(options))
   // }
@@ -67,13 +68,18 @@ function cli() {
   }
 
   try {
-    proccessFile(options["src"].toString(), options)
+    if (options["src"] !== undefined) {
+      proccessFile(options["src"].toString(), options)
+    } else {
+      console.error(`Error: Missing option.`)
+      printHelp()
+    }
   } catch (error) {
     if (error.causeCode === "invalidArgument") {
       console.error(`Error: ${error.message}`)
       printHelp()
     } else {
-      console.error(error)
+      console.error(`Error: ${error.message}`)
     }
   }
 }
@@ -82,7 +88,7 @@ function printHelp() {
   const sections = [
     {
       header: "TypeOnly",
-      content: "Parse TypeScript code with composite type and then generates a array of possible values"
+      content: "Parse TypeOnly code."
     },
     {
       header: "Synopsis",
@@ -123,6 +129,8 @@ function proccessFile(file: string, options) {
     throw new InvalidArgumentError(`Cannot read file: ${file}`)
   }
   const bnad = baseNameAndDir(file)
+  // const fileName = bnad.fileBaseName
+  // console.log(fileName.substring(0, fileName.length - 2))
   const ast: TypeOnlyAst = parseTypeOnlyToAst(input)
   createAstJsonFile(ast, options, bnad)
 }
@@ -130,9 +138,13 @@ function proccessFile(file: string, options) {
 function createAstJsonFile(ast: TypeOnlyAst, options, bnad: BaseNameAndDir) {
   const generateAst = JSON.stringify(ast, undefined, 2)
   const dir = normalizePath(options["output-dir"], bnad.directory)
-  const outFile = `${dir}/${bnad.fileBaseName}.ast.json`
+  let fileName = bnad.fileName
+  if (fileName.endsWith(".ts"))
+    fileName = fileName.substring(0, fileName.length - (fileName.endsWith(".d.ts") ? 5 : 3))
+  const outFile = `${dir}/${fileName}.ast.json`
   if (!options.force && existsSync(outFile))
     throw new Error(`Cannot overwrite existing file: ${outFile}`)
+  // console.info(`Write file: ${outFile}`)
   writeFileSync(outFile, generateAst, {
     encoding: options.encoding || "utf8",
   })
@@ -148,15 +160,12 @@ function normalizePath(path: string | undefined, defaultPath?: string): string |
 
 interface BaseNameAndDir {
   directory: string
-  fileBaseName: string
-  extension: string
+  fileName: string
 }
 
 function baseNameAndDir(file: string): BaseNameAndDir {
-  const extension = extname(file)
   return {
     directory: dirname(file),
-    fileBaseName: basename(file, extension),
-    extension
+    fileName: basename(file),
   }
 }

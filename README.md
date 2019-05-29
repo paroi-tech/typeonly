@@ -1,8 +1,23 @@
 # TypeOnly - `@paleo/typeonly`
-Parse TypeScript code with composite type and then generates a array of possible values
+Parse TypeOnly code.
 
 ## How to use the Command Line Interface
 
+Example:
+
+```sh
+node dist/cli.js --src file.d.ts
+```
+This command will generate one file `file.ast.json`
+
+Available options:
+```
+-h, --help                   Print this help message.
+  -o, --output-dir directory   The output directory (optional).
+  -e, --encoding string        Encoding for input and output file(s) (default is utf8).
+  -f, --force                  Overwrite output files.
+  --src file ...               The input file to process (by default at last position).
+```
 
 ## Contribute
 
