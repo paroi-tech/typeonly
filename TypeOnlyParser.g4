@@ -9,19 +9,19 @@ declarations: typeSep? declaration*;
 typeSep: (NL | SEMI_COLON)+;
 
 declaration:
-  namedImport typeSep?
+  importDecl typeSep?
   | namedInterface typeSep?
   | namedType (typeSep | EOF);
 
 /*
  * Import
  */
-namedImport: classicImport | namespacedImport;
+importDecl: classicImport | namespacedImport;
 classicImport:
-  IMPORT (( (member1 (NL? COMMA NL? member2)?) | member2) FROM)? STRING_LITERAL;
+  IMPORT (( (member1 (NL* COMMA NL* member2)?) | member2) FROM)? STRING_LITERAL;
 member1: IDENTIFIER;
 member2:
-  OPEN_BRACE namedMember (NL? COMMA NL? namedMember)* CLOSE_BRACE;
+  OPEN_BRACE namedMember (NL* COMMA NL* namedMember)* CLOSE_BRACE;
 namedMember: IDENTIFIER (AS IDENTIFIER)?;
 
 namespacedImport: IMPORT STAR AS IDENTIFIER FROM STRING_LITERAL;
@@ -30,15 +30,15 @@ namespacedImport: IMPORT STAR AS IDENTIFIER FROM STRING_LITERAL;
  * NamedInterface
  */
 namedInterface:
-  (EXPORT NL?)? INTERFACE IDENTIFIER (NL? genericDecl)? (
-    NL? interfaceExtends
-  )? NL? anonymousInterface;
+  (EXPORT NL*)? INTERFACE IDENTIFIER (NL* genericDecl)? (
+    NL* interfaceExtends
+  )? NL* anonymousInterface;
 
 interfaceExtends:
-  EXTENDS NL? typeName (NL? COMMA NL? typeName)*;
+  EXTENDS NL* typeName (NL* COMMA NL* typeName)*;
 
 anonymousInterface:
-  OPEN_BRACE (NL? interfaceEntries)? NL? CLOSE_BRACE;
+  OPEN_BRACE (NL* interfaceEntries)? NL* CLOSE_BRACE;
 
 interfaceEntries:
   interfaceEntry (propertySeparator interfaceEntry)*;
@@ -50,29 +50,29 @@ interfaceEntry:
   | mappedIndexSignature;
 
 property:
-  (READONLY NL?)? propertyName (NL? QUESTION_MARK)? NL? COLON NL? aType;
+  (READONLY NL*)? propertyName (NL* QUESTION_MARK)? NL* COLON NL* aType;
 
 functionProperty:
-  (READONLY NL?)? propertyName (NL? QUESTION_MARK)? NL? (
-    NL? genericDecl
+  (READONLY NL*)? propertyName (NL* QUESTION_MARK)? NL* (
+    NL* genericDecl
   )? OPEN_PARENTHESE (
-    NL? functionParameter (NL? COMMA NL? functionParameter)*
-  )? NL? CLOSE_PARENTHESE (NL? COLON NL? aType)?;
+    NL* functionParameter (NL* COMMA NL* functionParameter)*
+  )? NL* CLOSE_PARENTHESE (NL* COLON NL* aType)?;
 
 /*
  * IndexSignature and MappedIndexSignature
  */
 indexSignature:
-  (READONLY NL?)? OPEN_BRACKET IDENTIFIER COLON signatureType CLOSE_BRACKET (
-    NL? QUESTION_MARK
+  (READONLY NL*)? OPEN_BRACKET IDENTIFIER COLON signatureType CLOSE_BRACKET (
+    NL* QUESTION_MARK
   )? COLON aType;
 signatureType: STRING | NUMBER;
 mappedIndexSignature:
-  (READONLY NL?)? OPEN_BRACKET IDENTIFIER IN aType CLOSE_BRACKET (
-    NL? QUESTION_MARK
+  (READONLY NL*)? OPEN_BRACKET IDENTIFIER IN aType CLOSE_BRACKET (
+    NL* QUESTION_MARK
   )? COLON aType;
 
-propertySeparator: NL | NL? SEMI_COLON+ NL? | NL? COMMA NL?;
+propertySeparator: NL+ | NL* SEMI_COLON+ NL* | NL* COMMA NL*;
 
 propertyName: IDENTIFIER | JS_KEYWORD | typeOnlyKeywords;
 typeOnlyKeywords:
@@ -94,7 +94,7 @@ typeName: IDENTIFIER;
 /*
  * NamedType
  */
-namedType: (EXPORT NL?)? TYPE IDENTIFIER NL? (NL? genericDecl)? ASSIGN NL? aType;
+namedType: (EXPORT NL*)? TYPE IDENTIFIER NL* (NL* genericDecl)? ASSIGN NL* aType;
 
 /*
  * Common rules for NamedInterface and NamedType
@@ -107,15 +107,15 @@ aType:
   | tupleType
   | KEYOF aType
   | aType memberTypeBracket = OPEN_BRACKET memberName CLOSE_BRACKET
-  | aType NL? OPEN_BRACKET NL? CLOSE_BRACKET
+  | aType NL* OPEN_BRACKET NL* CLOSE_BRACKET
   | anonymousInterface
   | typeWithParenthesis
-  | aType NL? INTERSECTION NL? aType
-  | aType NL? UNION NL? aType
+  | aType NL* INTERSECTION NL* aType
+  | aType NL* UNION NL* aType
   | genericType
-  | (NL? genericDecl)? OPEN_PARENTHESE (
-    NL? functionParameter (NL? COMMA NL? functionParameter)*
-  )? NL? CLOSE_PARENTHESE NL? ARROW NL? aType;
+  | (NL* genericDecl)? OPEN_PARENTHESE (
+    NL* functionParameter (NL* COMMA NL* functionParameter)*
+  )? NL* CLOSE_PARENTHESE NL* ARROW NL* aType;
 
 memberName: STRING_LITERAL | INTEGER_LITERAL | IDENTIFIER;
 
@@ -125,17 +125,17 @@ genericParameter:
     ASSIGN defaultType = aType
   )?;
 genericType:
-  IDENTIFIER NL? LESS_THAN NL? aType (NL? COMMA NL? aType)* NL? MORE_THAN;
+  IDENTIFIER NL* LESS_THAN NL* aType (NL* COMMA NL* aType)* NL* MORE_THAN;
 inlineImportType:
   IMPORT OPEN_PARENTHESE stringLiteral CLOSE_PARENTHESE DOT IDENTIFIER;
 
 stringLiteral: STRING_LITERAL | TEMPLATE_STRING_LITERAL;
 
 tupleType:
-  OPEN_BRACKET (NL? aType (NL? COMMA NL? aType)*)? NL? CLOSE_BRACKET;
+  OPEN_BRACKET (NL* aType (NL* COMMA NL* aType)*)? NL* CLOSE_BRACKET;
 typeWithParenthesis:
-  OPEN_PARENTHESE NL? aType NL? CLOSE_PARENTHESE;
-functionParameter: IDENTIFIER (NL? COLON NL? aType)?;
+  OPEN_PARENTHESE NL* aType NL* CLOSE_PARENTHESE;
+functionParameter: IDENTIFIER (NL* COLON NL* aType)?;
 
 /*
  * Literal

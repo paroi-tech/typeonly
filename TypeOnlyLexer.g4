@@ -91,7 +91,7 @@ MULTILINE_COMMENT: '/*' .*? '*/' -> channel(HIDDEN);
 SINGLE_LINE_COMMENT: '//' ~[\r\n]* -> channel(HIDDEN);
 
 // WhiteSpaces
-NL: ('\r'? '\n' | '\r')+;
+NL: ('\r'? '\n' | '\r');
 WS: [ \t]+ -> skip;
 
 /*

@@ -253,17 +253,15 @@ export default class CommentGrabber {
 }
 
 function keepWholeLineComments(tokens: AntlrToken[], parsingContext: CommentParsingContext) {
-  const { tokenTypes: { SINGLE_LINE_COMMENT: SL_COM, NEWLINE }, source } = parsingContext
-  let prevWasNewLine = false
+  const { tokenTypes: { SINGLE_LINE_COMMENT: SL_COM, NEWLINE } } = parsingContext
+  let newLineCount = 0
   return tokens.filter(token => {
     if (token.type === NEWLINE) {
-      prevWasNewLine = true
-      const text = source.substring(token.start, token.stop + 1)
-      const count = (text.match(/\r?\n|\r/g) || []).length
-      return count >= 2
+      ++newLineCount
+      return newLineCount === 2
     }
-    const keep = token.type !== SL_COM || prevWasNewLine || token.tokenIndex === 0
-    prevWasNewLine = false
+    const keep = token.type !== SL_COM || newLineCount > 0 || token.tokenIndex === 0
+    newLineCount = 0
     return keep
   })
 }

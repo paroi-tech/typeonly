@@ -73,7 +73,7 @@ function cli() {
       console.error(`Error: ${error.message}`)
       printHelp()
     } else {
-      console.error(`Error: ${error.message}`)
+      console.error(error)
     }
   }
 }
