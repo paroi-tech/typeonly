@@ -39,11 +39,11 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
       whichImport: "classic",
       from: ctx.STRING_LITERAL().getText()
     }
-    if (ctx.member1()) {
-      classicImport.defaultName = ctx.member1().IDENTIFIER().getText()
+    if (ctx.defaultImportName()) {
+      classicImport.defaultName = ctx.defaultImportName().IDENTIFIER().getText()
     }
-    if (ctx.member2().namedMember()) {
-      const namedMembers = ctx.member2().namedMember()
+    if (ctx.namedImportPart().namedMember()) {
+      const namedMembers = ctx.namedImportPart().namedMember()
       const members: AstImportNamedMember[] = []
       namedMembers.forEach((member, index) => {
         const mb: AstImportNamedMember = {
@@ -60,7 +60,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     if (!this.ast!.declarations)
       this.ast!.declarations = []
     this.ast!.declarations.push(classicImport)
-    // console.log("enter classicImport", ctx.member2().namedMember()[0].IDENTIFIER()[0].getText())
+    // console.log("enter classicImport", ctx.namedImportPart().namedMember()[0].IDENTIFIER()[0].getText())
   }
 
   enterNamespacedImport(ctx: AntlrRuleContext) {

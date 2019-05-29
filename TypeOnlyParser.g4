@@ -9,7 +9,7 @@ declarations: typeSep? declaration*;
 typeSep: (NL | SEMI_COLON)+;
 
 declaration:
-  importDecl typeSep?
+  importDecl (typeSep | EOF)
   | namedInterface typeSep?
   | namedType (typeSep | EOF);
 
@@ -17,14 +17,24 @@ declaration:
  * Import
  */
 importDecl: classicImport | namespacedImport;
-classicImport:
-  IMPORT (( (member1 (NL* COMMA NL* member2)?) | member2) FROM)? STRING_LITERAL;
-member1: IDENTIFIER;
-member2:
-  OPEN_BRACE namedMember (NL* COMMA NL* namedMember)* CLOSE_BRACE;
-namedMember: IDENTIFIER (AS IDENTIFIER)?;
 
-namespacedImport: IMPORT STAR AS IDENTIFIER FROM STRING_LITERAL;
+classicImport:
+  IMPORT NL* (
+    (
+      (defaultImportName (NL* COMMA NL* namedImportPart)?)
+      | namedImportPart
+    ) NL* FROM NL*
+  )? STRING_LITERAL;
+
+defaultImportName: IDENTIFIER;
+
+namedImportPart:
+  OPEN_BRACE NL* namedMember (NL* COMMA NL* namedMember)* NL* CLOSE_BRACE;
+
+namedMember: IDENTIFIER (NL* AS NL* IDENTIFIER)?;
+
+namespacedImport:
+  IMPORT NL* STAR NL* AS NL* IDENTIFIER NL* FROM NL* STRING_LITERAL;
 
 /*
  * NamedInterface
