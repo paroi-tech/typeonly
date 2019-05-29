@@ -98,7 +98,7 @@ export type AstType = string
   | AstCompositeType
   | AstTupleType
   | AstArrayType
-  | AstGenericType
+  | AstGenericInstanceType
   | AstFunctionType
   | AstKeyofType
   | AstMemberType
@@ -106,7 +106,7 @@ export type AstType = string
 
 export interface AstLiteralType {
   whichType: "literal"
-  value: string | number | boolean | bigint
+  literal: string | number | boolean | bigint
   stringDelim?: "\"" | "'" | "`"
 }
 
@@ -127,8 +127,8 @@ export interface AstArrayType {
   genericSyntax?: boolean
 }
 
-export interface AstGenericType {
-  whichType: "generic"
+export interface AstGenericInstanceType {
+  whichType: "genericInstance"
   name: string
   parameterTypes: AstType[]
 }
@@ -157,7 +157,7 @@ export interface AstMemberType {
 }
 
 export interface AstMemberNameLiteral {
-  value: string | number
+  literal: string | number
   stringDelim?: "\"" | "'" | "`"
 }
 

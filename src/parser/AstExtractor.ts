@@ -1,4 +1,4 @@
-import { AstArrayType, AstClassicImport, AstCommentable, AstCompositeType, AstFunctionProperty, AstFunctionType, AstGenericParameter, AstGenericType, AstImportNamedMember, AstIndexSignature, AstInlineImportType, AstInterface, AstKeyofType, AstLiteralType, AstMappedIndexSignature, AstMemberNameLiteral, AstMemberType, AstNamedInterface, AstNamedType, AstNamespacedImport, AstProperty, AstStandaloneComment, AstStandaloneInterfaceComment, AstTupleType, AstType, TypeOnlyAst } from "../ast"
+import { AstArrayType, AstClassicImport, AstCommentable, AstCompositeType, AstFunctionProperty, AstFunctionType, AstGenericInstanceType, AstGenericParameter, AstImportNamedMember, AstIndexSignature, AstInlineImportType, AstInterface, AstKeyofType, AstLiteralType, AstMappedIndexSignature, AstMemberNameLiteral, AstMemberType, AstNamedInterface, AstNamedType, AstNamespacedImport, AstProperty, AstStandaloneComment, AstStandaloneInterfaceComment, AstTupleType, AstType, TypeOnlyAst } from "../ast"
 import { AntlrRuleContext } from "./antlr4-defs"
 import CommentGrabber, { GrabbedComment, GrabbedCommentsResult } from "./CommentGrabber"
 const { TypeOnlyParserListener } = require("../../antlr-parser/TypeOnlyParserListener")
@@ -283,7 +283,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     const literal: AstLiteralType = {
       whichType: "literal",
       // tslint:disable-next-line: no-eval
-      value: eval(ctx.getText())
+      literal: eval(ctx.getText())
     }
     const firstChar = ctx.getText()[0]
     if (isStringDelim(firstChar)) {
@@ -326,8 +326,8 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
         }, ctx.aType()[0])
 
     } else {
-      const genericType: AstGenericType = {
-        whichType: "generic",
+      const genericType: AstGenericInstanceType = {
+        whichType: "genericInstance",
         name: ctx.IDENTIFIER().getText(),
         parameterTypes: []
       }
@@ -396,7 +396,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     } else {
       const memberNameLiteral: AstMemberNameLiteral = {
         // tslint:disable-next-line: no-eval
-        value: eval(ctx.memberName().getText())
+        literal: eval(ctx.memberName().getText())
       }
       const firstChar = ctx.memberName().getText()[0]
       if (isStringDelim(firstChar)) {

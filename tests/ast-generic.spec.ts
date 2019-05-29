@@ -3,7 +3,7 @@ import { parseTypeOnlyToAst } from "../src/parser/parse-typeonly"
 
 describe("AST Specification for Generic", () => {
 
-  test("a generic with identifier", () => {
+  test("a generic instance with identifier", () => {
     const input = `
 type T1 = G<number, string>
 `
@@ -11,7 +11,7 @@ type T1 = G<number, string>
     const namedType = ast.declarations![0] as AstNamedType
     expect(namedType.name).toBe("T1")
     expect(namedType.type).toEqual({
-      whichType: "generic",
+      whichType: "genericInstance",
       name: "G",
       parameterTypes: [
         "number",

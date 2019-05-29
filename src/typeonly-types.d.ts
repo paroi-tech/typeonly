@@ -1,19 +1,19 @@
-export type TypeOnlyContainer = TypeOnlyEmbeddedCode | TypeOnlyModule
-
-export interface TypeOnlyEmbeddedCode {
-  containerType: "embedded"
-  namedTypes: NamedTypes
-}
-
 export interface TypeOnlyModules {
-  [name: string]: TypeOnlyModule
+  [path: string]: TypeOnlyModule
 }
 
 export interface TypeOnlyModule {
-  containerType: "module"
-  name: string
+  whichContainer: "module"
+  path: string
   namedTypes: NamedTypes
 }
+
+export interface TypeOnlyEmbeddedCode {
+  whichContainer: "embedded"
+  namedTypes: NamedTypes
+}
+
+export type TypeOnlyContainer = TypeOnlyModule | TypeOnlyEmbeddedCode
 
 export interface NamedTypes {
   [name: string]: NamedType
@@ -21,71 +21,88 @@ export interface NamedTypes {
 
 export type NamedType = Type & NamedTypeFields
 
-export type NamedTypeRef = TypeRef & NamedTypeFields
+export type NamedTypeName = TypeName & NamedTypeFields
+export type NamedGenericParameterName = GenericParameterName & NamedTypeFields
+export type NamedLocalTypeRef = LocalTypeRef & NamedTypeFields
+export type NamedImportedTypeRef = ImportedTypeRef & NamedTypeFields
 export type NamedLiteralType = LiteralType & NamedTypeFields
 export type NamedUnionType = UnionType & NamedTypeFields
 export type NamedInterface = Interface & NamedTypeFields
 export type NamedTupleType = TupleType & NamedTypeFields
 export type NamedArrayType = ArrayType & NamedTypeFields
-export type NamedGenericType = GenericType & NamedTypeFields
+export type NamedGenericInstanceType = GenericInstanceType & NamedTypeFields
 export type NamedFunctionType = FunctionType & NamedTypeFields
+export type NamedKeyofType = KeyofType & NamedTypeFields
+export type NamedMemberType = MemberType & NamedTypeFields
 
-export interface NamedTypeFields extends Commentable {
-  exported?: boolean
-  name: string
-  container: TypeOnlyContainer
-}
-
-export type Type = TypeRef
+export type Type = TypeName
+  | GenericParameterName
+  | LocalTypeRef
+  | ImportedTypeRef
   | LiteralType
   | UnionType
   | Interface
   | TupleType
   | ArrayType
-  | GenericType
+  | GenericInstanceType
   | FunctionType
+  | KeyofType
+  | MemberType
 
-export type TypeRef = SpecialTypeRef | PrimitiveTypeRef | GlobalTypeRef | LocalTypeRef | ImportedTypeRef
-
-export interface SpecialTypeRef {
-  whichType: "typeRef"
-  refType: "special"
-  refName: SpecialTypeName
+export interface NamedTypeFields extends Commentable {
+  exported?: boolean
+  name: string
+  container: TypeOnlyContainer
+  generic?: GenericParameterOfNamedType[]
 }
 
-export interface PrimitiveTypeRef {
-  whichType: "typeRef"
-  refType: "primitive"
-  refName: PrimitiveTypeName
+export type GenericParameter = GenericParameterOfNamedType | GenericParameterOfFunction
+
+export interface GenericParameterOfNamedType {
+  ofWhat: "named"
+  name: string
+  extendsType?: Type
+  defaultType?: Type
+  of: NamedType
 }
 
-export interface GlobalTypeRef {
-  whichType: "typeRef"
-  refType: "global"
-  refName: string
+export interface GenericParameterOfFunction {
+  ofWhat: "function"
+  name: string
+  extendsType?: Type
+  defaultType?: Type
+  of: FunctionType
+}
+
+export interface TypeName {
+  whichType: "name"
+  whichName: "special" | "primitive" | "standard" | "unresolved"
+  refName: SpecialTypeName | PrimitiveTypeName | string
+}
+
+export type SpecialTypeName = "any" | "unknown" | "object" | "void" | "never"
+export type PrimitiveTypeName = "string" | "number" | "boolean" | "undefined" | "null" | "symbol"
+
+export interface GenericParameterName {
+  whichType: "genericParameter"
+  genericParameter: GenericParameter
 }
 
 export interface LocalTypeRef {
-  whichType: "typeRef"
-  refType: "local"
-  refName: string
+  whichType: "localRef"
   ref: NamedType
 }
 
 export interface ImportedTypeRef {
-  whichType: "typeRef"
-  refType: "imported"
-  refName: string
+  whichType: "importedRef"
   ref: NamedType
-  from: string
+  refName: string
+  from: TypeOnlyModule
 }
-
-export type SpecialTypeName = "any" | "unknown" | "never" | "object"
-export type PrimitiveTypeName = "string" | "number" | "boolean" | "undefined" | "null" | "symbol"
 
 export interface LiteralType {
   whichType: "literal"
-  value: string | number | bigint | boolean
+  literal: string | number | bigint | boolean
 }
 
 export interface UnionType {
@@ -109,8 +126,8 @@ export interface ArrayType {
   genericSyntax?: boolean
 }
 
-export interface GenericType {
-  whichType: "generic"
+export interface GenericInstanceType {
+  whichType: "genericInstance"
   genericName: string
   parameterTypes: Type[]
 }
@@ -119,11 +136,27 @@ export interface FunctionType {
   whichType: "function"
   parameters: FunctionParameter[]
   returnType: Type
+  generic?: GenericParameterOfFunction[]
 }
 
 export interface FunctionParameter {
   name: string
   type?: Type
+}
+
+export interface KeyofType {
+  whichType: "keyof"
+  type: Type
+}
+
+export interface MemberType {
+  whichType: "member"
+  type: Type
+  memberName: string | MemberNameLiteral
+}
+
+export interface MemberNameLiteral {
+  literal: string | number
 }
 
 export interface Interface {

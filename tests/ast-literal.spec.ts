@@ -1,4 +1,4 @@
-import { AstNamedType } from "../src/ast"
+import { AstLiteralType, AstNamedType } from "../src/ast"
 import { parseTypeOnlyToAst } from "../src/parser/parse-typeonly"
 
 describe("AST Specification for Literal Types", () => {
@@ -12,9 +12,9 @@ describe("AST Specification for Literal Types", () => {
       expect(namedType.type).toEqual({
         whichType: "literal",
         // tslint:disable-next-line: no-eval
-        value: eval(literal),
+        literal: eval(literal),
         stringDelim: literal[0]
-      })
+      } as AstLiteralType)
     })
   })
 
@@ -27,8 +27,8 @@ describe("AST Specification for Literal Types", () => {
       expect(namedType.type).toEqual({
         whichType: "literal",
         // tslint:disable-next-line: no-eval
-        value: eval(literal),
-      })
+        literal: eval(literal),
+      } as AstLiteralType)
     })
   })
 })
