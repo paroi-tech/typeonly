@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// import commandLineArgs = require("command-line-args")
 import commandLineArgs = require("command-line-args")
 import commandLineUsage = require("command-line-usage")
 import { existsSync, readFileSync, writeFileSync } from "fs"
