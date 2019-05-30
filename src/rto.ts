@@ -22,16 +22,16 @@ export type RtoNamedType = RtoType & RtoNamedTypeFields
 // export type RtoNamedMemberType = RtoMemberType & RtoNamedTypeFields
 
 export type RtoType = RtoTypeName
-  | RtoGenericParameterName
+  // | RtoGenericParameterName // TODO: Implement with generic
   | RtoRef
   | RtoLiteralType
   | RtoUnionType
   | RtoTupleType
   | RtoArrayType
-  | RtoGenericInstanceType
+  // | RtoGenericInstanceType // TODO: Implement with generic
   | RtoFunctionType
-  | RtoKeyofGenericType
-  | RtoMemberType
+  // | RtoKeyofGenericType // TODO: Implement with generic
+  // | RtoMemberType // TODO: Implement with generic
   | RtoInterface
 
 export interface RtoNamedTypeFields extends RtoCommentable {
@@ -55,10 +55,11 @@ export interface RtoTypeName {
 export type RtoSpecialTypeName = "any" | "unknown" | "object" | "void" | "never"
 export type RtoPrimitiveTypeName = "string" | "number" | "boolean" | "undefined" | "null" | "symbol"
 
-export interface RtoGenericParameterName {
-  whichType: "genericParameter"
-  genericParameterName: string
-}
+// TODO: Implement with generic
+// export interface RtoGenericParameterName {
+//   whichType: "genericParameter"
+//   genericParameterName: string
+// }
 
 export type RtoRef = RtoLocalTypeRef | RtoImportedTypeRef
 
@@ -97,11 +98,12 @@ export interface RtoArrayType {
   genericSyntax?: boolean
 }
 
-export interface RtoGenericInstanceType {
-  whichType: "genericInstance"
-  genericName: string
-  parameterTypes: RtoType[]
-}
+// TODO: Implement with generic
+// export interface RtoGenericInstanceType {
+//   whichType: "genericInstance"
+//   genericName: string
+//   parameterTypes: RtoType[]
+// }
 
 export interface RtoFunctionType {
   whichType: "function"
@@ -115,16 +117,18 @@ export interface RtoFunctionParameter {
   type?: RtoType
 }
 
-export interface RtoKeyofGenericType {
-  whichType: "keyof"
-  genericParameterName: string
-}
+// TODO: Implement with generic
+// export interface RtoKeyofGenericType {
+//   whichType: "keyof"
+//   genericParameterName: string
+// }
 
-export interface RtoMemberType {
-  whichType: "member"
-  type: RtoType
-  memberName: string | RtoMemberNameLiteral
-}
+// TODO: Implement with generic
+// export interface RtoMemberType {
+//   whichType: "member"
+//   type: RtoType
+//   memberName: string | RtoMemberNameLiteral
+// }
 
 export interface RtoMemberNameLiteral {
   literal: string | number
@@ -133,7 +137,7 @@ export interface RtoMemberNameLiteral {
 export interface RtoInterface {
   whichType: "interface"
   indexSignature?: RtoIndexSignature
-  mappedIndexSignature?: RtoMappedIndexSignature
+  // mappedIndexSignature?: RtoMappedIndexSignature // TODO: Implement with generic
   properties?: RtoProperty[]
 }
 
@@ -152,13 +156,14 @@ export interface RtoIndexSignature extends RtoCommentable {
   readonly?: boolean
 }
 
-export interface RtoMappedIndexSignature extends RtoCommentable {
-  keyName: string
-  keyInType: RtoType
-  type: RtoType
-  optional?: boolean
-  readonly?: boolean
-}
+// TODO: Implement with generic
+// export interface RtoMappedIndexSignature extends RtoCommentable {
+//   keyName: string
+//   keyInType: RtoType
+//   type: RtoType
+//   optional?: boolean
+//   readonly?: boolean
+// }
 
 export interface RtoCommentable {
   /**

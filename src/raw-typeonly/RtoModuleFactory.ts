@@ -1,15 +1,15 @@
 import { AstArrayType, AstCompositeType, AstDeclaration, AstFunctionParameter, AstFunctionProperty, AstFunctionType, AstGenericInstanceType, AstImport, AstIndexSignature, AstInlineComment, AstInlineImportType, AstInterface, AstInterfaceEntry, AstLiteralType, AstMappedIndexSignature, AstNamedInterface, AstNamedType, AstProperty, AstTupleType, AstType, TypeOnlyAst } from "../ast"
-import { ArrayType, FunctionParameter, FunctionType, GenericInstanceType, IndexSignature, Interface, LiteralType, MappedIndexSignature, NamedType, NamedTypeFields, Properties, Property, TupleType, Type, TypeOnlyEmbeddedCode, UnionType } from "../typeonly-types"
+import { RtoNamedType } from "../rto"
+import Project from "./Project"
 
-// interface Context {
-//   imports:
+export default class RtoModuleFactory {
+  namedTypes: RtoNamedType[] = []
 
-// }
+  constructor(private project: Project, { declarations }: TypeOnlyAst, public path?: string) {
+  }
 
-// export class ContainerAnalyzer {
-//   constructor({ declarations }: TypeOnlyAst, public path: string) {
-//   }
-// }
+  // private createRtoNamedTypes(declarations:  )
+}
 
 // export function typeonlyFromAst({ declarations }: TypeOnlyAst): TypeOnlyEmbeddedCode {
 //   const namedTypes = {}
