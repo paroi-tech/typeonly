@@ -1,14 +1,190 @@
-import { AstArrayType, AstCompositeType, AstDeclaration, AstFunctionParameter, AstFunctionProperty, AstFunctionType, AstGenericInstanceType, AstImport, AstIndexSignature, AstInlineComment, AstInlineImportType, AstInterface, AstInterfaceEntry, AstLiteralType, AstMappedIndexSignature, AstNamedInterface, AstNamedType, AstProperty, AstTupleType, AstType, TypeOnlyAst } from "../ast"
-import { RtoNamedType } from "../rto"
+import { AstArrayType, AstCompositeType, AstDeclaration, AstFunctionParameter, AstFunctionProperty, AstFunctionType, AstGenericInstance, AstImport, AstIndexSignature, AstInlineComment, AstInlineImportType, AstInterface, AstInterfaceEntry, AstKeyofType, AstLiteralType, AstMappedIndexSignature, AstMemberType, AstNamedInterface, AstNamedType, AstProperty, AstTupleType, AstType, TypeOnlyAst } from "../ast"
+import { RtoArrayType, RtoBaseNamedType, RtoCompositeType, RtoFunctionType, RtoGenericInstance, RtoImportedTypeRef, RtoInterface, RtoKeyofType, RtoLiteralType, RtoLocalTypeRef, RtoMemberType, RtoModule, RtoNamedType, RtoTupleType, RtoType, RtoTypeName } from "../rto"
+import ImportTool, { ImportRef } from "./ImportTool"
 import Project from "./Project"
 
 export default class RtoModuleFactory {
-  namedTypes: RtoNamedType[] = []
-
-  constructor(private project: Project, { declarations }: TypeOnlyAst, public path?: string) {
+  private namedTypeList: RtoBaseNamedType[] = []
+  private namedTypes = new Map<string, RtoBaseNamedType>()
+  private importTool: ImportTool
+  private module?: RtoModule
+  private rtoTypeCreators: {
+    [K in Exclude<AstType, string>["whichType"]]: (astNode: any) => RtoType
   }
 
-  // private createRtoNamedTypes(declarations:  )
+  constructor(project: Project, ast: TypeOnlyAst, private path?: string) {
+    this.importTool = new ImportTool(project, path)
+    this.rtoTypeCreators = {
+      array: astNode => this.createRtoArrayType(astNode),
+      literal: astNode => this.createRtoLiteralType(astNode),
+      composite: astNode => this.createRtoCompositeType(astNode),
+      genericInstance: astNode => this.createRtoGenericInstance(astNode),
+      keyof: astNode => this.createRtoKeyofType(astNode),
+      member: astNode => this.createRtoMemberType(astNode),
+      tuple: astNode => this.createRtoTupleType(astNode),
+      function: astNode => this.createRtoFunctionType(astNode),
+      inlineImport: astNode => this.createRtoImportedRefFromInline(astNode),
+      interface: astNode => this.createRtoInterface(astNode),
+    }
+    if (ast.declarations) {
+      ast.declarations.forEach(astDecl => this.registerAstDeclaration(astDecl))
+      ast.declarations.forEach(astDecl => {
+        if (astDecl.whichDeclaration === "interface" || astDecl.whichDeclaration === "type")
+          this.fillAstNamed(astDecl)
+      })
+    }
+  }
+
+  getRtoModule(): RtoModule {
+    if (!this.module) {
+      this.module = {
+        path: this.path,
+        namedTypes: this.namedTypeList as RtoNamedType[]
+      }
+    }
+    return this.module
+  }
+
+  private registerAstDeclaration(astNode: AstDeclaration) {
+    switch (astNode.whichDeclaration) {
+      case "import":
+        this.importTool.addImport(astNode)
+        break
+      case "interface":
+      case "type":
+        const namedType = this.createRtoBaseNamedType(astNode)
+        this.namedTypes.set(namedType.name, namedType)
+        this.namedTypeList.push(namedType)
+        break
+      case "comment":
+        break
+      default:
+        throw new Error(`Invalid whichDeclaration: ${astNode!.whichDeclaration}`)
+    }
+  }
+
+  private createRtoBaseNamedType(astNode: AstNamedInterface | AstNamedType) {
+    const result: RtoBaseNamedType = {
+      name: astNode.name
+    }
+    if (astNode.exported)
+      result.exported = astNode.exported
+    if (astNode.docComment)
+      result.docComment = astNode.docComment
+    return result
+  }
+
+  private fillAstNamed(astNode: AstNamedInterface | AstNamedType) {
+    const base = this.getBaseNamedType(astNode.name)
+    const type = astNode.whichDeclaration === "interface"
+      ? this.createRtoInterface(astNode)
+      : this.createRtoType(astNode.type)
+    Object.assign(base, type)
+  }
+
+  private createRtoType(astNode: AstType): RtoType {
+    if (typeof astNode === "string") {
+      const whichName = findWhichTypeName(astNode)
+      if (whichName)
+        return createRtoTypeName(whichName, astNode)
+      if (this.namedTypes.get(astNode))
+        return createRtoLocalTypeRef(astNode)
+      const importRef = this.importTool.findImport(astNode)
+      if (importRef)
+        return createRtoImportedTypeRef(importRef)
+      throw new Error(`Unexpected type: ${astNode}`)
+    } else {
+      const creator = this.rtoTypeCreators[astNode.whichType]
+      if (!creator)
+        throw new Error(`Unexpected whichType: ${astNode.whichType}`)
+      return creator(astNode)
+    }
+  }
+
+  private createRtoArrayType(astNode: AstArrayType): RtoArrayType {
+    return {
+      whichType: "array",
+      itemType: this.createRtoType(astNode.itemType)
+    }
+  }
+
+  private createRtoLiteralType(astNode: AstLiteralType): RtoLiteralType {
+    return undefined as any // TODO
+  }
+
+  private createRtoCompositeType(astNode: AstCompositeType): RtoCompositeType {
+    return undefined as any // TODO
+  }
+
+  private createRtoGenericInstance(astNode: AstGenericInstance): RtoGenericInstance {
+    return undefined as any // TODO
+  }
+
+  private createRtoKeyofType(astNode: AstKeyofType): RtoKeyofType {
+    return undefined as any // TODO
+  }
+
+  private createRtoMemberType(astNode: AstMemberType): RtoMemberType {
+    return undefined as any // TODO
+  }
+
+  private createRtoTupleType(astNode: AstTupleType): RtoTupleType {
+    return undefined as any // TODO
+  }
+
+  private createRtoFunctionType(astNode: AstFunctionType): RtoFunctionType {
+    return undefined as any // TODO
+  }
+
+  private createRtoImportedRefFromInline(astNode: AstInlineImportType): RtoImportedTypeRef {
+    return createRtoImportedTypeRef(this.importTool.inlineImport(astNode))
+  }
+
+  private createRtoInterface(astNode: AstInterface) {
+    const result: RtoInterface = {
+      whichType: "interface"
+    }
+    // TODO
+    return result
+  }
+
+  private getBaseNamedType(name: string): RtoBaseNamedType {
+    const result = this.namedTypes.get(name)
+    if (!result)
+      throw new Error(`Unknown named type: ${name}`)
+    return result
+  }
+}
+
+function findWhichTypeName(typeName: string): "special" | "primitive" | "standard" | undefined {
+  if (["any", "unknown", "object", "void", "never"].includes(typeName))
+    return "special"
+  if (["string", "number", "bigint", "boolean", "undefined", "null", "symbol"].includes(typeName))
+    return "primitive"
+  if (["String", "Number", "Bigint", "Boolean", "Symbol", "Date"].includes(typeName))
+    return "standard"
+}
+
+function createRtoTypeName(whichName: "special" | "primitive" | "standard" | "unresolved", refName: string): RtoTypeName {
+  return {
+    whichType: "name",
+    whichName,
+    refName
+  }
+}
+
+function createRtoLocalTypeRef(refName: string): RtoLocalTypeRef {
+  return {
+    whichType: "localRef",
+    refName
+  }
+}
+
+function createRtoImportedTypeRef(ref: ImportRef): RtoImportedTypeRef {
+  return {
+    whichType: "importedRef",
+    ...ref
+  }
 }
 
 // export function typeonlyFromAst({ declarations }: TypeOnlyAst): TypeOnlyEmbeddedCode {

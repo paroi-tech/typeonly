@@ -1,4 +1,4 @@
-import { AstArrayType, AstClassicImport, AstCommentable, AstCompositeType, AstFunctionProperty, AstFunctionType, AstGenericInstanceType, AstGenericParameter, AstImportNamedMember, AstIndexSignature, AstInlineImportType, AstInterface, AstKeyofType, AstLiteralType, AstMappedIndexSignature, AstMemberNameLiteral, AstMemberType, AstNamedInterface, AstNamedType, AstNamespacedImport, AstProperty, AstStandaloneComment, AstStandaloneInterfaceComment, AstTupleType, AstType, TypeOnlyAst } from "../ast"
+import { AstArrayType, AstClassicImport, AstCommentable, AstCompositeType, AstFunctionProperty, AstFunctionType, AstGenericInstance, AstGenericParameter, AstImportNamedMember, AstIndexSignature, AstInlineImportType, AstInterface, AstKeyofType, AstLiteralType, AstMappedIndexSignature, AstMemberNameLiteral, AstMemberType, AstNamedInterface, AstNamedType, AstNamespacedImport, AstProperty, AstStandaloneComment, AstStandaloneInterfaceComment, AstTupleType, AstType, TypeOnlyAst } from "../ast"
 import { AntlrRuleContext } from "./antlr4-defs"
 import CommentGrabber, { GrabbedComment, GrabbedCommentsResult } from "./CommentGrabber"
 const { TypeOnlyParserListener } = require("../../antlr-parser/TypeOnlyParserListener")
@@ -326,7 +326,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
         }, ctx.aType()[0])
 
     } else {
-      const genericType: AstGenericInstanceType = {
+      const genericType: AstGenericInstance = {
         whichType: "genericInstance",
         name: ctx.IDENTIFIER().getText(),
         parameterTypes: []

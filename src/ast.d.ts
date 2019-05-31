@@ -98,7 +98,7 @@ export type AstType = string
   | AstCompositeType
   | AstTupleType
   | AstArrayType
-  | AstGenericInstanceType
+  | AstGenericInstance
   | AstFunctionType
   | AstKeyofType
   | AstMemberType
@@ -127,7 +127,7 @@ export interface AstArrayType {
   genericSyntax?: boolean
 }
 
-export interface AstGenericInstanceType {
+export interface AstGenericInstance {
   whichType: "genericInstance"
   name: string
   parameterTypes: AstType[]
