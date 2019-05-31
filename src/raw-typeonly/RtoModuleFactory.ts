@@ -1,5 +1,5 @@
-import { AstArrayType, AstCompositeType, AstDeclaration, AstFunctionParameter, AstFunctionProperty, AstFunctionType, AstGenericInstance, AstImport, AstIndexSignature, AstInlineComment, AstInlineImportType, AstInterface, AstInterfaceEntry, AstKeyofType, AstLiteralType, AstMappedIndexSignature, AstMemberType, AstNamedInterface, AstNamedType, AstProperty, AstTupleType, AstType, TypeOnlyAst } from "../ast"
-import { RtoArrayType, RtoBaseNamedType, RtoCompositeType, RtoFunctionType, RtoGenericInstance, RtoImportedTypeRef, RtoInterface, RtoKeyofType, RtoLiteralType, RtoLocalTypeRef, RtoMemberType, RtoModule, RtoNamedType, RtoTupleType, RtoType, RtoTypeName } from "../rto"
+import { AstArrayType, AstCompositeType, AstDeclaration, AstFunctionParameter, AstFunctionProperty, AstFunctionType, AstGenericInstance, AstGenericParameter, AstImport, AstIndexSignature, AstInlineComment, AstInlineImportType, AstInterface, AstInterfaceEntry, AstKeyofType, AstLiteralType, AstMappedIndexSignature, AstMemberType, AstNamedInterface, AstNamedType, AstProperty, AstTupleType, AstType, TypeOnlyAst } from "../ast"
+import { RtoArrayType, RtoBaseNamedType, RtoCompositeType, RtoFunctionParameter, RtoFunctionType, RtoGenericInstance, RtoGenericParameter, RtoImportedTypeRef, RtoIndexSignature, RtoInterface, RtoKeyofType, RtoLiteralType, RtoLocalTypeRef, RtoMappedIndexSignature, RtoMemberType, RtoModule, RtoNamedType, RtoProperty, RtoTupleType, RtoType, RtoTypeName } from "../rto"
 import ImportTool, { ImportRef } from "./ImportTool"
 import Project from "./Project"
 
@@ -109,42 +109,146 @@ export default class RtoModuleFactory {
   }
 
   private createRtoLiteralType(astNode: AstLiteralType): RtoLiteralType {
-    return undefined as any // TODO
+    return {
+      whichType: "literal",
+      literal: astNode.literal
+    }
   }
 
   private createRtoCompositeType(astNode: AstCompositeType): RtoCompositeType {
-    return undefined as any // TODO
+    return {
+      whichType: "composite",
+      op: astNode.op,
+      types: astNode.types.map(child => this.createRtoType(child))
+    }
   }
 
   private createRtoGenericInstance(astNode: AstGenericInstance): RtoGenericInstance {
-    return undefined as any // TODO
+    return {
+      whichType: "genericInstance",
+      genericName: astNode.name,
+      parameterTypes: astNode.parameterTypes.map(child => this.createRtoType(child))
+    }
   }
 
   private createRtoKeyofType(astNode: AstKeyofType): RtoKeyofType {
-    return undefined as any // TODO
+    return {
+      whichType: "keyof",
+      type: this.createRtoType(astNode.type)
+    }
   }
 
   private createRtoMemberType(astNode: AstMemberType): RtoMemberType {
-    return undefined as any // TODO
+    return {
+      whichType: "member",
+      type: this.createRtoType(astNode.type),
+      memberName: astNode.memberName
+    }
   }
 
   private createRtoTupleType(astNode: AstTupleType): RtoTupleType {
-    return undefined as any // TODO
+    return {
+      whichType: "tuple",
+      itemTypes: astNode.itemTypes ? astNode.itemTypes.map(child => this.createRtoType(child)) : []
+    }
   }
 
   private createRtoFunctionType(astNode: AstFunctionType): RtoFunctionType {
-    return undefined as any // TODO
+    return {
+      whichType: "function",
+      parameters: this.createRtoFunctionParameters(astNode.parameters),
+      returnType: this.createRtoType(astNode.returnType),
+      generic: this.createRtoGenericParameters(astNode.generic)
+    }
+  }
+
+  private createRtoFunctionParameters(astNodes: AstFunctionParameter[] | undefined): RtoFunctionParameter[] {
+    if (!astNodes)
+      return []
+    return astNodes.map(({ name, type }) => {
+      const param: RtoFunctionParameter = { name }
+      if (type)
+        param.type = this.createRtoType(type)
+      return param
+    })
+  }
+
+  private createRtoGenericParameters(astNodes: AstGenericParameter[] | undefined): RtoGenericParameter[] {
+    if (!astNodes)
+      return []
+    return astNodes.map(({ name, extendsType, defaultType }) => {
+      const param: RtoGenericParameter = { name }
+      if (extendsType)
+        param.extendsType = this.createRtoType(extendsType)
+      if (defaultType)
+        param.defaultType = this.createRtoType(defaultType)
+      return param
+    })
   }
 
   private createRtoImportedRefFromInline(astNode: AstInlineImportType): RtoImportedTypeRef {
     return createRtoImportedTypeRef(this.importTool.inlineImport(astNode))
   }
 
-  private createRtoInterface(astNode: AstInterface) {
+  private createRtoInterface(astNode: AstInterface): RtoInterface {
     const result: RtoInterface = {
       whichType: "interface"
     }
-    // TODO
+    if (astNode.entries) {
+      const properties: RtoProperty[] = []
+      for (const entry of astNode.entries) {
+        if (entry.whichEntry === "indexSignature") {
+          const indexSignature: RtoIndexSignature = {
+            keyName: entry.keyName,
+            keyType: entry.keyType,
+            type: this.createRtoType(entry.type)
+          }
+          if (entry.optional)
+            indexSignature.readonly = entry.readonly
+          if (entry.readonly)
+            indexSignature.readonly = entry.readonly
+          result.indexSignature = indexSignature
+
+        } else if (entry.whichEntry === "mappedIndexSignature") {
+          const mappedIndexSignature: RtoMappedIndexSignature = {
+            keyName: entry.keyName,
+            keyInType: this.createRtoType(entry.keyInType),
+            type: this.createRtoType(entry.type)
+          }
+          if (entry.optional)
+            mappedIndexSignature.readonly = entry.readonly
+          if (entry.readonly)
+            mappedIndexSignature.readonly = entry.readonly
+          result.mappedIndexSignature = mappedIndexSignature
+
+        } else if (entry.whichEntry === "property") {
+          const property: RtoProperty = {
+            name: entry.name,
+            type: this.createRtoType(entry.type),
+          }
+          if (entry.optional)
+            property.readonly = entry.readonly
+          if (entry.readonly)
+            property.readonly = entry.readonly
+          properties.push(property)
+
+        } else if (entry.whichEntry === "functionProperty") {
+          const property: RtoProperty = {
+            name: entry.name,
+            type: this.createRtoType(entry.returnType || "any"),
+          }
+          if (entry.optional)
+            property.readonly = entry.readonly
+          if (entry.readonly)
+            property.readonly = entry.readonly
+          properties.push(property)
+        }
+
+      }
+
+      if (properties.length > 0)
+        result.properties = properties
+    }
     return result
   }
 
@@ -186,6 +290,8 @@ function createRtoImportedTypeRef(ref: ImportRef): RtoImportedTypeRef {
     ...ref
   }
 }
+
+
 
 // export function typeonlyFromAst({ declarations }: TypeOnlyAst): TypeOnlyEmbeddedCode {
 //   const namedTypes = {}

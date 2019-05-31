@@ -1,4 +1,4 @@
-import { AstArrayType, AstFunctionProperty, AstInterface, AstLiteralType, AstNamedType, AstProperty, AstTupleType, AstType, TypeOnlyAst } from "../ast"
+import { AstArrayType, AstCompositeType, AstFunctionProperty, AstInterface, AstLiteralType, AstNamedType, AstProperty, AstTupleType, AstType, TypeOnlyAst } from "../ast"
 
 export interface CheckResult {
   valid: boolean
@@ -18,8 +18,10 @@ export default class Checker {
       const valid = this.checkType(namedType.type, val)
 
       if (valid) {
-        if (this.lastError)
+        if (this.lastError) {
+          console.log("df1")
           throw new Error(`Check is valid but with an error message: ${this.lastError}`)
+        }
         return { valid: true }
       }
       if (!this.lastError)
@@ -59,29 +61,16 @@ export default class Checker {
       return this.checkArrayType(type, val)
     else if (type.whichType === "tuple")
       return this.checkTupleType(type, val)
-    else
+    else if (type.whichType === "composite") {
+      return this.checkCompositeType(type, val)
+    } else
       throw new Error(`Unexpected whichType: ${type.whichType}`)
   }
-  // if (!namedType)
-  //       throw new Error(`Unknown type: ${typeName}`)
-  //     const valid = this.checkType(namedType.type, val)
-
-  // if (valid) {
-  //   if (this.lastError)
-  //     throw new Error(`bug`)
-  //   return { valid: true }
-  // }
-  // return {
-  //   valid: false,
-  //   error: this.lastError || "(no error message)"
-  // }
 
   private findNamedType(typeName: string): AstNamedType | undefined {
     const namedType = this.ast.declarations!.find(
       decl => decl.whichDeclaration === "type" && decl.name === typeName
     )
-    // if (!namedType)
-    //   throw new Error(`Unknown type: ${typeName}`)
     return namedType as AstNamedType
   }
 
@@ -161,6 +150,30 @@ export default class Checker {
         return false
     }
     return true
+  }
+
+  private checkCompositeType(type: AstCompositeType, val: unknown): boolean {
+    // console.log(val)
+    // console.log(type)
+
+    if (type.op === "union") {
+      for (const itemType of type.types) {
+        if (this.checkType(itemType, val)) {
+          this.lastError = undefined
+          return true
+        }
+      }
+      this.lastError = `Expected types '${Array.from(type.types.values()).join(" or ")}', received: '${typeof val}'.`
+      return false
+
+    } else {
+
+      this.lastError = `Expected types '${type.types}', received: '${typeof val}'.`
+      return false
+    }
+
+
+
   }
 
 }

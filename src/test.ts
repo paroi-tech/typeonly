@@ -1,1 +1,0 @@
-type Color = "12"

@@ -132,7 +132,7 @@ export interface RtoFunctionParameter {
 
 export interface RtoKeyofType {
   whichType: "keyof"
-  genericParameterName: string
+  type: RtoType
 }
 
 export interface RtoMemberType {
