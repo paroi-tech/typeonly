@@ -40,7 +40,7 @@ namespacedImport:
  * NamedInterface
  */
 namedInterface:
-  (EXPORT NL*)? INTERFACE IDENTIFIER (NL* genericDecl)? (
+  (EXPORT NL*)? INTERFACE IDENTIFIER (NL* genericParameters)? (
     NL* interfaceExtends
   )? NL* anonymousInterface;
 
@@ -64,7 +64,7 @@ property:
 
 functionProperty:
   (READONLY NL*)? propertyName (NL* QUESTION_MARK)? NL* (
-    NL* genericDecl
+    NL* genericParameters
   )? OPEN_PARENTHESE (
     NL* functionParameter (NL* COMMA NL* functionParameter)*
   )? NL* CLOSE_PARENTHESE (NL* COLON NL* aType)?;
@@ -99,19 +99,21 @@ typeOnlyKeywords:
   | FROM
   | IMPORT;
 
-typeName: IDENTIFIER;
+typeName: IDENTIFIER | IDENTIFIER DOT IDENTIFIER;
 
 /*
  * NamedType
  */
-namedType: (EXPORT NL*)? TYPE IDENTIFIER NL* (NL* genericDecl)? ASSIGN NL* aType;
+namedType: (EXPORT NL*)? TYPE IDENTIFIER NL* (
+    NL* genericParameters
+  )? ASSIGN NL* aType;
 
 /*
  * Common rules for NamedInterface and NamedType
  */
 aType:
   inlineImportType
-  | IDENTIFIER
+  | typeName
   | signatureType
   | literal
   | tupleType
@@ -122,20 +124,20 @@ aType:
   | typeWithParenthesis
   | aType NL* INTERSECTION NL* aType
   | aType NL* UNION NL* aType
-  | genericType
-  | (NL* genericDecl)? OPEN_PARENTHESE (
+  | genericInstance
+  | (NL* genericParameters)? OPEN_PARENTHESE (
     NL* functionParameter (NL* COMMA NL* functionParameter)*
   )? NL* CLOSE_PARENTHESE NL* ARROW NL* aType;
 
 memberName: STRING_LITERAL | INTEGER_LITERAL | IDENTIFIER;
 
-genericDecl: LESS_THAN genericParameter+ MORE_THAN;
+genericParameters: LESS_THAN genericParameter+ MORE_THAN;
 genericParameter:
   IDENTIFIER (EXTENDS extendsType = aType)? (
     ASSIGN defaultType = aType
   )?;
-genericType:
-  IDENTIFIER NL* LESS_THAN NL* aType (NL* COMMA NL* aType)* NL* MORE_THAN;
+genericInstance:
+  typeName NL* LESS_THAN NL* aType (NL* COMMA NL* aType)* NL* MORE_THAN;
 inlineImportType:
   IMPORT OPEN_PARENTHESE stringLiteral CLOSE_PARENTHESE DOT IDENTIFIER;
 

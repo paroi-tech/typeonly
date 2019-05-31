@@ -1,5 +1,5 @@
-import { AstLiteralType, AstNamedType } from "../src/ast"
-import { parseTypeOnlyToAst } from "../src/parser/parse-typeonly"
+import { AstLiteralType, AstNamedType } from "../../src/ast"
+import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
 
 describe("AST Specification for Literal Types", () => {
 

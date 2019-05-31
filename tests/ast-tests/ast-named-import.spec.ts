@@ -1,5 +1,5 @@
-import { AstClassicImport, AstNamespacedImport } from "../src/ast"
-import { parseTypeOnlyToAst } from "../src/parser/parse-typeonly"
+import { AstClassicImport, AstNamespacedImport } from "../../src/ast"
+import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
 
 describe("AST Specification for Named Import", () => {
 

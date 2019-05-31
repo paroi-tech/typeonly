@@ -1,5 +1,5 @@
-import { AstFunctionType, AstNamedType } from "../src/ast"
-import { parseTypeOnlyToAst } from "../src/parser/parse-typeonly"
+import { AstFunctionType, AstNamedType } from "../../src/ast"
+import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
 
 describe("AST Specification for Function Types", () => {
   test(`empty function`, () => {

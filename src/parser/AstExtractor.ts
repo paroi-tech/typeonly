@@ -312,8 +312,8 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     // console.log("enter Tuple type", ctx.getText())
   }
 
-  enterGenericType(ctx: AntlrRuleContext) {
-    if (ctx.IDENTIFIER().getText() === "Array" && ctx.aType().length === 1) {
+  enterGenericInstance(ctx: AntlrRuleContext) {
+    if (ctx.typeName().getText() === "Array" && ctx.aType().length === 1) {
       const arrayType: Partial<AstArrayType> = {
         whichType: "array",
         genericSyntax: true
@@ -326,19 +326,19 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
         }, ctx.aType()[0])
 
     } else {
-      const genericType: AstGenericInstance = {
+      const genericInstance: AstGenericInstance = {
         whichType: "genericInstance",
-        name: ctx.IDENTIFIER().getText(),
+        name: ctx.typeName().getText(),
         parameterTypes: []
       }
-      this.registerAstChild(genericType, ctx.parentCtx)
+      this.registerAstChild(genericInstance, ctx.parentCtx)
 
       const parameters = ctx.aType()
       if (parameters !== null) {
         parameters.forEach((param, index) => {
           this.setAstChildRegistration(
             astType => {
-              genericType.parameterTypes[index] = astType
+              genericInstance.parameterTypes[index] = astType
             },
             param
           )
@@ -570,9 +570,9 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
   }
 
   proccessGenericParameter(ctx: AntlrRuleContext, astNode: { generic?: AstGenericParameter[] }) {
-    if (ctx.genericDecl()) {
+    if (ctx.genericParameters()) {
       const generic: AstGenericParameter[] = []
-      const genericParameters = ctx.genericDecl().genericParameter()
+      const genericParameters = ctx.genericParameters().genericParameter()
       genericParameters.forEach((param, index) => {
         generic[index] = {
           name: param.IDENTIFIER().getText()
@@ -606,7 +606,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
       throw new Error(`Child type already defined for: ${aType.getText()}`)
     this.childTypes.set(aType, cb)
     // console.log("checkMap", this.childTypes.get(aType))
-    if (aType.IDENTIFIER() || aType.signatureType())
+    if (aType.typeName() || aType.signatureType())
       this.registerAstChild(aType.getText(), aType)
   }
 

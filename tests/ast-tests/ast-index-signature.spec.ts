@@ -1,5 +1,5 @@
-import { AstIndexSignature, AstMappedIndexSignature, AstNamedInterface } from "../src/ast"
-import { parseTypeOnlyToAst } from "../src/parser/parse-typeonly"
+import { AstIndexSignature, AstMappedIndexSignature, AstNamedInterface } from "../../src/ast"
+import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
 
 describe("AST Specification for Index Signature", () => {
 

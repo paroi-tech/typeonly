@@ -1,4 +1,4 @@
-import { AstNamedType, AstType, AstInterface, AstArrayType, AstTupleType, AstLiteralType, AstProperty, AstFunctionProperty, TypeOnlyAst } from "../ast"
+import { AstArrayType, AstFunctionProperty, AstInterface, AstLiteralType, AstNamedType, AstProperty, AstTupleType, AstType, TypeOnlyAst } from "../ast"
 
 export interface CheckResult {
   valid: boolean
@@ -6,15 +6,28 @@ export interface CheckResult {
 }
 
 export default class Checker {
+  private lastError?: string
   constructor(private ast: TypeOnlyAst) {
   }
 
   check(typeName: string, val: unknown): CheckResult {
     try {
-      const namedType = this.getNamedType(typeName)
-      this.checkType(namedType.type, val)
+      const namedType = this.findNamedType(typeName)
+      if (!namedType)
+        throw new Error(`Unknown type: ${typeName}`)
+      const valid = this.checkType(namedType.type, val)
 
-      return { valid: true }
+      if (valid) {
+        if (this.lastError)
+          throw new Error(`Check is valid but with an error message: ${this.lastError}`)
+        return { valid: true }
+      }
+      if (!this.lastError)
+        throw new Error(`Missing error message`)
+      return {
+        valid: false,
+        error: this.lastError
+      }
     } catch (error) {
       return {
         valid: false,
@@ -23,39 +36,61 @@ export default class Checker {
     }
   }
 
-  private checkType(type: AstType, val: unknown): void {
+  private checkType(type: AstType, val: unknown): boolean {
     if (typeof type === "string") {
       if (isPrimitive(type)) {
-        if (typeof val !== type)
-          throw new Error(`Expected type ${type}, received: '${typeof val}'.`)
-      } else
-        this.checkType(this.getNamedType(type).type, val)
-    } else {
-      if (type.whichType === "interface")
-        this.checkInterface(type, val)
-      else if (type.whichType === "literal")
-        this.checkLiteralType(type, val)
-      else if (type.whichType === "array")
-        this.checkArrayType(type, val)
-      else if (type.whichType === "tuple")
-        this.checkTupleType(type, val)
-      else
-        throw new Error(`Unexpected whichType: ${type.whichType}`)
+        if (typeof val !== type) {
+          this.lastError = `Expected type ${type}, received: '${typeof val}'.`
+          return false
+        }
+        return true
+      } else {
+        const namedType = this.findNamedType(type)
+        if (!namedType)
+          throw new Error(`Unknown type: ${type}`)
+        return this.checkType(namedType.type, val)
+      }
     }
+    if (type.whichType === "interface")
+      return this.checkInterface(type, val)
+    else if (type.whichType === "literal")
+      return this.checkLiteralType(type, val)
+    else if (type.whichType === "array")
+      return this.checkArrayType(type, val)
+    else if (type.whichType === "tuple")
+      return this.checkTupleType(type, val)
+    else
+      throw new Error(`Unexpected whichType: ${type.whichType}`)
   }
+  // if (!namedType)
+  //       throw new Error(`Unknown type: ${typeName}`)
+  //     const valid = this.checkType(namedType.type, val)
 
-  private getNamedType(typeName: string): AstNamedType {
+  // if (valid) {
+  //   if (this.lastError)
+  //     throw new Error(`bug`)
+  //   return { valid: true }
+  // }
+  // return {
+  //   valid: false,
+  //   error: this.lastError || "(no error message)"
+  // }
+
+  private findNamedType(typeName: string): AstNamedType | undefined {
     const namedType = this.ast.declarations!.find(
       decl => decl.whichDeclaration === "type" && decl.name === typeName
     )
-    if (!namedType)
-      throw new Error(`Unknown type: ${typeName}`)
+    // if (!namedType)
+    //   throw new Error(`Unknown type: ${typeName}`)
     return namedType as AstNamedType
   }
 
-  private checkInterface(type: AstInterface, val: unknown) {
-    if (!val || typeof val !== "object")
-      throw new Error(`Expected type object, received: '${typeof val}'.`)
+  private checkInterface(type: AstInterface, val: unknown): boolean {
+    if (!val || typeof val !== "object") {
+      this.lastError = `Expected type object, received: '${typeof val}'.`
+      return false
+    }
+
     const obj = val as object
     const entries = type.entries || []
     const remaining = new Set(Object.keys(obj))
@@ -66,8 +101,10 @@ export default class Checker {
         remaining.delete(entry.name)
         const prop = obj[entry.name]
         if (prop === undefined) {
-          if (!entry.optional)
-            throw new Error(`Required property '${entry.name}'`)
+          if (!entry.optional) {
+            this.lastError = `Required property '${entry.name}'`
+            return false
+          }
         } else if (entry.whichEntry === "property")
           this.checkType(entry.type, prop)
         else
@@ -76,43 +113,54 @@ export default class Checker {
         throw new Error(`Unexpected whichEntry: ${entry.whichEntry}`)
     }
 
-    if (remaining.size > 0)
-      throw new Error(`Unexpected properties: ${Array.from(remaining.values()).join(", ")}`)
+    if (remaining.size > 0) {
+      this.lastError = `Unexpected properties: ${Array.from(remaining.values()).join(", ")}`
+      return false
+    }
+
+    return true
   }
 
-  private checkLiteralType(type: AstLiteralType, val: unknown) {
-    if (type.literal !== val)
-      throw new Error(`Expected type '${type.literal}', received: '${val}'.`)
+  private checkLiteralType(type: AstLiteralType, val: unknown): boolean {
+    if (type.literal !== val) {
+      this.lastError = `Expected type '${type.literal}', received: '${val}'.`
+      return false
+    }
+    return true
   }
 
-  private checkArrayType(type: AstArrayType, val: unknown) {
-    if (Array.isArray(val)) {
-      const items = val
-      for (const item of items) {
-        this.checkType(type.itemType, item)
-      }
-
-    } else
-      throw new Error(`Expected type 'Array', received: '${typeof val}'.`)
+  private checkArrayType(type: AstArrayType, val: unknown): boolean {
+    if (!Array.isArray(val)) {
+      this.lastError = `Expected type 'Array', received: '${typeof val}'.`
+      return false
+    }
+    const items = val
+    for (const item of items) {
+      if (!this.checkType(type.itemType, item))
+        return false
+    }
+    return true
   }
 
-  private checkTupleType(type: AstTupleType, val: unknown) {
+  private checkTupleType(type: AstTupleType, val: unknown): boolean {
     // console.log(val)
     // console.log(type)
+    if (!Array.isArray(val)) {
+      this.lastError = `Expected type 'Array', received: '${typeof val}'.`
+      return false
+    }
+    const items = type.itemTypes || []
+    if (val.length !== items.length) {
+      this.lastError = `Invalid tuple size: expected ${items.length}, received: '${val.length}'.`
+      return false
+    }
 
-    if (Array.isArray(val)) {
-      const items = type.itemTypes || []
-      const remaining = new Set(val)
-
-      items.forEach((item, index) => {
-        remaining.delete(val[index])
-        const prop = val[index]
-        this.checkType(item, prop)
-      })
-      if (remaining.size > 0)
-        throw new Error(`Unexpected items: ${Array.from(remaining.values()).join(", ")}`)
-    } else
-      throw new Error(`Expected type 'Array', received: '${typeof val}'.`)
+    for (const [index, item] of items.entries()) {
+      const prop = val[index]
+      if (!this.checkType(item, prop))
+        return false
+    }
+    return true
   }
 
 }

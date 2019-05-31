@@ -1,5 +1,5 @@
-import { AstArrayType, AstFunctionType, AstInterface, AstNamedType, AstProperty } from "../src/ast"
-import { parseTypeOnlyToAst } from "../src/parser/parse-typeonly"
+import { AstArrayType, AstFunctionType, AstInterface, AstNamedType, AstProperty } from "../../src/ast"
+import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
 
 describe("AST Specification for Array", () => {
 

@@ -1,5 +1,5 @@
-import { AstFunctionProperty, AstFunctionType, AstNamedInterface, AstProperty } from "../src/ast"
-import { parseTypeOnlyToAst } from "../src/parser/parse-typeonly"
+import { AstFunctionProperty, AstFunctionType, AstNamedInterface, AstProperty } from "../../src/ast"
+import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
 
 describe("AST Specification for Interfaces (part 2)", () => {
   const testFunctionAsProperty = (input: string, parameters: any[], returnType: string) => {

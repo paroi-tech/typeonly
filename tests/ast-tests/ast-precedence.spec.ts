@@ -1,5 +1,5 @@
-import { AstArrayType, AstCompositeType, AstFunctionType, AstInterface, AstNamedType, AstProperty } from "../src/ast"
-import { parseTypeOnlyToAst } from "../src/parser/parse-typeonly"
+import { AstArrayType, AstCompositeType, AstFunctionType, AstInterface, AstNamedType, AstProperty } from "../../src/ast"
+import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
 
 describe("AST Specification for Precedence", () => {
 
