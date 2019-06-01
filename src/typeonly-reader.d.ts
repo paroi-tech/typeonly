@@ -1,3 +1,7 @@
+export interface Modules {
+  [path: string]: Module
+}
+
 /**
  * TypeOnly Module
  */

@@ -29,7 +29,7 @@ export default class ModuleFactory {
   private importedNamespaces = new Map<string, ModuleFactory>()
   private gmf?: GetModuleFactory
 
-  constructor(private rtoModule: RtoModule) {
+  constructor(readonly rtoModule: RtoModule) {
     if (rtoModule.path)
       this.module.path = rtoModule.path
     if (rtoModule.namedTypes) {
@@ -234,33 +234,19 @@ export default class ModuleFactory {
 
   private createInterface(rtoNode: RtoInterface): Interface {
     const result: Interface = {
-      kind: "interface"
-    } as any // TODO
-    // if (rtoNode.entries) {
-    //   for (const entry of rtoNode.entries) {
-    //     if (entry.whichEntry === "indexSignature") {
-    //       // if (result.indexSignature || result.mappedIndexSignature)
-    //       //   throw new Error(`An interface cannot have several index signatures`)
-    //       result.indexSignature = this.createIndexSignature(entry)
-    //     } else if (entry.whichEntry === "mappedIndexSignature") {
-    //       // if (result.indexSignature || result.mappedIndexSignature || result.properties)
-    //       //   throw new Error(`An interface cannot have other entries with a mapped index signature`)
-    //       result.mappedIndexSignature = this.createMappedIndexSignature(entry)
-    //     } else if (entry.whichEntry === "property") {
-    //       // if (result.mappedIndexSignature)
-    //       //   throw new Error(`An interface cannot have other entries with a mapped index signature`)
-    //       if (!result.properties)
-    //         result.properties = []
-    //       result.properties.push(this.createProperty(entry))
-    //     } else if (entry.whichEntry === "functionProperty") {
-    //       // if (result.mappedIndexSignature)
-    //       //   throw new Error(`An interface cannot have other entries with a mapped index signature`)
-    //       if (!result.properties)
-    //         result.properties = []
-    //       result.properties.push(this.createPropertyFromFunctionProperty(entry))
-    //     }
-    //   }
-    // }
+      kind: "interface",
+      properties: {}
+    }
+    if (rtoNode.properties) {
+      rtoNode.properties.forEach(entry => {
+        const property = this.createProperty(entry)
+        result.properties[property.name] = property
+      })
+    }
+    if (rtoNode.indexSignature)
+      result.indexSignature = this.createIndexSignature(rtoNode.indexSignature)
+    if (rtoNode.mappedIndexSignature)
+      result.mappedIndexSignature = this.createMappedIndexSignature(rtoNode.mappedIndexSignature)
     return result
   }
 
