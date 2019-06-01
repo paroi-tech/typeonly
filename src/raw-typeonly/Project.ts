@@ -1,5 +1,5 @@
 import * as fs from "fs"
-import { join } from "path"
+import { dirname, join } from "path"
 import { promisify } from "util"
 import { parseTypeOnlyToAst } from "../parser/parse-typeonly"
 import RtoModuleFactory from "./RtoModuleFactory"
@@ -11,7 +11,7 @@ export type ModuleLoader = (modulePath: ModulePath) => Promise<RtoModuleFactory>
 
 export interface ModulePath {
   from: string
-  relativeTo?: string
+  relativeToModule?: string
 }
 
 export interface ProjectOptions {
@@ -55,7 +55,7 @@ export default class Project {
     return factory
   }
 
-  private pathInProject({ from, relativeTo }: ModulePath): string {
+  private pathInProject({ from, relativeToModule }: ModulePath): string {
     if (from.endsWith(".ts")) {
       const extLength = from.endsWith(".d.ts") ? 5 : 3
       from = from.slice(0, from.length - extLength)
@@ -68,7 +68,7 @@ export default class Project {
       return from.slice(inputDir.length)
     }
     if (firstChar === ".")
-      return relativeTo ? join(relativeTo, from) : from
+      return relativeToModule ? join(dirname(relativeToModule), from) : from
     throw new Error(`Module path must start with '.' or '/'`)
   }
 }

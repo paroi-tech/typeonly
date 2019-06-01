@@ -41,7 +41,7 @@ export default class ImportTool {
 
   async load() {
     for (const [from, ifm] of this.fromModules.entries()) {
-      const factory = await this.moduleLoader({ from, relativeTo: this.path })
+      const factory = await this.moduleLoader({ from, relativeToModule: this.path })
       this.checkExportedNames(ifm, factory)
     }
   }
@@ -60,9 +60,9 @@ export default class ImportTool {
       namespaces.forEach(asNamespace => namespacedImports.push({ from, asNamespace }))
     }
     const result: { imports?: RtoImport[], namespacedImports?: RtoNamespacedImport[] } = {}
-    if (imports)
+    if (imports.length > 0)
       result.imports = imports
-    if (namespacedImports)
+    if (namespacedImports.length > 0)
       result.namespacedImports = namespacedImports
     return result
   }
@@ -113,11 +113,11 @@ export default class ImportTool {
 
   private checkExportedNames(ifm: ImportedFromModule, factory: RtoModuleFactory) {
     for (const { name } of ifm.namedMembers) {
-      if (!factory.hasNamedType(name))
+      if (!factory.hasExportedNamedType(name))
         throw new Error(`Module '${factory.getModulePath()}' has no exported member '${name}'.`)
     }
     for (const name of ifm.inlineMembers) {
-      if (!factory.hasNamedType(name))
+      if (!factory.hasExportedNamedType(name))
         throw new Error(`Module '${factory.getModulePath()}' has no exported member '${name}'.`)
     }
   }

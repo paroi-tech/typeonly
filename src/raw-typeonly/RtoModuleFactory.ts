@@ -29,8 +29,9 @@ export default class RtoModuleFactory {
       this.ast.declarations.forEach(astDecl => this.registerAstDeclaration(astDecl))
   }
 
-  hasNamedType(name: string): boolean {
-    return this.namedTypes.has(name)
+  hasExportedNamedType(name: string): boolean {
+    const namedType = this.namedTypes.get(name)
+    return !!(namedType && namedType.exported)
   }
 
   getModulePath(): string {
@@ -72,13 +73,13 @@ export default class RtoModuleFactory {
           throw new Error(`Imports are not loaded`)
       })
     }
-    const module: RtoModule = {
-      namedTypes: this.namedTypeList as RtoNamedType[]
-    }
+    const module: RtoModule = {}
     if (this.importTool) {
       module.path = this.importTool.path
       Object.assign(module, this.importTool.createRtoImports())
     }
+    if (this.namedTypeList.length > 0)
+      module.namedTypes = this.namedTypeList as RtoNamedType[]
     return module
   }
 
