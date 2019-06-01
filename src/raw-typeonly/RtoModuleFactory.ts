@@ -1,20 +1,13 @@
-import { AstArrayType, AstCompositeType, AstDeclaration, AstFunctionParameter, AstFunctionProperty, AstFunctionType, AstGenericInstance, AstGenericParameter, AstImport, AstIndexSignature, AstInlineComment, AstInlineImportType, AstInterface, AstInterfaceEntry, AstKeyofType, AstLiteralType, AstMappedIndexSignature, AstMemberType, AstNamedInterface, AstNamedType, AstProperty, AstTupleType, AstType, TypeOnlyAst } from "../ast"
+import { AstArrayType, AstCompositeType, AstDeclaration, AstFunctionParameter, AstFunctionProperty, AstFunctionType, AstGenericInstance, AstGenericParameter, AstIndexSignature, AstInlineImportType, AstInterface, AstKeyofType, AstLiteralType, AstMappedIndexSignature, AstMemberType, AstNamedInterface, AstNamedType, AstProperty, AstTupleType, AstType, TypeOnlyAst } from "../ast"
 import { RtoArrayType, RtoBaseNamedType, RtoCompositeType, RtoFunctionParameter, RtoFunctionType, RtoGenericInstance, RtoGenericParameter, RtoImportedTypeRef, RtoIndexSignature, RtoInterface, RtoKeyofType, RtoLiteralType, RtoLocalTypeRef, RtoMappedIndexSignature, RtoMemberType, RtoModule, RtoNamedType, RtoProperty, RtoTupleType, RtoType, RtoTypeName } from "../rto"
 import ImportTool, { ImportRef } from "./ImportTool"
-import Project from "./Project"
+import InlineImportScanner from "./InlineImportScanner"
+import { ModuleLoader } from "./Project"
 
 export default class RtoModuleFactory {
-  private namedTypeList: RtoBaseNamedType[] = []
-  private namedTypes = new Map<string, RtoBaseNamedType>()
-  private importTool: ImportTool
-  private module?: RtoModule
   private rtoTypeCreators: {
     [K in Exclude<AstType, string>["whichType"]]: (astNode: any) => RtoType
-  }
-
-  constructor(project: Project, ast: TypeOnlyAst, private path?: string) {
-    this.importTool = new ImportTool(project, path)
-    this.rtoTypeCreators = {
+  } = {
       array: astNode => this.createRtoArrayType(astNode),
       literal: astNode => this.createRtoLiteralType(astNode),
       composite: astNode => this.createRtoCompositeType(astNode),
@@ -26,36 +19,78 @@ export default class RtoModuleFactory {
       inlineImport: astNode => this.createRtoImportedRefFromInline(astNode),
       interface: astNode => this.createRtoInterface(astNode),
     }
-    if (ast.declarations) {
-      ast.declarations.forEach(astDecl => this.registerAstDeclaration(astDecl))
-      ast.declarations.forEach(astDecl => {
-        if (astDecl.whichDeclaration === "interface" || astDecl.whichDeclaration === "type")
-          this.fillAstNamed(astDecl)
-      })
+  private namedTypeList: RtoBaseNamedType[] = []
+  private namedTypes = new Map<string, RtoBaseNamedType>()
+  private importTool?: ImportTool
+  private module?: RtoModule
+
+  constructor(private ast: TypeOnlyAst, private pathInProject?: string) {
+    if (this.ast.declarations)
+      this.ast.declarations.forEach(astDecl => this.registerAstDeclaration(astDecl))
+  }
+
+  hasNamedType(name: string): boolean {
+    return this.namedTypes.has(name)
+  }
+
+  getModulePath(): string {
+    if (!this.pathInProject)
+      throw new Error(`Missing module path`)
+    return this.pathInProject
+  }
+
+  async loadImports(moduleLoader: ModuleLoader) {
+    this.importTool = new ImportTool(this.getModulePath(), moduleLoader)
+    if (this.ast.declarations) {
+      const inlineScanner = new InlineImportScanner(this.importTool)
+      for (const astDecl of this.ast.declarations) {
+        if (astDecl.whichDeclaration === "import")
+          this.importTool.addImport(astDecl)
+        else if (astDecl.whichDeclaration === "interface")
+          inlineScanner.scan(astDecl)
+        else if (astDecl.whichDeclaration === "type")
+          inlineScanner.scan(astDecl.type)
+        else if (astDecl.whichDeclaration !== "comment")
+          throw new Error(`Invalid whichDeclaration: ${astDecl!.whichDeclaration}`)
+      }
     }
+    await this.importTool.load()
   }
 
   getRtoModule(): RtoModule {
-    if (!this.module) {
-      this.module = {
-        path: this.path,
-        namedTypes: this.namedTypeList as RtoNamedType[]
-      }
-    }
+    if (!this.module)
+      this.module = this.createRtoModule()
     return this.module
+  }
+
+  private createRtoModule(): RtoModule {
+    if (this.ast.declarations) {
+      this.ast.declarations.forEach(astDecl => {
+        if (astDecl.whichDeclaration === "interface" || astDecl.whichDeclaration === "type")
+          this.fillAstNamed(astDecl)
+        else if (astDecl.whichDeclaration === "import" && !this.importTool)
+          throw new Error(`Imports are not loaded`)
+      })
+    }
+    const module: RtoModule = {
+      namedTypes: this.namedTypeList as RtoNamedType[]
+    }
+    if (this.importTool) {
+      module.path = this.importTool.path
+      Object.assign(module, this.importTool.createRtoImports())
+    }
+    return module
   }
 
   private registerAstDeclaration(astNode: AstDeclaration) {
     switch (astNode.whichDeclaration) {
-      case "import":
-        this.importTool.addImport(astNode)
-        break
       case "interface":
       case "type":
         const namedType = this.createRtoBaseNamedType(astNode)
         this.namedTypes.set(namedType.name, namedType)
         this.namedTypeList.push(namedType)
         break
+      case "import":
       case "comment":
         break
       default:
@@ -69,6 +104,8 @@ export default class RtoModuleFactory {
     }
     if (astNode.exported)
       result.exported = astNode.exported
+    if (astNode.generic)
+      result.generic = this.createRtoGenericParameters(astNode.generic)
     if (astNode.docComment)
       result.docComment = astNode.docComment
     return result
@@ -89,9 +126,11 @@ export default class RtoModuleFactory {
         return createRtoTypeName(whichName, astNode)
       if (this.namedTypes.get(astNode))
         return createRtoLocalTypeRef(astNode)
-      const importRef = this.importTool.findImport(astNode)
-      if (importRef)
-        return createRtoImportedTypeRef(importRef)
+      if (this.importTool) {
+        const importRef = this.importTool.findImportedMember(astNode)
+        if (importRef)
+          return createRtoImportedTypeRef(importRef)
+      }
       throw new Error(`Unexpected type: ${astNode}`)
     } else {
       const creator = this.rtoTypeCreators[astNode.whichType]
@@ -147,24 +186,27 @@ export default class RtoModuleFactory {
   }
 
   private createRtoTupleType(astNode: AstTupleType): RtoTupleType {
-    return {
+    const type: RtoTupleType = {
       whichType: "tuple",
-      itemTypes: astNode.itemTypes ? astNode.itemTypes.map(child => this.createRtoType(child)) : []
     }
+    if (astNode.itemTypes)
+      type.itemTypes = astNode.itemTypes.map(child => this.createRtoType(child))
+    return type
   }
 
   private createRtoFunctionType(astNode: AstFunctionType): RtoFunctionType {
-    return {
+    const type: RtoFunctionType = {
       whichType: "function",
-      parameters: this.createRtoFunctionParameters(astNode.parameters),
       returnType: this.createRtoType(astNode.returnType),
-      generic: this.createRtoGenericParameters(astNode.generic)
     }
+    if (astNode.parameters)
+      type.parameters = this.createRtoFunctionParameters(astNode.parameters)
+    if (astNode.generic)
+      type.generic = this.createRtoGenericParameters(astNode.generic)
+    return type
   }
 
-  private createRtoFunctionParameters(astNodes: AstFunctionParameter[] | undefined): RtoFunctionParameter[] {
-    if (!astNodes)
-      return []
+  private createRtoFunctionParameters(astNodes: AstFunctionParameter[]): RtoFunctionParameter[] {
     return astNodes.map(({ name, type }) => {
       const param: RtoFunctionParameter = { name }
       if (type)
@@ -173,9 +215,7 @@ export default class RtoModuleFactory {
     })
   }
 
-  private createRtoGenericParameters(astNodes: AstGenericParameter[] | undefined): RtoGenericParameter[] {
-    if (!astNodes)
-      return []
+  private createRtoGenericParameters(astNodes: AstGenericParameter[]): RtoGenericParameter[] {
     return astNodes.map(({ name, extendsType, defaultType }) => {
       const param: RtoGenericParameter = { name }
       if (extendsType)
@@ -187,6 +227,8 @@ export default class RtoModuleFactory {
   }
 
   private createRtoImportedRefFromInline(astNode: AstInlineImportType): RtoImportedTypeRef {
+    if (!this.importTool)
+      throw new Error(`Imports are not loaded`)
     return createRtoImportedTypeRef(this.importTool.inlineImport(astNode))
   }
 
@@ -195,61 +237,97 @@ export default class RtoModuleFactory {
       whichType: "interface"
     }
     if (astNode.entries) {
-      const properties: RtoProperty[] = []
       for (const entry of astNode.entries) {
         if (entry.whichEntry === "indexSignature") {
-          const indexSignature: RtoIndexSignature = {
-            keyName: entry.keyName,
-            keyType: entry.keyType,
-            type: this.createRtoType(entry.type)
-          }
-          if (entry.optional)
-            indexSignature.readonly = entry.readonly
-          if (entry.readonly)
-            indexSignature.readonly = entry.readonly
-          result.indexSignature = indexSignature
-
+          // if (result.indexSignature || result.mappedIndexSignature)
+          //   throw new Error(`An interface cannot have several index signatures`)
+          result.indexSignature = this.createRtoIndexSignature(entry)
         } else if (entry.whichEntry === "mappedIndexSignature") {
-          const mappedIndexSignature: RtoMappedIndexSignature = {
-            keyName: entry.keyName,
-            keyInType: this.createRtoType(entry.keyInType),
-            type: this.createRtoType(entry.type)
-          }
-          if (entry.optional)
-            mappedIndexSignature.readonly = entry.readonly
-          if (entry.readonly)
-            mappedIndexSignature.readonly = entry.readonly
-          result.mappedIndexSignature = mappedIndexSignature
-
+          // if (result.indexSignature || result.mappedIndexSignature || result.properties)
+          //   throw new Error(`An interface cannot have other entries with a mapped index signature`)
+          result.mappedIndexSignature = this.createRtoMappedIndexSignature(entry)
         } else if (entry.whichEntry === "property") {
-          const property: RtoProperty = {
-            name: entry.name,
-            type: this.createRtoType(entry.type),
-          }
-          if (entry.optional)
-            property.readonly = entry.readonly
-          if (entry.readonly)
-            property.readonly = entry.readonly
-          properties.push(property)
-
+          // if (result.mappedIndexSignature)
+          //   throw new Error(`An interface cannot have other entries with a mapped index signature`)
+          if (!result.properties)
+            result.properties = []
+          result.properties.push(this.createRtoProperty(entry))
         } else if (entry.whichEntry === "functionProperty") {
-          const property: RtoProperty = {
-            name: entry.name,
-            type: this.createRtoType(entry.returnType || "any"),
-          }
-          if (entry.optional)
-            property.readonly = entry.readonly
-          if (entry.readonly)
-            property.readonly = entry.readonly
-          properties.push(property)
+          // if (result.mappedIndexSignature)
+          //   throw new Error(`An interface cannot have other entries with a mapped index signature`)
+          if (!result.properties)
+            result.properties = []
+          result.properties.push(this.createRtoPropertyFromFunctionProperty(entry))
         }
-
       }
-
-      if (properties.length > 0)
-        result.properties = properties
     }
     return result
+  }
+
+  private createRtoProperty(entry: AstProperty): RtoProperty {
+    const property: RtoProperty = {
+      name: entry.name,
+      type: this.createRtoType(entry.type),
+    }
+    if (entry.optional)
+      property.optional = entry.optional
+    if (entry.readonly)
+      property.readonly = entry.readonly
+    if (entry.docComment)
+      property.docComment = entry.docComment
+    return property
+  }
+
+  private createRtoPropertyFromFunctionProperty(entry: AstFunctionProperty): RtoProperty {
+    const type: RtoFunctionType = {
+      whichType: "function",
+      returnType: this.createRtoType(entry.returnType || "any"),
+    }
+    if (entry.parameters)
+      type.parameters = this.createRtoFunctionParameters(entry.parameters)
+    if (entry.generic)
+      type.generic = this.createRtoGenericParameters(entry.generic)
+    const property: RtoProperty = {
+      name: entry.name,
+      type,
+    }
+    if (entry.optional)
+      property.optional = entry.optional
+    if (entry.readonly)
+      property.readonly = entry.readonly
+    if (entry.docComment)
+      property.docComment = entry.docComment
+    return property
+  }
+
+  private createRtoIndexSignature(entry: AstIndexSignature): RtoIndexSignature {
+    const indexSignature: RtoIndexSignature = {
+      keyName: entry.keyName,
+      keyType: entry.keyType,
+      type: this.createRtoType(entry.type)
+    }
+    if (entry.optional)
+      indexSignature.optional = entry.optional
+    if (entry.readonly)
+      indexSignature.readonly = entry.readonly
+    if (entry.docComment)
+      indexSignature.docComment = entry.docComment
+    return indexSignature
+  }
+
+  private createRtoMappedIndexSignature(entry: AstMappedIndexSignature): RtoMappedIndexSignature {
+    const mappedIndexSignature: RtoMappedIndexSignature = {
+      keyName: entry.keyName,
+      keyInType: this.createRtoType(entry.keyInType),
+      type: this.createRtoType(entry.type)
+    }
+    if (entry.optional)
+      mappedIndexSignature.optional = entry.optional
+    if (entry.readonly)
+      mappedIndexSignature.readonly = entry.readonly
+    if (entry.docComment)
+      mappedIndexSignature.docComment = entry.docComment
+    return mappedIndexSignature
   }
 
   private getBaseNamedType(name: string): RtoBaseNamedType {
@@ -301,7 +379,7 @@ function createRtoImportedTypeRef(ref: ImportRef): RtoImportedTypeRef {
 //   }
 
 //   if (declarations) {
-//     const astImports = declarations.filter(isAstImport) // TODO
+//     const astImports = declarations.filter(isAstImport)
 //     const astInterfaces = declarations.filter(isAstNamedInterface)
 //     const astTypes = declarations.filter(isAstNamedType)
 
@@ -379,7 +457,7 @@ function createRtoImportedTypeRef(ref: ImportRef): RtoImportedTypeRef {
 //   if (astNodes.length > 1)
 //     throw new Error(`Cannot have several index signature in the same interface`)
 //   const astNode = astNodes[0]
-//   const result: MappedIndexSignature = { // TODO: convert to real properties using keyInType
+//   const result: MappedIndexSignature = {
 //     keyName: astNode.keyName,
 //     keyInType: analyzeAstType(astNode.keyInType),
 //     type: analyzeAstType(astNode.type)
@@ -405,7 +483,7 @@ function createRtoImportedTypeRef(ref: ImportRef): RtoImportedTypeRef {
 //     else if (entry.whichEntry === "functionProperty")
 //       return analyzeAstFunctionProperty(entry)
 //     else
-//       throw new Error(`Invalid interface entry: ${entry.whichEntry}`) // TODO: Add indexSignature, mappedIndexSignature
+//       throw new Error(`Invalid interface entry: ${entry.whichEntry}`)
 //   })
 //   const properties = {}
 //   for (const property of list)
@@ -514,7 +592,7 @@ function createRtoImportedTypeRef(ref: ImportRef): RtoImportedTypeRef {
 // function analyzeAstCompositeType(astNode: AstCompositeType): Interface | UnionType {
 //   if (astNode.op === "intersection")
 //     return analyzeAstIntersection(astNode.types)
-//   // TODO
+//
 //   return undefined as any
 // }
 
@@ -528,7 +606,7 @@ function createRtoImportedTypeRef(ref: ImportRef): RtoImportedTypeRef {
 
 // function analyzeAstInterfaceType(type: AstInterface): Interface {
 //   return undefined as any
-//   // TODO
+//
 // }
 
 // function analyzeAstTupleType(astNode: AstTupleType): TupleType {
@@ -587,15 +665,15 @@ function createRtoImportedTypeRef(ref: ImportRef): RtoImportedTypeRef {
 // }
 
 // function addDelayedIntersection(typeName: string, target: Type) {
-//   // TODO
+//
 // }
 
 // function addDelayedLocalOrImportedTypeRef(target: GlobalTypeRef) {
-//   // TODO
+//
 // }
 
 // function addDelayedImportedTypeRefFromInline(target: GlobalTypeRef, moduleName: string) {
-//   // TODO
+//
 // }
 
 // function toNamedType(type: Type, fields: NamedTypeFields): NamedType {
@@ -614,7 +692,7 @@ function createRtoImportedTypeRef(ref: ImportRef): RtoImportedTypeRef {
 // }
 
 // function analyzeAstNamedType(astNode: AstNamedType, container: TypeOnlyGroup): NamedType {
-//   return undefined as any // TODO
+//   return undefined as any
 // }
 
 // function isAstImport(decl: AstDeclaration): decl is AstImport {

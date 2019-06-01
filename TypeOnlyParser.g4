@@ -21,12 +21,12 @@ importDecl: classicImport | namespacedImport;
 classicImport:
   IMPORT NL* (
     (
-      (defaultImportName (NL* COMMA NL* namedImportPart)?)
-      | namedImportPart
+      // (defaultImportName (NL* COMMA NL* namedImportPart)?)
+      namedImportPart
     ) NL* FROM NL*
   )? STRING_LITERAL;
 
-defaultImportName: IDENTIFIER;
+// defaultImportName: IDENTIFIER;
 
 namedImportPart:
   OPEN_BRACE NL* namedMember (NL* COMMA NL* namedMember)* NL* CLOSE_BRACE;

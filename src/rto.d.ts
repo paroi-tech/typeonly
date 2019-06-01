@@ -8,9 +8,9 @@ export interface RtoModule {
   namedTypes?: RtoNamedType[]
 }
 
-export interface RtoImport extends RtoCommentable {
+export interface RtoImport {
   from: string
-  defaultName?: string
+  // defaultName?: string
   namedMembers?: RtoImportNamedMember[]
 }
 
@@ -19,7 +19,7 @@ export interface RtoImportNamedMember {
   as?: string
 }
 
-export interface RtoNamespacedImport extends RtoCommentable {
+export interface RtoNamespacedImport {
   from: string
   asNamespace: string
 }
@@ -104,7 +104,7 @@ export interface RtoCompositeType {
 
 export interface RtoTupleType {
   whichType: "tuple"
-  itemTypes: RtoType[]
+  itemTypes?: RtoType[]
 }
 
 export interface RtoArrayType {
@@ -120,7 +120,7 @@ export interface RtoGenericInstance {
 
 export interface RtoFunctionType {
   whichType: "function"
-  parameters: RtoFunctionParameter[]
+  parameters?: RtoFunctionParameter[]
   returnType: RtoType
   generic?: RtoGenericParameter[]
 }

@@ -1,4 +1,4 @@
-import { AstArrayType, AstCompositeType, AstFunctionProperty, AstInterface, AstLiteralType, AstNamedType, AstProperty, AstTupleType, AstType, TypeOnlyAst } from "../ast"
+import { AstArrayType, AstCompositeType, AstInterface, AstLiteralType, AstNamedType, AstTupleType, AstType, TypeOnlyAst } from "../ast"
 
 export interface CheckResult {
   valid: boolean

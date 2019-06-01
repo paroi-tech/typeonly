@@ -37,11 +37,12 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     const classicImport: AstClassicImport = {
       whichDeclaration: "import",
       whichImport: "classic",
-      from: ctx.STRING_LITERAL().getText()
+      // tslint:disable-next-line: no-eval
+      from: eval(ctx.STRING_LITERAL().getText())
     }
-    if (ctx.defaultImportName()) {
-      classicImport.defaultName = ctx.defaultImportName().IDENTIFIER().getText()
-    }
+    // if (ctx.defaultImportName()) {
+    //   classicImport.defaultName = ctx.defaultImportName().IDENTIFIER().getText()
+    // }
     if (ctx.namedImportPart().namedMember()) {
       const namedMembers = ctx.namedImportPart().namedMember()
       const members: AstImportNamedMember[] = []
@@ -67,7 +68,8 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     const namespacedImport: AstNamespacedImport = {
       whichDeclaration: "import",
       whichImport: "namespaced",
-      from: ctx.STRING_LITERAL().getText(),
+      // tslint:disable-next-line: no-eval
+      from: eval(ctx.STRING_LITERAL().getText()),
       asNamespace: ctx.IDENTIFIER().getText()
     }
 
@@ -560,7 +562,8 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
   enterInlineImportType(ctx: AntlrRuleContext) {
     const inlineImportType: AstInlineImportType = {
       whichType: "inlineImport",
-      from: ctx.stringLiteral().getText(),
+      // tslint:disable-next-line: no-eval
+      from: eval(ctx.stringLiteral().getText()),
       exportedName: ctx.IDENTIFIER().getText()
     }
 

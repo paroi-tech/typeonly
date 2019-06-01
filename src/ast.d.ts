@@ -13,8 +13,13 @@ export interface AstClassicImport extends AstCommentable {
   whichDeclaration: "import"
   whichImport: "classic"
   from: string
-  defaultName?: string
+  // defaultName?: string
   namedMembers?: AstImportNamedMember[]
+}
+
+export interface AstImportNamedMember {
+  name: string
+  as?: string
 }
 
 export interface AstNamespacedImport extends AstCommentable {
@@ -22,11 +27,6 @@ export interface AstNamespacedImport extends AstCommentable {
   whichImport: "namespaced"
   from: string
   asNamespace: string
-}
-
-export interface AstImportNamedMember {
-  name: string
-  as?: string
 }
 
 export interface AstInterface {
