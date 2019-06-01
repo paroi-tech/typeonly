@@ -10,7 +10,6 @@ export interface RtoModule {
 
 export interface RtoImport {
   from: string
-  // defaultName?: string
   namedMembers?: RtoImportNamedMember[]
 }
 
@@ -68,7 +67,7 @@ export interface RtoGenericParameter {
 
 export interface RtoTypeName {
   whichType: "name"
-  whichName: "special" | "primitive" | "standard" | "unresolved"
+  kindOfName: "ts" | "primitive" | "standard" | "global"
   refName: RtoSpecialTypeName | RtoPrimitiveTypeName | string
 }
 
@@ -137,7 +136,7 @@ export interface RtoKeyofType {
 
 export interface RtoMemberType {
   whichType: "member"
-  type: RtoType
+  parentType: RtoType
   memberName: string | RtoMemberNameLiteral
 }
 

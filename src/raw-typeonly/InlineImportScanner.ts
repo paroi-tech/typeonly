@@ -50,7 +50,7 @@ export default class InlineImportScanner {
   }
 
   private scanMemberType(astNode: AstMemberType) {
-    this.scan(astNode.type)
+    this.scan(astNode.parentType)
   }
 
   private scanTupleType(astNode: AstTupleType) {

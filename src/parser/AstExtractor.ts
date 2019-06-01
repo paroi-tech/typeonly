@@ -401,17 +401,15 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
         literal: eval(ctx.memberName().getText())
       }
       const firstChar = ctx.memberName().getText()[0]
-      if (isStringDelim(firstChar)) {
+      if (isStringDelim(firstChar))
         memberNameLiteral.stringDelim = firstChar
-      }
       memberType.memberName = memberNameLiteral
     }
     this.registerAstChild(memberType, ctx)
     this.setAstChildRegistration(
-      astType => {
-        memberType.type = astType
-
-      }, ctx.aType()[0])
+      astType => { memberType.parentType = astType },
+      ctx.aType()[0]
+    )
   }
 
   processArrayType(ctx: AntlrRuleContext) {
@@ -420,10 +418,9 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     }
     this.registerAstChild(arrayType, ctx)
     this.setAstChildRegistration(
-      astType => {
-        arrayType.itemType = astType
-
-      }, ctx.aType()[0])
+      astType => { arrayType.itemType = astType },
+      ctx.aType()[0]
+    )
   }
 
   processCompositeType(ctx: AntlrRuleContext) {

@@ -152,7 +152,7 @@ export interface AstKeyofType {
 
 export interface AstMemberType {
   whichType: "member"
-  type: AstType
+  parentType: AstType
   memberName: string | AstMemberNameLiteral
 }
 
