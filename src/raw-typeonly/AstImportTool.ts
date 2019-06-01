@@ -1,7 +1,7 @@
 import { AstImport, AstInlineImportType } from "../ast"
 import { RtoImport, RtoNamespacedImport } from "../rto"
-import { ModuleLoader } from "./Project"
 import RtoModuleFactory from "./RtoModuleFactory"
+import { RtoModuleLoader } from "./RtoProject"
 
 export interface ImportRef {
   refName: string
@@ -14,12 +14,12 @@ interface ImportedFromModule {
   inlineMembers: Set<string>
 }
 
-export default class ImportTool {
+export default class AstImportTool {
   private fromModules = new Map<string, ImportedFromModule>()
   private importedIdentifiers = new Set<string>()
   private importedNamespaces = new Set<string>()
 
-  constructor(readonly path: string, private moduleLoader: ModuleLoader) {
+  constructor(readonly path: string, private moduleLoader: RtoModuleLoader) {
   }
 
   addImport(astNode: AstImport) {

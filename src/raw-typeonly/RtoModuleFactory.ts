@@ -1,8 +1,8 @@
 import { AstArrayType, AstCompositeType, AstDeclaration, AstFunctionParameter, AstFunctionProperty, AstFunctionType, AstGenericInstance, AstGenericParameter, AstIndexSignature, AstInlineImportType, AstInterface, AstKeyofType, AstLiteralType, AstMappedIndexSignature, AstMemberType, AstNamedInterface, AstNamedType, AstProperty, AstTupleType, AstType, TypeOnlyAst } from "../ast"
 import { RtoArrayType, RtoBaseNamedType, RtoCompositeType, RtoFunctionParameter, RtoFunctionType, RtoGenericInstance, RtoGenericParameter, RtoImportedTypeRef, RtoIndexSignature, RtoInterface, RtoKeyofType, RtoLiteralType, RtoLocalTypeRef, RtoMappedIndexSignature, RtoMemberType, RtoModule, RtoNamedType, RtoProperty, RtoTupleType, RtoType, RtoTypeName } from "../rto"
-import ImportTool, { ImportRef } from "./ImportTool"
+import AstImportTool, { ImportRef } from "./AstImportTool"
 import InlineImportScanner from "./InlineImportScanner"
-import { ModuleLoader } from "./Project"
+import { RtoModuleLoader } from "./RtoProject"
 
 export default class RtoModuleFactory {
   private rtoTypeCreators: {
@@ -21,12 +21,11 @@ export default class RtoModuleFactory {
     }
   private namedTypeList: RtoBaseNamedType[] = []
   private namedTypes = new Map<string, RtoBaseNamedType>()
-  private importTool?: ImportTool
-  private module?: RtoModule
+  private importTool?: AstImportTool
 
   constructor(private ast: TypeOnlyAst, private pathInProject?: string) {
-    if (this.ast.declarations)
-      this.ast.declarations.forEach(astDecl => this.registerAstDeclaration(astDecl))
+    if (ast.declarations)
+      ast.declarations.forEach(astDecl => this.registerAstDeclaration(astDecl))
   }
 
   hasExportedNamedType(name: string): boolean {
@@ -40,8 +39,8 @@ export default class RtoModuleFactory {
     return this.pathInProject
   }
 
-  async loadImports(moduleLoader: ModuleLoader) {
-    this.importTool = new ImportTool(this.getModulePath(), moduleLoader)
+  async loadImports(moduleLoader: RtoModuleLoader) {
+    this.importTool = new AstImportTool(this.getModulePath(), moduleLoader)
     if (this.ast.declarations) {
       const inlineScanner = new InlineImportScanner(this.importTool)
       for (const astDecl of this.ast.declarations) {
@@ -58,17 +57,11 @@ export default class RtoModuleFactory {
     await this.importTool.load()
   }
 
-  getRtoModule(): RtoModule {
-    if (!this.module)
-      this.module = this.createRtoModule()
-    return this.module
-  }
-
-  private createRtoModule(): RtoModule {
+  createRtoModule(): RtoModule {
     if (this.ast.declarations) {
       this.ast.declarations.forEach(astDecl => {
         if (astDecl.whichDeclaration === "interface" || astDecl.whichDeclaration === "type")
-          this.fillAstNamed(astDecl)
+          this.fillRtoNamed(astDecl)
         else if (astDecl.whichDeclaration === "import" && !this.importTool)
           throw new Error(`Imports are not loaded`)
       })
@@ -112,7 +105,7 @@ export default class RtoModuleFactory {
     return result
   }
 
-  private fillAstNamed(astNode: AstNamedInterface | AstNamedType) {
+  private fillRtoNamed(astNode: AstNamedInterface | AstNamedType) {
     const base = this.getBaseNamedType(astNode.name)
     const type = astNode.whichDeclaration === "interface"
       ? this.createRtoInterface(astNode)
@@ -143,21 +136,21 @@ export default class RtoModuleFactory {
 
   private createRtoArrayType(astNode: AstArrayType): RtoArrayType {
     return {
-      whichType: "array",
+      kind: "array",
       itemType: this.createRtoType(astNode.itemType)
     }
   }
 
   private createRtoLiteralType(astNode: AstLiteralType): RtoLiteralType {
     return {
-      whichType: "literal",
+      kind: "literal",
       literal: astNode.literal
     }
   }
 
   private createRtoCompositeType(astNode: AstCompositeType): RtoCompositeType {
     return {
-      whichType: "composite",
+      kind: "composite",
       op: astNode.op,
       types: astNode.types.map(child => this.createRtoType(child))
     }
@@ -165,22 +158,22 @@ export default class RtoModuleFactory {
 
   private createRtoGenericInstance(astNode: AstGenericInstance): RtoGenericInstance {
     return {
-      whichType: "genericInstance",
-      genericName: astNode.name,
+      kind: "genericInstance",
+      genericName: astNode.genericName,
       parameterTypes: astNode.parameterTypes.map(child => this.createRtoType(child))
     }
   }
 
   private createRtoKeyofType(astNode: AstKeyofType): RtoKeyofType {
     return {
-      whichType: "keyof",
+      kind: "keyof",
       type: this.createRtoType(astNode.type)
     }
   }
 
   private createRtoMemberType(astNode: AstMemberType): RtoMemberType {
     return {
-      whichType: "member",
+      kind: "member",
       parentType: this.createRtoType(astNode.parentType),
       memberName: astNode.memberName
     }
@@ -188,7 +181,7 @@ export default class RtoModuleFactory {
 
   private createRtoTupleType(astNode: AstTupleType): RtoTupleType {
     const type: RtoTupleType = {
-      whichType: "tuple",
+      kind: "tuple",
     }
     if (astNode.itemTypes)
       type.itemTypes = astNode.itemTypes.map(child => this.createRtoType(child))
@@ -197,7 +190,7 @@ export default class RtoModuleFactory {
 
   private createRtoFunctionType(astNode: AstFunctionType): RtoFunctionType {
     const type: RtoFunctionType = {
-      whichType: "function",
+      kind: "function",
       returnType: this.createRtoType(astNode.returnType),
     }
     if (astNode.parameters)
@@ -235,7 +228,7 @@ export default class RtoModuleFactory {
 
   private createRtoInterface(astNode: AstInterface): RtoInterface {
     const result: RtoInterface = {
-      whichType: "interface"
+      kind: "interface"
     }
     if (astNode.entries) {
       for (const entry of astNode.entries) {
@@ -281,7 +274,7 @@ export default class RtoModuleFactory {
 
   private createRtoPropertyFromFunctionProperty(entry: AstFunctionProperty): RtoProperty {
     const type: RtoFunctionType = {
-      whichType: "function",
+      kind: "function",
       returnType: this.createRtoType(entry.returnType || "any"),
     }
     if (entry.parameters)
@@ -350,22 +343,22 @@ function findKindOfName(typeName: string): "ts" | "primitive" | "standard" | und
 
 function createRtoTypeName(kindOfName: "ts" | "primitive" | "standard" | "global", refName: string): RtoTypeName {
   return {
-    whichType: "name",
-    kindOfName,
+    kind: "name",
+    group: kindOfName,
     refName
   }
 }
 
 function createRtoLocalTypeRef(refName: string): RtoLocalTypeRef {
   return {
-    whichType: "localRef",
+    kind: "localRef",
     refName
   }
 }
 
 function createRtoImportedTypeRef(ref: ImportRef): RtoImportedTypeRef {
   return {
-    whichType: "importedRef",
+    kind: "importedRef",
     ...ref
   }
 }

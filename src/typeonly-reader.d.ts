@@ -6,12 +6,10 @@ export interface Module {
   imports?: Import[]
   namespacedImports?: NamespacedImport[]
   namedTypes: NamedTypes
-  findExportedType(name: string): NamedType | undefined
-  getExportedType(name: string): NamedType
 }
 
 export interface Import {
-  from: string
+  from: Module
   namedMembers?: ImportNamedMembers
 }
 
@@ -20,7 +18,7 @@ export interface ImportNamedMembers {
 }
 
 export interface NamespacedImport {
-  from: string
+  from: Module
   asNamespace: string
 }
 
@@ -72,8 +70,8 @@ export interface GenericParameter {
 }
 
 export interface TypeName {
-  whichType: "name"
-  kindOfName: "ts" | "primitive" | "standard" | "global"
+  kind: "name"
+  group: "ts" | "primitive" | "standard" | "global"
   refName: SpecialTypeName | PrimitiveTypeName | string
 }
 
@@ -81,52 +79,52 @@ export type SpecialTypeName = "any" | "unknown" | "object" | "void" | "never"
 export type PrimitiveTypeName = "string" | "number" | "bigint" | "boolean" | "undefined" | "null" | "symbol"
 
 export interface GenericParameterName {
-  whichType: "genericParameterName"
+  kind: "genericParameterName"
   genericParameterName: string
 }
 
 export interface LocalTypeRef {
-  whichType: "localRef"
+  kind: "localRef"
   refName: string
   ref: NamedType
 }
 
 export interface ImportedTypeRef {
-  whichType: "importedRef"
+  kind: "importedRef"
   refName: string
   namespace?: string
   ref: NamedType
 }
 
 export interface LiteralType {
-  whichType: "literal"
+  kind: "literal"
   literal: string | number | bigint | boolean
 }
 
 export interface CompositeType {
-  whichType: "composite"
+  kind: "composite"
   op: "union" | "intersection"
   types: Type[]
 }
 
 export interface TupleType {
-  whichType: "tuple"
+  kind: "tuple"
   itemTypes: Type[]
 }
 
 export interface ArrayType {
-  whichType: "array"
+  kind: "array"
   itemType: Type
 }
 
 export interface GenericInstance {
-  whichType: "genericInstance"
+  kind: "genericInstance"
   genericName: string
   parameterTypes: Type[]
 }
 
 export interface FunctionType {
-  whichType: "function"
+  kind: "function"
   parameters: FunctionParameter[]
   returnType: Type
   generic?: GenericParameter[]
@@ -138,12 +136,12 @@ export interface FunctionParameter {
 }
 
 export interface KeyofType {
-  whichType: "keyof"
+  kind: "keyof"
   type: Type
 }
 
 export interface MemberType {
-  whichType: "member"
+  kind: "member"
   parentType: Type
   memberName: string | MemberNameLiteral
 }
@@ -153,7 +151,7 @@ export interface MemberNameLiteral {
 }
 
 export interface Interface {
-  whichType: "interface"
+  kind: "interface"
   indexSignature?: IndexSignature
   mappedIndexSignature?: MappedIndexSignature
   properties: Properties

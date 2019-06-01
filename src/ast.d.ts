@@ -129,7 +129,7 @@ export interface AstArrayType {
 
 export interface AstGenericInstance {
   whichType: "genericInstance"
-  name: string
+  genericName: string
   parameterTypes: AstType[]
 }
 

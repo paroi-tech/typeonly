@@ -66,8 +66,8 @@ export interface RtoGenericParameter {
 }
 
 export interface RtoTypeName {
-  whichType: "name"
-  kindOfName: "ts" | "primitive" | "standard" | "global"
+  kind: "name"
+  group: "ts" | "primitive" | "standard" | "global"
   refName: RtoSpecialTypeName | RtoPrimitiveTypeName | string
 }
 
@@ -75,50 +75,50 @@ export type RtoSpecialTypeName = "any" | "unknown" | "object" | "void" | "never"
 export type RtoPrimitiveTypeName = "string" | "number" | "bigint" | "boolean" | "undefined" | "null" | "symbol"
 
 export interface RtoGenericParameterName {
-  whichType: "genericParameterName"
+  kind: "genericParameterName"
   genericParameterName: string
 }
 
 export interface RtoLocalTypeRef {
-  whichType: "localRef"
+  kind: "localRef"
   refName: string
 }
 
 export interface RtoImportedTypeRef {
-  whichType: "importedRef"
+  kind: "importedRef"
   refName: string
   namespace?: string
 }
 
 export interface RtoLiteralType {
-  whichType: "literal"
+  kind: "literal"
   literal: string | number | bigint | boolean
 }
 
 export interface RtoCompositeType {
-  whichType: "composite"
+  kind: "composite"
   op: "union" | "intersection"
   types: RtoType[]
 }
 
 export interface RtoTupleType {
-  whichType: "tuple"
+  kind: "tuple"
   itemTypes?: RtoType[]
 }
 
 export interface RtoArrayType {
-  whichType: "array"
+  kind: "array"
   itemType: RtoType
 }
 
 export interface RtoGenericInstance {
-  whichType: "genericInstance"
+  kind: "genericInstance"
   genericName: string
   parameterTypes: RtoType[]
 }
 
 export interface RtoFunctionType {
-  whichType: "function"
+  kind: "function"
   parameters?: RtoFunctionParameter[]
   returnType: RtoType
   generic?: RtoGenericParameter[]
@@ -130,12 +130,12 @@ export interface RtoFunctionParameter {
 }
 
 export interface RtoKeyofType {
-  whichType: "keyof"
+  kind: "keyof"
   type: RtoType
 }
 
 export interface RtoMemberType {
-  whichType: "member"
+  kind: "member"
   parentType: RtoType
   memberName: string | RtoMemberNameLiteral
 }
@@ -145,7 +145,7 @@ export interface RtoMemberNameLiteral {
 }
 
 export interface RtoInterface {
-  whichType: "interface"
+  kind: "interface"
   indexSignature?: RtoIndexSignature
   mappedIndexSignature?: RtoMappedIndexSignature
   properties?: RtoProperty[]

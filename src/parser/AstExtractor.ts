@@ -330,7 +330,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     } else {
       const genericInstance: AstGenericInstance = {
         whichType: "genericInstance",
-        name: ctx.typeName().getText(),
+        genericName: ctx.typeName().getText(),
         parameterTypes: []
       }
       this.registerAstChild(genericInstance, ctx.parentCtx)

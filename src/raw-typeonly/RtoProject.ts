@@ -7,24 +7,24 @@ import RtoModuleFactory from "./RtoModuleFactory"
 const readFile = promisify(fs.readFile)
 const writeFile = promisify(fs.writeFile)
 
-export type ModuleLoader = (modulePath: ModulePath) => Promise<RtoModuleFactory>
+export type RtoModuleLoader = (modulePath: RtoModulePath) => Promise<RtoModuleFactory>
 
-export interface ModulePath {
+export interface RtoModulePath {
   from: string
   relativeToModule?: string
 }
 
-export interface ProjectOptions {
+export interface RtoProjectOptions {
   inputDir: string
   encoding: string
   outputDir?: string
   prettify?: boolean
 }
 
-export default class Project {
+export default class RtoProject {
   private factories = new Map<string, RtoModuleFactory>()
 
-  constructor(private options: ProjectOptions) {
+  constructor(private options: RtoProjectOptions) {
   }
 
   async parseModules(paths: string[]) {
@@ -35,14 +35,14 @@ export default class Project {
     for (const factory of this.factories.values())
       await factory.loadImports(modulePath => this.importModule(modulePath))
     for (const factory of this.factories.values()) {
-      const module = factory.getRtoModule()
+      const module = factory.createRtoModule()
       const data = prettify ? JSON.stringify(module, undefined, 2) : JSON.stringify(module)
       const outputFile = `${join(outputDir, factory.getModulePath())}.rto.json`
       await writeFile(outputFile, data, { encoding })
     }
   }
 
-  private async importModule(modulePath: ModulePath): Promise<RtoModuleFactory> {
+  private async importModule(modulePath: RtoModulePath): Promise<RtoModuleFactory> {
     const { inputDir, encoding } = this.options
     const pathInProject = this.pathInProject(modulePath)
     let factory = this.factories.get(pathInProject)
@@ -55,7 +55,7 @@ export default class Project {
     return factory
   }
 
-  private pathInProject({ from, relativeToModule }: ModulePath): string {
+  private pathInProject({ from, relativeToModule }: RtoModulePath): string {
     if (from.endsWith(".ts")) {
       const extLength = from.endsWith(".d.ts") ? 5 : 3
       from = from.slice(0, from.length - extLength)
