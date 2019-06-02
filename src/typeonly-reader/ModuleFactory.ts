@@ -29,9 +29,8 @@ export default class ModuleFactory {
   private importedNamespaces = new Map<string, ModuleFactory>()
   private gmf?: GetModuleFactory
 
-  constructor(readonly rtoModule: RtoModule) {
-    if (rtoModule.path)
-      this.module.path = rtoModule.path
+  constructor(readonly rtoModule: RtoModule, modulePath?: string) {
+    this.module.path = modulePath
     if (rtoModule.namedTypes) {
       rtoModule.namedTypes.forEach(rtoNode => {
         const namedType = this.createBaseNamedType(rtoNode)
@@ -43,7 +42,7 @@ export default class ModuleFactory {
   getExportedNamedType(name: string): BaseNamedType {
     const namedType = this.namedTypes.get(name)
     if (!namedType || !namedType.exported)
-      throw new Error(`Module '${this.rtoModule.path}' has no exported member '${name}'`)
+      throw new Error(`Module '${this.module.path}' has no exported member '${name}'`)
     return namedType
   }
 
@@ -298,9 +297,11 @@ export default class ModuleFactory {
   private moduleFactoryOf(from: string) {
     if (!this.gmf)
       throw new Error(`Cannot get a module here`)
+    if (!this.module.path)
+      throw new Error(`Cannot import from an embedded module`)
     return this.gmf({
       from,
-      relativeToModule: this.rtoModule.path
+      relativeToModule: this.module.path
     })
   }
 }

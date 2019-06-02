@@ -1,8 +1,11 @@
+export interface RtoModules {
+  [modulePath: string]: RtoModule
+}
+
 /**
  * Raw TypeOnly Module
  */
 export interface RtoModule {
-  path?: string
   imports?: RtoImport[]
   namespacedImports?: RtoNamespacedImport[]
   namedTypes?: RtoNamedType[]

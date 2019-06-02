@@ -7,15 +7,15 @@ import ModuleFactory from "./ModuleFactory"
 
 const readFile = promisify(fs.readFile)
 
-export type GetModuleFactory = (modulePath: ModulePath) => ModuleFactory
+export type GetModuleFactory = (modulePath: RelativeModulePath) => ModuleFactory
 
-export interface ModulePath {
+export interface RelativeModulePath {
   from: string
   relativeToModule?: string
 }
 
 export interface ProjectOptions {
-  inputDir: string
+  baseDir: string
   encoding: string
 }
 
@@ -38,7 +38,7 @@ export default class Project {
     return modules
   }
 
-  private getModuleFactory(modulePath: ModulePath): ModuleFactory {
+  private getModuleFactory(modulePath: RelativeModulePath): ModuleFactory {
     const pathInProject = this.pathInProject(modulePath)
     const factory = this.factories.get(pathInProject)
     if (!factory)
@@ -46,39 +46,39 @@ export default class Project {
     return factory
   }
 
-  private async loadImports(factory: ModuleFactory) {
+  private async loadRtoModule(rmp: RelativeModulePath) {
+    const { baseDir, encoding } = this.options
+    const modulePath = this.pathInProject(rmp)
+    let factory = this.factories.get(modulePath)
+    if (!factory) {
+      const data = await readRtoFile(baseDir, modulePath, encoding)
+      const rtoModule = JSON.parse(data) as RtoModule
+      factory = new ModuleFactory(rtoModule, modulePath)
+      this.factories.set(modulePath, factory)
+      await this.loadImports(factory, modulePath)
+    }
+  }
+
+  private async loadImports(factory: ModuleFactory, modulePath: string) {
     if (factory.rtoModule.imports) {
       for (const { from } of factory.rtoModule.imports)
-        await this.loadRtoModule({ from, relativeToModule: factory.rtoModule.path })
+        await this.loadRtoModule({ from, relativeToModule: modulePath })
     }
     if (factory.rtoModule.namespacedImports) {
       for (const { from } of factory.rtoModule.namespacedImports)
-        await this.loadRtoModule({ from, relativeToModule: factory.rtoModule.path })
+        await this.loadRtoModule({ from, relativeToModule: modulePath })
     }
   }
 
-  private async loadRtoModule(modulePath: ModulePath) {
-    const { inputDir, encoding } = this.options
-    const pathInProject = this.pathInProject(modulePath)
-    let factory = this.factories.get(pathInProject)
-    if (!factory) {
-      const data = await readRtoFile(inputDir, pathInProject, encoding)
-      const rtoModule = JSON.parse(data) as RtoModule
-      factory = new ModuleFactory(rtoModule)
-      this.factories.set(pathInProject, factory)
-      await this.loadImports(factory)
-    }
-  }
-
-  private pathInProject({ from, relativeToModule }: ModulePath): string {
+  private pathInProject({ from, relativeToModule }: RelativeModulePath): string {
     if (from.endsWith(".rto.json"))
       from = from.slice(0, from.length - 9)
-    const { inputDir } = this.options
+    const { baseDir } = this.options
     const firstChar = from[0]
     if (firstChar === "/") {
-      if (!from.startsWith(inputDir))
+      if (!from.startsWith(baseDir))
         throw new Error(`Cannot import a RTO module outside the project: ${from}`)
-      return from.slice(inputDir.length)
+      return from.slice(baseDir.length)
     }
     if (firstChar === ".")
       return relativeToModule ? join(dirname(relativeToModule), from) : from
@@ -86,8 +86,8 @@ export default class Project {
   }
 }
 
-async function readRtoFile(baseDir: string, moduleName: string, encoding: string) {
-  const path = join(baseDir, moduleName)
+async function readRtoFile(baseDir: string, modulePath: string, encoding: string) {
+  const path = join(baseDir, modulePath)
   try {
     return await readFile(`${path}.rto.json`, { encoding })
   } catch {

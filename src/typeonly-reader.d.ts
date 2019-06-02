@@ -1,5 +1,5 @@
 export interface Modules {
-  [path: string]: Module
+  [modulePath: string]: Module
 }
 
 /**

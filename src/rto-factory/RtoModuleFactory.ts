@@ -2,7 +2,7 @@ import { AstArrayType, AstCompositeType, AstDeclaration, AstFunctionParameter, A
 import { RtoArrayType, RtoBaseNamedType, RtoCompositeType, RtoFunctionParameter, RtoFunctionType, RtoGenericInstance, RtoGenericParameter, RtoImportedTypeRef, RtoIndexSignature, RtoInterface, RtoKeyofType, RtoLiteralType, RtoLocalTypeRef, RtoMappedIndexSignature, RtoMemberType, RtoModule, RtoNamedType, RtoProperty, RtoTupleType, RtoType, RtoTypeName } from "../rto"
 import AstImportTool, { ImportRef } from "./AstImportTool"
 import InlineImportScanner from "./InlineImportScanner"
-import { RtoModuleLoader } from "./RtoProject"
+import { RtoModuleLoader } from "./internal-types"
 
 export default class RtoModuleFactory {
   private rtoTypeCreators: {
@@ -68,7 +68,7 @@ export default class RtoModuleFactory {
     }
     const module: RtoModule = {}
     if (this.importTool) {
-      module.path = this.importTool.path
+      // module.path = this.importTool.path
       Object.assign(module, this.importTool.createRtoImports())
     }
     if (this.namedTypeList.length > 0)

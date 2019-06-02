@@ -1,7 +1,7 @@
 import { AstImport, AstInlineImportType } from "../ast"
 import { RtoImport, RtoNamespacedImport } from "../rto"
+import { RtoModuleLoader } from "./internal-types"
 import RtoModuleFactory from "./RtoModuleFactory"
-import { RtoModuleLoader } from "./RtoProject"
 
 export interface ImportRef {
   refName: string
