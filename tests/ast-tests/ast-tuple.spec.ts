@@ -1,13 +1,13 @@
-import { AstInterface, AstNamedInterface, AstNamedType, AstProperty, AstTupleType } from "../../src/ast"
-import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
+import { parseTypeOnly } from "../../src/api"
+import { AstNamedType } from "../../src/ast"
 
 describe("AST Specification for Tuples", () => {
 
   test("empty tuple", () => {
-    const input = `
+    const source = `
 type T1 = []
 `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const namedType = ast.declarations![0] as AstNamedType
     expect(namedType.name).toBe("T1")
     expect(namedType.type).toEqual({
@@ -16,10 +16,10 @@ type T1 = []
   })
 
   test("a tuple with identifiers", () => {
-    const input = `
+    const source = `
 type T1 = [string, number, boolean]
 `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const namedType = ast.declarations![0] as AstNamedType
     expect(namedType.name).toBe("T1")
     expect(namedType.type).toEqual({
@@ -29,10 +29,10 @@ type T1 = [string, number, boolean]
   })
 
   test("a tuple with identifiers and an interface", () => {
-    const input = `
+    const source = `
 type T2 = [string, {a: number, b: string}, boolean]
 `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const namedType = ast.declarations![0] as AstNamedType
     expect(namedType.name).toBe("T2")
     expect(namedType.type).toEqual({
@@ -62,12 +62,12 @@ type T2 = [string, {a: number, b: string}, boolean]
   })
 
   test("a tuple with a newline", () => {
-    const input = `
+    const source = `
 type T3 = [string, number,boolean
   ,
   dfdfd]
 `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const namedType = ast.declarations![0] as AstNamedType
     expect(namedType.name).toBe("T3")
     expect(namedType.type).toEqual({

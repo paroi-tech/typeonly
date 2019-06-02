@@ -1,13 +1,13 @@
-import { AstArrayType, AstCompositeType, AstFunctionType, AstInterface, AstNamedType, AstProperty } from "../../src/ast"
-import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
+import { parseTypeOnly } from "../../src/api"
+import { AstArrayType, AstCompositeType, AstFunctionType, AstNamedType } from "../../src/ast"
 
 describe("AST Specification for Precedence", () => {
 
   test("function with an array as return value", () => {
-    const input = `
+    const source = `
 type T1 = () => A[]
 `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const namedType = ast.declarations![0] as AstNamedType
     const type = namedType.type as AstFunctionType
     expect(type.whichType).toBe("function")
@@ -17,10 +17,10 @@ type T1 = () => A[]
   })
 
   test("function with a composite type as return value", () => {
-    const input = `
+    const source = `
 type T1 = () => A | B[]
 `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const namedType = ast.declarations![0] as AstNamedType
     const type = namedType.type as AstFunctionType
     expect(type.whichType).toBe("function")

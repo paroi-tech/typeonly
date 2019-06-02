@@ -1,16 +1,16 @@
+import { parseTypeOnly } from "../../src/api"
 import { AstInterface, AstNamedInterface, AstProperty } from "../../src/ast"
-import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
 
 describe("AST Specification for Nested Types", () => {
   test("an anonymous interface nested in a interface", () => {
-    const input = `
+    const source = `
 interface I1 {
   a: {
     b: string
   }
 }
       `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     expect(ast.declarations!.length).toBe(1)
     const namedInterface = ast.declarations![0] as AstNamedInterface
     expect(namedInterface.whichType).toBe("interface")
@@ -34,8 +34,8 @@ interface I1 {
         return "number"
       return `{ a: ${makeInterface(deep - 1)} }`
     }
-    const input = `interface I1 ${makeInterface(deep)}`
-    const ast = parseTypeOnlyToAst(input)
+    const source = `interface I1 ${makeInterface(deep)}`
+    const ast = parseTypeOnly({ source })
     let parent = ast.declarations![0] as AstInterface
     for (let i = 0; i < deep - 1; ++i) {
       const child = parent.entries![0] as AstProperty

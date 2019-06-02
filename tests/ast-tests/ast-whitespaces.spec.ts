@@ -1,8 +1,8 @@
-import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
+import { parseTypeOnly } from "../../src/api"
 
 describe("AST Specification about White Spaces", () => {
   test("weird spaces do not matter", () => {
-    const input = `
+    const source = `
 
    interface    I1
 
@@ -14,24 +14,27 @@ describe("AST Specification about White Spaces", () => {
  }
 
       `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     expect(ast.declarations!.length).toBe(1)
   })
 
 
   test("new lines in a named type", () => {
-    parseTypeOnlyToAst(`
+    parseTypeOnly({
+      source: `
 type T1
 =
 number
 [
 
 ]
-`)
+`
+    })
   })
 
   test("new lines in a named interface", () => {
-    parseTypeOnlyToAst(`
+    parseTypeOnly({
+      source: `
 export
   interface I1 {
   readonly
@@ -39,6 +42,7 @@ export
   :
   string
 }
-`)
+`
+    })
   })
 })

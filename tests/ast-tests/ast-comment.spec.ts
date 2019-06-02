@@ -1,11 +1,11 @@
+import { parseTypeOnly } from "../../src/api"
 import { AstInlineComment, AstNamedInterface, AstNamedType, AstStandaloneComment } from "../../src/ast"
-import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
 
 describe("AST Specification for Comments", () => {
 
-  function testStandaloneComment(input: string, text: string, syntax: "inline" | "classic") {
-    test(`standalone comment: ${JSON.stringify(input).replace(/\\n/g, "\u23ce")}`, () => {
-      const ast = parseTypeOnlyToAst(input)
+  function testStandaloneComment(source: string, text: string, syntax: "inline" | "classic") {
+    test(`standalone comment: ${JSON.stringify(source).replace(/\\n/g, "\u23ce")}`, () => {
+      const ast = parseTypeOnly({ source })
       expect(ast.declarations![0]).toEqual({
         whichDeclaration: "comment",
         text,
@@ -27,9 +27,9 @@ describe("AST Specification for Comments", () => {
   testStandaloneComment("/*\ncom 1\n*/", "\ncom 1\n", "classic")
   testStandaloneComment("/*\n *\n * com 1\n *\n */", "\ncom 1\n", "classic")
 
-  function testInlineComment(input: string, text: string, syntax: "inline" | "classic") {
-    test(`inline comment: ${JSON.stringify(input).replace(/\\n/g, "\u23ce")}`, () => {
-      const ast = parseTypeOnlyToAst(input)
+  function testInlineComment(source: string, text: string, syntax: "inline" | "classic") {
+    test(`inline comment: ${JSON.stringify(source).replace(/\\n/g, "\u23ce")}`, () => {
+      const ast = parseTypeOnly({ source })
       const namedType = ast.declarations![0] as AstNamedType
       expect(namedType.inlineComments).toEqual([
         {
@@ -46,9 +46,9 @@ describe("AST Specification for Comments", () => {
   testInlineComment("type T1 /* com 1 */ = string", "com 1", "classic")
   testInlineComment("type /* com 1 */ T1 = string", "com 1", "classic")
 
-  function testDocCommentOnDeclaration(input: string, text: string) {
-    test(`doc comment in declaration: ${JSON.stringify(input).replace(/\\n/g, "\u23ce")}`, () => {
-      const ast = parseTypeOnlyToAst(input)
+  function testDocCommentOnDeclaration(source: string, text: string) {
+    test(`doc comment in declaration: ${JSON.stringify(source).replace(/\\n/g, "\u23ce")}`, () => {
+      const ast = parseTypeOnly({ source })
       const decl = ast.declarations![0] as AstNamedType | AstNamedInterface
       expect(decl.docComment).toBe(text)
     })
@@ -66,7 +66,7 @@ describe("AST Specification for Comments", () => {
   testDocCommentsOnDeclaration("interface I1 {}")
 
   test(`multiple comments`, () => {
-    const input = `
+    const source = `
 // standalone 1, line 1
 // standalone 1, line 2
 
@@ -79,7 +79,7 @@ type T1 = A // inline T1
 
 // standalone 3
     `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     expect(ast.declarations![0]).toEqual({
       whichDeclaration: "comment",
       text: "standalone 1, line 1\nstandalone 1, line 2",

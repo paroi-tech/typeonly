@@ -1,14 +1,14 @@
 import Checker from "../../dist/checker/Checker"
-import { parseTypeOnlyToAst } from "../../dist/parser/parse-typeonly"
+import { parseTypeOnly } from "../../src/api"
 
 describe("Check nameType with string", () => {
 
   test("primitive types", () => {
-    const input = `
+    const source = `
     type A = B
     type B = number
 `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const checker = new Checker(ast)
     const response = checker.check("A", "12")
     expect(response.valid).toBe(false)
@@ -20,13 +20,13 @@ describe("Check nameType with string", () => {
 
 
   //   test("primitive types", () => {
-  //     const input = `
+  //     const source = `
   //     type A = {
   //       a: [string, number],
   //       b: string
   //     }
   // `
-  //     const ast = parseTypeOnlyToAst(input)
+  //     const ast = parseTypeOnly({ source })
   //     const checker = new Checker(ast)
   //     const response = checker.check("A", { a: ["sd", "23"], b: "ab" })
   //     expect(response.valid).toBe(false)

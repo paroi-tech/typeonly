@@ -1,7 +1,6 @@
-import { dirname, join } from "path"
 import { TypeOnlyAstProvider } from "../api"
+import { RelativeModulePath, toModulePath } from "../helpers/module-path-helpers"
 import { RtoModule } from "../rto"
-import { RelativeModulePath } from "./internal-types"
 import RtoModuleFactory from "./RtoModuleFactory"
 
 export interface RtoProjectOptions {
@@ -28,8 +27,11 @@ export default class RtoProject {
     }
   }
 
-  private async importModule(rmp: RelativeModulePath): Promise<RtoModuleFactory> {
-    const modulePath = this.pathInProject(rmp)
+  private async importModule(relPath: RelativeModulePath): Promise<RtoModuleFactory> {
+    const modulePath = toModulePath({
+      ...relPath,
+      removeExtensions: [".ts", ".d.ts"]
+    })
     let factory = this.factories.get(modulePath)
     if (!factory) {
       const ast = await this.options.astProvider(modulePath)
@@ -37,16 +39,5 @@ export default class RtoProject {
       this.factories.set(modulePath, factory)
     }
     return factory
-  }
-
-  private pathInProject({ from, relativeToModule }: RelativeModulePath): string {
-    if (from.endsWith(".ts")) {
-      const extLength = from.endsWith(".d.ts") ? 5 : 3
-      from = from.slice(0, from.length - extLength)
-    }
-    const firstChar = from[0]
-    if (firstChar === ".")
-      return relativeToModule ? join(dirname(relativeToModule), from) : from
-    throw new Error(`Module path must start with '.' or '/'`)
   }
 }

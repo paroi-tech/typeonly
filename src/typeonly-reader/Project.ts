@@ -1,6 +1,7 @@
 import * as fs from "fs"
-import { dirname, join } from "path"
+import { join } from "path"
 import { promisify } from "util"
+import { RelativeModulePath, toModulePath } from "../helpers/module-path-helpers"
 import { RtoModule } from "../rto"
 import { Modules } from "../typeonly-reader"
 import ModuleFactory from "./ModuleFactory"
@@ -8,11 +9,6 @@ import ModuleFactory from "./ModuleFactory"
 const readFile = promisify(fs.readFile)
 
 export type GetModuleFactory = (modulePath: RelativeModulePath) => ModuleFactory
-
-export interface RelativeModulePath {
-  from: string
-  relativeToModule?: string
-}
 
 export interface ProjectOptions {
   baseDir: string
@@ -26,6 +22,10 @@ export default class Project {
   }
 
   async parseModules(paths: string[]): Promise<Modules> {
+    paths.forEach(path => {
+      if (!path.startsWith("./") && !path.startsWith("../"))
+        throw new Error(`A relative path is required for RTO module`)
+    })
     for (const from of paths)
       await this.loadRtoModule({ from })
     const modules: Modules = {}
@@ -38,17 +38,23 @@ export default class Project {
     return modules
   }
 
-  private getModuleFactory(modulePath: RelativeModulePath): ModuleFactory {
-    const pathInProject = this.pathInProject(modulePath)
-    const factory = this.factories.get(pathInProject)
+  private getModuleFactory(relPath: RelativeModulePath): ModuleFactory {
+    const modulePath = toModulePath({
+      ...relPath,
+      removeExtensions: [".rto.json"]
+    })
+    const factory = this.factories.get(modulePath)
     if (!factory)
-      throw new Error(`Unknown module: ${pathInProject}`)
+      throw new Error(`Unknown module: ${modulePath}`)
     return factory
   }
 
-  private async loadRtoModule(rmp: RelativeModulePath) {
+  private async loadRtoModule(relPath: RelativeModulePath) {
     const { baseDir, encoding } = this.options
-    const modulePath = this.pathInProject(rmp)
+    const modulePath = toModulePath({
+      ...relPath,
+      removeExtensions: [".rto.json"]
+    })
     let factory = this.factories.get(modulePath)
     if (!factory) {
       const data = await readRtoFile(baseDir, modulePath, encoding)
@@ -68,21 +74,6 @@ export default class Project {
       for (const { from } of factory.rtoModule.namespacedImports)
         await this.loadRtoModule({ from, relativeToModule: modulePath })
     }
-  }
-
-  private pathInProject({ from, relativeToModule }: RelativeModulePath): string {
-    if (from.endsWith(".rto.json"))
-      from = from.slice(0, from.length - 9)
-    const { baseDir } = this.options
-    const firstChar = from[0]
-    if (firstChar === "/") {
-      if (!from.startsWith(baseDir))
-        throw new Error(`Cannot import a RTO module outside the project: ${from}`)
-      return from.slice(baseDir.length)
-    }
-    if (firstChar === ".")
-      return relativeToModule ? join(dirname(relativeToModule), from) : from
-    throw new Error(`Module path must start with '.' or '/'`)
   }
 }
 

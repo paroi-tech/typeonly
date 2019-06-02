@@ -1,19 +1,19 @@
-import { AstNamedType } from "../../src/ast"
-import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
+import { parseTypeOnly } from "../../src/api"
+import { AstNamedType, AstMemberType } from "../../src/ast"
 
 describe("AST Specification for MemberType", () => {
 
   test("a member type with identifier", () => {
-    const input = `
+    const source = `
     type T1 = Add[cv]
 `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const namedType = ast.declarations![0] as AstNamedType
     expect(namedType.name).toBe("T1")
     expect(namedType.type).toEqual({
       whichType: "member",
       memberName: "cv",
-      type: "Add"
-    })
+      parentType: "Add"
+    } as AstMemberType)
   })
 })

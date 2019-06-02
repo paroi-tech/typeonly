@@ -1,10 +1,10 @@
+import { parseTypeOnly } from "../../src/api"
 import { AstFunctionType, AstNamedType } from "../../src/ast"
-import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
 
 describe("AST Specification for Function Types", () => {
   test(`empty function`, () => {
-    const input = `type T1 = () => void`
-    const ast = parseTypeOnlyToAst(input)
+    const source = `type T1 = () => void`
+    const ast = parseTypeOnly({ source })
     const namedType = ast.declarations![0] as AstNamedType
     expect(namedType.type).toEqual({
       whichType: "function",
@@ -13,8 +13,8 @@ describe("AST Specification for Function Types", () => {
   })
 
   test(`function with parameters`, () => {
-    const input = `type T1 = (p1: string, p2: number) => void`
-    const ast = parseTypeOnlyToAst(input)
+    const source = `type T1 = (p1: string, p2: number) => void`
+    const ast = parseTypeOnly({ source })
     const namedType = ast.declarations![0] as AstNamedType
     expect(namedType.type).toEqual({
       whichType: "function",
@@ -33,8 +33,8 @@ describe("AST Specification for Function Types", () => {
   })
 
   test(`function with nested types`, () => {
-    const input = `type T1 = (p1: () => void) => () => void`
-    const ast = parseTypeOnlyToAst(input)
+    const source = `type T1 = (p1: () => void) => () => void`
+    const ast = parseTypeOnly({ source })
     const namedType = ast.declarations![0] as AstNamedType
     const fnType = namedType.type as AstFunctionType
     const emptyFnType: AstFunctionType = {
@@ -46,8 +46,8 @@ describe("AST Specification for Function Types", () => {
   })
 
   test(`function with nested types and parenthesis`, () => {
-    const input = `type T1 = (((p1: (() => void)) => (() => void)))`
-    const ast = parseTypeOnlyToAst(input)
+    const source = `type T1 = (((p1: (() => void)) => (() => void)))`
+    const ast = parseTypeOnly({ source })
     const namedType = ast.declarations![0] as AstNamedType
     const fnType = namedType.type as AstFunctionType
     const emptyFnType: AstFunctionType = {

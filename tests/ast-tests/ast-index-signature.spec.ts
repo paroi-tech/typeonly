@@ -1,13 +1,13 @@
-import { AstIndexSignature, AstMappedIndexSignature, AstNamedInterface } from "../../src/ast"
-import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
+import { parseTypeOnly } from "../../src/api"
+import { AstNamedInterface } from "../../src/ast"
 
 describe("AST Specification for Index Signature", () => {
 
   test("a index signature", () => {
-    const input = `interface I1 {
+    const source = `interface I1 {
       [index1: string] : {a: number}
     }`
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const namedInterface = ast.declarations![0] as AstNamedInterface
     expect(namedInterface.whichDeclaration).toBe("interface")
     expect(namedInterface.whichType).toBe("interface")
@@ -36,10 +36,10 @@ describe("AST Specification for Index Signature", () => {
   })
 
   test("a mapped index signature", () => {
-    const input = `interface I1 {
+    const source = `interface I1 {
       [index1 in string] : {a: number}
     }`
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const namedInterface = ast.declarations![0] as AstNamedInterface
     expect(namedInterface.whichDeclaration).toBe("interface")
     expect(namedInterface.whichType).toBe("interface")

@@ -1,11 +1,11 @@
+import { parseTypeOnly } from "../../src/api"
 import { AstClassicImport, AstNamespacedImport } from "../../src/ast"
-import { parseTypeOnlyToAst } from "../../src/parser/parse-typeonly"
 
 describe("AST Specification for Named Import", () => {
 
   test("a classic import", () => {
-    const input = `import { A as B, C as D } from "./abc.js"`
-    const ast = parseTypeOnlyToAst(input)
+    const source = `import { A as B, C as D } from "./abc.js"`
+    const ast = parseTypeOnly({ source })
     const classicImport = ast.declarations![0] as AstClassicImport
     expect(classicImport.whichDeclaration).toBe("import")
     expect(classicImport.whichImport).toBe("classic")
@@ -23,8 +23,8 @@ describe("AST Specification for Named Import", () => {
   })
 
   test("a namespaced import", () => {
-    const input = `import * as ns from "./abc.js"`
-    const ast = parseTypeOnlyToAst(input)
+    const source = `import * as ns from "./abc.js"`
+    const ast = parseTypeOnly({ source })
     const namespacedImport = ast.declarations![0] as AstNamespacedImport
     expect(namespacedImport.whichDeclaration).toBe("import")
     expect(namespacedImport.whichImport).toBe("namespaced")

@@ -1,16 +1,16 @@
 import Checker from "../../dist/checker/Checker"
-import { parseTypeOnlyToAst } from "../../dist/parser/parse-typeonly"
+import { parseTypeOnly } from "../../src/api"
 
 describe("Check type of interface", () => {
 
   test("interface with primitive types", () => {
-    const input = `
+    const source = `
     type A = {
       a: number,
       b: string
     }
 `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const checker = new Checker(ast)
     const response = checker.check("A", { a: 12, b: 22 })
     expect(response.valid).toBe(false)
@@ -18,13 +18,13 @@ describe("Check type of interface", () => {
   })
 
   test("interface with array type", () => {
-    const input = `
+    const source = `
     type A = {
       a: number[],
       b: string
     }
 `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const checker = new Checker(ast)
     const response = checker.check("A", { a: [12, "23"], b: "ab" })
     expect(response.valid).toBe(false)
@@ -32,13 +32,13 @@ describe("Check type of interface", () => {
   })
 
   test("interface with literal type", () => {
-    const input = `
+    const source = `
     type A = {
       a: "test",
       b: string
     }
 `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const checker = new Checker(ast)
     const response = checker.check("A", { a: "test1", b: "ab" })
     expect(response.valid).toBe(false)
@@ -46,13 +46,13 @@ describe("Check type of interface", () => {
   })
 
   test("interface with tuple", () => {
-    const input = `
+    const source = `
     type A = {
       a: [string, number],
       b: string
     }
 `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const checker = new Checker(ast)
     const response = checker.check("A", { a: ["sd", "23"], b: "ab" })
     expect(response.valid).toBe(false)
@@ -61,7 +61,7 @@ describe("Check type of interface", () => {
   })
 
   test("check interface with depth", () => {
-    const input = `
+    const source = `
     type A = {
       a: {
         c: { d: boolean }[]
@@ -69,7 +69,7 @@ describe("Check type of interface", () => {
       b: string
     }
 `
-    const ast = parseTypeOnlyToAst(input)
+    const ast = parseTypeOnly({ source })
     const checker = new Checker(ast)
     const response = checker.check("A", {
       a: {
