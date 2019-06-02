@@ -17,7 +17,7 @@ export function parseTypeOnly(options: ParseTypeOnlyOptions): TypeOnlyAst {
   return ast
 }
 
-export interface CreateRtoModulesOptions {
+export interface GenerateRtoModulesOptions {
   modulePaths: string[]
   readFiles?: {
     sourceDir: string
@@ -37,7 +37,7 @@ export interface CreateRtoModulesOptions {
 
 export type TypeOnlyAstProvider = (modulePath: string) => Promise<TypeOnlyAst> | TypeOnlyAst
 
-export async function createRtoModules(options: CreateRtoModulesOptions): Promise<void | RtoModules> {
+export async function generateRtoModules(options: GenerateRtoModulesOptions): Promise<void | RtoModules> {
   let astProvider = options.astProvider
   if (!astProvider) {
     if (!options.readFiles)
