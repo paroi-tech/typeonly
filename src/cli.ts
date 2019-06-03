@@ -2,9 +2,11 @@
 import commandLineArgs = require("command-line-args")
 import commandLineUsage = require("command-line-usage")
 import { existsSync, readFileSync, writeFileSync } from "fs"
-import { basename, dirname } from "path"
+import { basename, dirname, join } from "path"
+import { generateRtoModules, parseTypeOnly } from "./api"
 import { TypeOnlyAst } from "./ast"
 import { parseTypeOnlyToAst } from "./parser/parse-typeonly"
+import { RtoModule } from "./rto"
 
 class InvalidArgumentError extends Error {
   readonly causeCode = "invalidArgument"
@@ -23,10 +25,22 @@ const optionDefinitions: OptionDefinition[] = [
     description: "Print this help message.",
   },
   {
+    name: "ast",
+    type: Boolean,
+    description: "Generate ast in {underline file.ast.json} ."
+  },
+  {
     name: "output-dir",
     alias: "o",
     type: String,
     description: "The output directory (optional).",
+    typeLabel: "{underline directory}"
+  },
+  {
+    name: "source-dir",
+    alias: "s",
+    type: String,
+    description: "The source directory (optional when is used with option -ast).",
     typeLabel: "{underline directory}"
   },
   {
@@ -35,12 +49,12 @@ const optionDefinitions: OptionDefinition[] = [
     type: String,
     description: "Encoding for input and output file(s) (default is {underline utf8})."
   },
-  {
-    name: "force",
-    alias: "f",
-    type: Boolean,
-    description: "Overwrite output files."
-  },
+  // {
+  //   name: "force",
+  //   alias: "f",
+  //   type: Boolean,
+  //   description: "Overwrite output files."
+  // },
   {
     name: "src",
     description: "The input file to process (by default at last position).",
@@ -51,9 +65,11 @@ const optionDefinitions: OptionDefinition[] = [
   }
 ]
 
-cli()
+cli().catch(error => {
+  console.error(`Error: ${error.message}`)
+})
 
-function cli() {
+async function cli() {
   const options = parseOptions()
   if (!options)
     return
@@ -67,19 +83,13 @@ function cli() {
   }
 
   try {
-    if (options["src"] !== undefined) {
-      proccessFile(options["src"].toString(), options)
-    } else {
-      console.error(`Error: Missing option.`)
-      printHelp()
-    }
+    await processFiles(options)
   } catch (error) {
     if (error.causeCode === "invalidArgument") {
       console.error(`Error: ${error.message}`)
       printHelp()
-    } else {
-      console.error(`Error: ${error.message}`)
-    }
+    } else
+      throw error
   }
 }
 
@@ -117,44 +127,72 @@ function parseOptions(): object | undefined {
   }
 }
 
-function proccessFile(file: string, options) {
-  if (!options.src)
-    throw new InvalidArgumentError("Missing Source File")
+async function processFiles(options: object) {
+  if (!options["src"])
+    throw new InvalidArgumentError("Missing source file(s).")
+  if (options["ast"])
+    options["src"].map((file: string) => createAstJsonFile(file, options))
+  else
+    await createRtoJsonFiles(options)
+}
 
-  let input: string
+function createAstJsonFile(file: string, options: object) {
+  file = options["source-dir"] ? join(options["source-dir"], file) : file
+  let source: string
   try {
-    input = readFileSync(file, { encoding: options.encoding || "utf8" }) as any
+    source = readFileSync(file, { encoding: options["encoding"] || "utf8" }) as any
   } catch (err) {
     throw new InvalidArgumentError(`Cannot read file: ${file}`)
   }
-  const bnad = baseNameAndDir(file)
-  // const fileName = bnad.fileBaseName
-  // console.log(fileName.substring(0, fileName.length - 2))
-  const ast: TypeOnlyAst = parseTypeOnlyToAst(input)
-  createAstJsonFile(ast, options, bnad)
-}
 
-function createAstJsonFile(ast: TypeOnlyAst, options, bnad: BaseNameAndDir) {
-  const generateAst = JSON.stringify(ast, undefined, 2)
-  const dir = normalizePath(options["output-dir"], bnad.directory)
+  const bnad = baseNameAndDir(file)
   let fileName = bnad.fileName
   if (fileName.endsWith(".ts"))
     fileName = fileName.substring(0, fileName.length - (fileName.endsWith(".d.ts") ? 5 : 3))
-  const outFile = `${dir}/${fileName}.ast.json`
-  if (!options.force && existsSync(outFile))
-    throw new Error(`Cannot overwrite existing file: ${outFile}`)
-  // console.info(`Write file: ${outFile}`)
-  writeFileSync(outFile, generateAst, {
-    encoding: options.encoding || "utf8",
+
+  const ast: TypeOnlyAst = parseTypeOnly({ source })
+  const outFile = join(options["output-dir"] || bnad.directory, `${fileName}.ast.json`)
+  writeFileSync(outFile, JSON.stringify(ast, undefined, "\t"), {
+    encoding: options["encoding"] || "utf8",
   })
 }
 
-function normalizePath(path: string | undefined, defaultPath?: string): string | undefined {
-  if (!path)
-    return defaultPath
-  path = path.replace(/\/+$/, "")
-  if (path)
-    return path
+async function createRtoJsonFiles(options: object) {
+  if (!options["source-dir"])
+    throw new Error("Missing source-dir option")
+  const sourceDir = normalizeDir(options["source-dir"])
+  const outputDir = normalizeDir(options["output-dir"] || options["source-dir"])
+
+  const modulePaths = normalizeModulePaths(options["src"], sourceDir)
+  const encoding = options["encoding"] || "utf8"
+  await generateRtoModules({
+    modulePaths,
+    readFiles: {
+      encoding,
+      sourceDir,
+    },
+    writeFiles: {
+      encoding,
+      outputDir,
+      prettify: "\t"
+    }
+  })
+}
+
+function normalizeModulePaths(files: string[], sourceDir: string): string[] {
+  const prefix = `${sourceDir}/`.replace(/\\/g, "/")
+  return files.map(file => {
+    file = file.replace(/\\/g, "/")
+    if (file.startsWith(prefix))
+      file = `./${file.substr(prefix.length)}`
+    else if (!file.startsWith("./") && !file.startsWith("../"))
+      file = `./${file}`
+    return file
+  })
+}
+
+function normalizeDir(path: string): string {
+  return path.replace(/\/+$/, "")
 }
 
 interface BaseNameAndDir {
