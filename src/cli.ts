@@ -40,7 +40,7 @@ const optionDefinitions: OptionDefinition[] = [
     name: "source-dir",
     alias: "s",
     type: String,
-    description: "The source directory (optional when is used with option -ast).",
+    description: "The source directory (optional when is used with option --ast).",
     typeLabel: "{underline directory}"
   },
   {

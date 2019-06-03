@@ -8,14 +8,22 @@ Example:
 ```sh
 node dist/cli.js --src file.d.ts
 ```
+This command will generate one file `file.rto.json`
+
+If you want to generate an ast file :
+
+```sh
+node dist/cli.js --ast --src file.d.ts
+```
 This command will generate one file `file.ast.json`
 
 Available options:
 ```
 -h, --help                   Print this help message.
+  --ast                        Generate ast in file.ast.json .
   -o, --output-dir directory   The output directory (optional).
+  -s, --source-dir directory   The source directory (optional when is used with option --ast).
   -e, --encoding string        Encoding for input and output file(s) (default is utf8).
-  -f, --force                  Overwrite output files.
   --src file ...               The input file to process (by default at last position).
 ```
 
