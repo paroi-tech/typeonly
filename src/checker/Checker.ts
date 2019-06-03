@@ -1,183 +1,220 @@
-import { AstArrayType, AstCompositeType, AstInterface, AstLiteralType, AstNamedType, AstTupleType, AstType, TypeOnlyAst } from "../ast"
+import { ArrayType, CompositeType, Interface, LiteralType, Modules, Property, TupleType, Type, TypeName } from "../typeonly-reader"
+import { readModules, ReadModulesOptions } from "../typeonly-reader/reader-api"
 
 export interface CheckResult {
-  valid: boolean
+  conform: boolean
   error?: string
 }
 
+type InternalResult = { done: true, unmatch?: undefined } | {
+  done: false,
+  unmatch: Unmatch
+}
+
+interface Unmatch {
+  val: unknown,
+  type: Type
+}
+
+export async function createChecker(options: ReadModulesOptions) {
+  return new Checker(await readModules(options))
+}
+
 export default class Checker {
-  private lastError?: string
-  constructor(private ast: TypeOnlyAst) {
+  private typeCheckers: {
+    [K in Type["kind"]]: (type: any, val: unknown) => InternalResult
+  } = {
+      name: (type, val) => this.checkTypeName(type, val),
+      interface: (type, val) => this.checkInterface(type, val),
+      array: (type, val) => this.checkArrayType(type, val),
+      composite: (type, val) => this.checkCompositeType(type, val),
+      function: (type, val) => this.checkFunctionType(type, val),
+      genericInstance: (type, val) => this.checkGenericInstance(type, val),
+      genericParameterName: (type, val) => this.checkGenericParameterName(type, val),
+      importedRef: (type, val) => this.checkImportedTypeRef(type, val),
+      keyof: (type, val) => this.checkKeyofType(type, val),
+      literal: (type, val) => this.checkLiteralType(type, val),
+      localRef: (type, val) => this.checkLocalTypeRef(type, val),
+      member: (type, val) => this.checkMemberType(type, val),
+      tuple: (type, val) => this.checkTupleType(type, val),
+
+    }
+
+  constructor(private modules: Modules) {
   }
 
-  check(typeName: string, val: unknown): CheckResult {
-    try {
-      const namedType = this.findNamedType(typeName)
-      if (!namedType)
-        throw new Error(`Unknown type: ${typeName}`)
-      const valid = this.checkType(namedType.type, val)
+  check(moduleName: string, typeName: string, val: unknown): CheckResult {
+    const module = this.modules[moduleName]
+    if (!module)
+      throw new Error(`Unknown module: ${moduleName}`)
+    const namedType = module.namedTypes[typeName]
+    if (!namedType)
+      throw new Error(`Unknown type: ${typeName}`)
+    const result = this.checkType(namedType, val)
 
-      if (valid) {
-        if (this.lastError) {
-          console.log("df1")
-          throw new Error(`Check is valid but with an error message: ${this.lastError}`)
-        }
-        return { valid: true }
-      }
-      if (!this.lastError)
-        throw new Error(`Missing error message`)
-      return {
-        valid: false,
-        error: this.lastError
-      }
-    } catch (error) {
-      return {
-        valid: false,
-        error: error.message
-      }
+    if (result.done)
+      return { conform: true }
+
+    return {
+      conform: false,
+      error: `Expected type ${result.unmatch.type.kind}, received: '${typeof result.unmatch.val}'.`
     }
   }
 
-  private checkType(type: AstType, val: unknown): boolean {
-    if (typeof type === "string") {
-      if (isPrimitive(type)) {
-        if (typeof val !== type) {
-          this.lastError = `Expected type ${type}, received: '${typeof val}'.`
-          return false
-        }
-        return true
-      } else {
-        const namedType = this.findNamedType(type)
-        if (!namedType)
-          throw new Error(`Unknown type: ${type}`)
-        return this.checkType(namedType.type, val)
+  private checkType(type: Type, val: unknown): InternalResult {
+    const checker = this.typeCheckers[type.kind]
+    if (!checker)
+      throw new Error(`Unexpected kind: ${type.kind}`)
+    return checker(type, val)
+  }
+
+  private checkTypeName(type: TypeName, val: unknown): InternalResult {
+    if (type.group === "primitive") {
+      console.log(type)
+      if (typeof val !== type.refName) {
+        return { done: false, unmatch: { type, val } }
       }
+      return { done: true }
     }
-    if (type.whichType === "interface")
-      return this.checkInterface(type, val)
-    else if (type.whichType === "literal")
-      return this.checkLiteralType(type, val)
-    else if (type.whichType === "array")
-      return this.checkArrayType(type, val)
-    else if (type.whichType === "tuple")
-      return this.checkTupleType(type, val)
-    else if (type.whichType === "composite") {
-      return this.checkCompositeType(type, val)
-    } else
-      throw new Error(`Unexpected whichType: ${type.whichType}`)
+
+    if (type.group === "ts") {
+      if (type.refName === "object" && typeof val !== "object") {
+        return { done: false, unmatch: { type, val } }
+      }
+      if (type.refName === "void" && typeof val !== undefined) {
+        return { done: false, unmatch: { type, val } }
+      }
+      if (type.refName === "never") {
+        return { done: false, unmatch: { type, val } }
+      }
+
+      return { done: true }
+    }
+
+    if (type.group === "standard")
+      throw new Error(`Not yet implemented.`)
+
+
+    if (type.group === "global")
+      throw new Error(`Not yet implemented.`)
+
+    return { done: false, unmatch: { type, val } }
   }
 
-  private findNamedType(typeName: string): AstNamedType | undefined {
-    const namedType = this.ast.declarations!.find(
-      decl => decl.whichDeclaration === "type" && decl.name === typeName
-    )
-    return namedType as AstNamedType
-  }
-
-  private checkInterface(type: AstInterface, val: unknown): boolean {
+  private checkInterface(type: Interface, val: unknown): InternalResult {
     if (!val || typeof val !== "object") {
-      this.lastError = `Expected type object, received: '${typeof val}'.`
-      return false
+      return { done: false, unmatch: { type, val } }
     }
 
     const obj = val as object
-    const entries = type.entries || []
     const remaining = new Set(Object.keys(obj))
-    for (const entry of entries) {
-      if (entry.whichEntry === "comment")
-        continue
-      if (entry.whichEntry === "property" || entry.whichEntry === "functionProperty") {
-        remaining.delete(entry.name)
-        const prop = obj[entry.name]
-        if (prop === undefined) {
-          if (!entry.optional) {
-            this.lastError = `Required property '${entry.name}'`
-            return false
-          }
-        } else if (entry.whichEntry === "property")
-          this.checkType(entry.type, prop)
-        else
-          throw new Error(`functionProperty not implemented`)
-      } else
-        throw new Error(`Unexpected whichEntry: ${entry.whichEntry}`)
+
+    for (const property of Object.values(type.properties)) {
+      remaining.delete(property.name)
+      const prop = obj[property.name]
+      if (prop === undefined) {
+        if (!property.optional) {
+          // this.lastError = `Required property '${property.name}'`
+          return { done: false, unmatch: { type, val } }
+        }
+      } else {
+        const childResult = this.checkType(property.type, prop)
+        if (!childResult.done)
+          return childResult
+      }
     }
 
     if (remaining.size > 0) {
-      this.lastError = `Unexpected properties: ${Array.from(remaining.values()).join(", ")}`
-      return false
+      // this.lastError = `Unexpected properties: ${Array.from(remaining.values()).join(", ")}`
+      return { done: false, unmatch: { type, val } }
     }
 
-    return true
+    return { done: true }
   }
 
-  private checkLiteralType(type: AstLiteralType, val: unknown): boolean {
-    if (type.literal !== val) {
-      this.lastError = `Expected type '${type.literal}', received: '${val}'.`
-      return false
-    }
-    return true
+  private checkLiteralType(type: LiteralType, val: unknown): InternalResult {
+    if (type.literal !== val)
+      return { done: false, unmatch: { type, val } }
+    return { done: true }
   }
 
-  private checkArrayType(type: AstArrayType, val: unknown): boolean {
-    if (!Array.isArray(val)) {
-      this.lastError = `Expected type 'Array', received: '${typeof val}'.`
-      return false
+  private checkArrayType(type: ArrayType, val: unknown): InternalResult {
+    if (!Array.isArray(val))
+      return { done: false, unmatch: { type, val } }
+
+    for (const item of val) {
+      const childResult = this.checkType(type.itemType, item)
+      if (!childResult.done)
+        return childResult
     }
-    const items = val
-    for (const item of items) {
-      if (!this.checkType(type.itemType, item))
-        return false
-    }
-    return true
+    return { done: true }
   }
 
-  private checkTupleType(type: AstTupleType, val: unknown): boolean {
-    // console.log(val)
-    // console.log(type)
-    if (!Array.isArray(val)) {
-      this.lastError = `Expected type 'Array', received: '${typeof val}'.`
-      return false
-    }
-    const items = type.itemTypes || []
+  private checkTupleType(type: TupleType, val: unknown): InternalResult {
+    if (!Array.isArray(val))
+      return { done: false, unmatch: { type, val } }
+
+    const items = type.itemTypes
     if (val.length !== items.length) {
-      this.lastError = `Invalid tuple size: expected ${items.length}, received: '${val.length}'.`
-      return false
+      // this.lastError = `Invalid tuple size: expected ${items.length}, received: '${val.length}'.`
+      return { done: false, unmatch: { type, val } }
     }
 
     for (const [index, item] of items.entries()) {
       const prop = val[index]
-      if (!this.checkType(item, prop))
-        return false
+      const childResult = this.checkType(item, prop)
+      if (!childResult.done)
+        return childResult
     }
-    return true
+
+    return { done: true }
   }
-
-  private checkCompositeType(type: AstCompositeType, val: unknown): boolean {
-    // console.log(val)
-    // console.log(type)
-
+  private checkCompositeType(type: CompositeType, val: unknown): InternalResult {
     if (type.op === "union") {
       for (const itemType of type.types) {
-        if (this.checkType(itemType, val)) {
-          this.lastError = undefined
-          return true
-        }
+        if (this.checkType(itemType, val).done)
+          return { done: true }
       }
-      this.lastError = `Expected types '${Array.from(type.types.values()).join(" or ")}', received: '${typeof val}'.`
-      return false
+
+      // this.lastError = `Expected types '${Array.from(type.types.values()).join(" or ")}', received: '${typeof val}'.`
+      return { done: false, unmatch: { type, val } }
 
     } else {
 
-      this.lastError = `Expected types '${type.types}', received: '${typeof val}'.`
-      return false
+      // this.lastError = `Expected types '${type.types}', received: '${typeof val}'.`
+      return { done: false, unmatch: { type, val } }
     }
-
-
-
   }
 
-}
 
-function isPrimitive(str: string): boolean {
-  return ["string", "number", "boolean", "bigint"].includes(str)
+  private checkFunctionType(type: any, val: unknown): InternalResult {
+    // TODO
+    throw new Error("Method not implemented.")
+  }
+  private checkGenericInstance(type: any, val: unknown): InternalResult {
+    // TODO
+    throw new Error("Method not implemented.")
+  }
+  private checkGenericParameterName(type: any, val: unknown): InternalResult {
+    // TODO
+    throw new Error("Method not implemented.")
+  }
+  private checkImportedTypeRef(type: any, val: unknown): InternalResult {
+    // TODO
+    throw new Error("Method not implemented.")
+  }
+  private checkKeyofType(type: any, val: unknown): InternalResult {
+    // TODO
+    throw new Error("Method not implemented.")
+  }
+  private checkLocalTypeRef(type: any, val: unknown): InternalResult {
+    // TODO
+    throw new Error("Method not implemented.")
+  }
+  private checkMemberType(type: any, val: unknown): InternalResult {
+    // TODO
+    throw new Error("Method not implemented.")
+  }
+
+
 }
