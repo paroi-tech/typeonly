@@ -7,7 +7,12 @@ import RtoProject from "./rto-factory/RtoProject"
 
 export interface ParseTypeOnlyOptions {
   source: string
-  return?: { freeze?: boolean }
+  return?: {
+    /**
+     * Default value is `false`.
+     */
+    freeze?: boolean
+  }
 }
 
 export function parseTypeOnly(options: ParseTypeOnlyOptions): TypeOnlyAst {
@@ -32,12 +37,17 @@ export interface GenerateRtoModulesOptions {
      */
     prettify?: number | string
   }
-  returnRtoModules?: boolean | { freeze?: boolean }
+  returnRtoModules?: boolean | {
+    /**
+     * Default value is `false`.
+     */
+    freeze?: boolean
+  }
 }
 
 export type TypeOnlyAstProvider = (modulePath: string) => Promise<TypeOnlyAst> | TypeOnlyAst
 
-export async function generateRtoModules(options: GenerateRtoModulesOptions): Promise<void | RtoModules> {
+export async function generateRtoModules(options: GenerateRtoModulesOptions): Promise<RtoModules | undefined> {
   let astProvider = options.astProvider
   if (!astProvider) {
     if (!options.readFiles)
@@ -48,7 +58,7 @@ export async function generateRtoModules(options: GenerateRtoModulesOptions): Pr
   if (options.writeFiles) {
     const wfOpt1 = options.writeFiles === true ? {} : options.writeFiles
     const encoding = wfOpt1.encoding || "utf8"
-    const outputDir = wfOpt1.outputDir || (options.readFiles && options.readFiles.sourceDir)
+    const outputDir = wfOpt1.outputDir || (!options.astProvider && options.readFiles && options.readFiles.sourceDir)
     if (!outputDir)
       throw new Error(`Option 'writeFiles.outputDir' is required when 'readFiles.sourceDir' is not provided.`)
     wfOpt2 = {
@@ -76,6 +86,9 @@ export async function generateRtoModules(options: GenerateRtoModulesOptions): Pr
 
 export interface CreateStandaloneRtoModuleOptions {
   ast: TypeOnlyAst
+  /**
+   * Default value is `false`.
+   */
   freeze?: boolean
 }
 

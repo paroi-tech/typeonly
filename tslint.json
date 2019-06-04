@@ -11,7 +11,6 @@
     ]
   },
   "rules": {
-    "no-console": false,
     "arrow-parens": false,
     "curly": false,
     "eofline": false,
@@ -28,6 +27,7 @@
       "no-public"
     ],
     "no-consecutive-blank-lines": false,
+    "no-console": false,
     "no-empty": [
       true,
       "allow-empty-catch",

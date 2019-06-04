@@ -1,36 +1,28 @@
-import Checker, { createChecker } from "../../dist/checker/Checker"
-import { parseTypeOnly } from "../../src/api"
+import { createStandaloneRtoModule, generateRtoModules, parseTypeOnly } from "../../src/api"
+import Checker from "../../src/checker/Checker"
+import { readModules } from "../../src/typeonly-reader/reader-api"
 
 describe("Check type of interface", () => {
 
-  test("interface with primitive types", () => {
-
-    async function main() {
-      const options = {
-        baseDir: __dirname,
-        modulePath: ["./check-interface.rto"]
+  test("interface with primitive types", async () => {
+    const source = `
+      type A = {
+        a: number,
+        b: string
       }
+    `
 
-      const checker = await createChecker(options)
-      const result = checker.check("./check-interface.rto", "A", { a: 12, b: 22 })
+    const modules = await readModules({
+      modulePaths: ["./mod1"],
+      rtoModuleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
+    })
+    const checker = new Checker(modules)
+    const result = checker.check("./mod1", "A", { a: 12, b: 22 })
 
-      expect(result.valid).toBe(false)
-      expect(result.error).not.toBeUndefined()
-    }
-
-    main().catch(console.log)
-
-    //     const source = `
-    //     type A = {
-    //       a: number,
-    //       b: string
-    //     }
-    // `
-    //     const ast = parseTypeOnly({ source })
-    //     const checker = new Checker(ast)
-    //     const response = checker.check("A", { a: 12, b: 22 })
-    //     expect(response.valid).toBe(false)
-    //     expect(response.error).not.toBeUndefined()
+    expect(result.conform).toBe(false)
+    expect(result.error).not.toBeUndefined()
   })
 
 

@@ -1,18 +1,12 @@
-import * as fs from "fs"
-import { join } from "path"
-import { promisify } from "util"
 import { RelativeModulePath, toModulePath } from "../helpers/module-path-helpers"
-import { RtoModule } from "../rto"
 import { Modules } from "../typeonly-reader"
 import ModuleFactory from "./ModuleFactory"
-
-const readFile = promisify(fs.readFile)
+import { RtoModuleProvider } from "./reader-api"
 
 export type GetModuleFactory = (modulePath: RelativeModulePath) => ModuleFactory
 
 export interface ProjectOptions {
-  baseDir: string
-  encoding: string
+  rtoModuleProvider: RtoModuleProvider
 }
 
 export default class Project {
@@ -50,15 +44,13 @@ export default class Project {
   }
 
   private async loadRtoModule(relPath: RelativeModulePath) {
-    const { baseDir, encoding } = this.options
     const modulePath = toModulePath({
       ...relPath,
       removeExtensions: [".rto.json"]
     })
     let factory = this.factories.get(modulePath)
     if (!factory) {
-      const data = await readRtoFile(baseDir, modulePath, encoding)
-      const rtoModule = JSON.parse(data) as RtoModule
+      const rtoModule = await this.options.rtoModuleProvider(modulePath)
       factory = new ModuleFactory(rtoModule, modulePath)
       this.factories.set(modulePath, factory)
       await this.loadImports(factory, modulePath)
@@ -74,14 +66,5 @@ export default class Project {
       for (const { from } of factory.rtoModule.namespacedImports)
         await this.loadRtoModule({ from, relativeToModule: modulePath })
     }
-  }
-}
-
-async function readRtoFile(baseDir: string, modulePath: string, encoding: string) {
-  const path = join(baseDir, modulePath)
-  try {
-    return await readFile(`${path}.rto.json`, { encoding })
-  } catch {
-    throw new Error(`Cannot open module file: ${path}.rto.json`)
   }
 }

@@ -1,19 +1,25 @@
-import Checker from "../../dist/checker/Checker"
-import { parseTypeOnly } from "../../src/api"
+import { createStandaloneRtoModule, parseTypeOnly } from "../../src/api"
+import Checker from "../../src/checker/Checker"
+import { readModules } from "../../src/typeonly-reader/reader-api"
 
 describe("Check nameType with string", () => {
 
-  test("primitive types", () => {
+  test("primitive types", async () => {
     const source = `
     type A = B
     type B = number
 `
-    const ast = parseTypeOnly({ source })
-    const checker = new Checker(ast)
-    const response = checker.check("A", "12")
-    expect(response.valid).toBe(false)
-    expect(response.error).not.toBeUndefined()
+    const modules = await readModules({
+      modulePaths: ["./mod1"],
+      rtoModuleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
+    })
+    const checker = new Checker(modules)
 
+    const response = checker.check("./mod1", "A", "12")
+    expect(response.conform).toBe(false)
+    expect(response.error).not.toBeUndefined()
   })
 
 
