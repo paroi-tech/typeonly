@@ -132,7 +132,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     if (!interf)
       throw new Error("InterfaceStack should not be empty")
 
-    if (interf.entries && interf.entries.length > 1) {
+    if (interf.entries) {
       let mappedIndexSignatureNb = 0
       let indexSignatureNb = 0
       let otherPropertyNb = 0
@@ -146,8 +146,13 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
           ++otherPropertyNb
         }
       }
-      if (mappedIndexSignatureNb > 1 || (mappedIndexSignatureNb === 1 && otherPropertyNb > 0))
-        throw new Error("Synthax Error : An Interface must be have one property which is a mappedIndexSignature property")
+      if (mappedIndexSignatureNb > 0) {
+        if (this.interfaceStack.length === 0 && this.currentNamedInterface)
+          throw new Error("A mapped signature can't be in a named interface")
+        if (mappedIndexSignatureNb > 1 || (mappedIndexSignatureNb === 1 && otherPropertyNb > 0)) {
+          throw new Error("Synthax Error : An Interface must have one property which is a mappedIndexSignature property")
+        }
+      }
       if (indexSignatureNb > 1) {
         throw new Error("Synthax Error: An Interface must be have one indexSignature property")
       }
@@ -352,16 +357,16 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
   }
 
   enterAType(ctx: AntlrRuleContext) {
-    if (ctx.OPEN_PARENTHESE()) {
+    if (ctx.returnType) {
       // console.log("##&& function type== ", ctx.getText())
       this.processFunctionType(ctx)
     } else if (ctx.UNION() || ctx.INTERSECTION()) {
       // console.log("##&& open composite== ", ctx.getText())
       this.processCompositeType(ctx)
-    } else if (ctx.memberTypeBracket) {
+    } else if (ctx.memberParentType) {
       // console.log("##&& enter MemberType", ctx.memberName().getText())
       this.processMemberType(ctx)
-    } else if (ctx.OPEN_BRACKET()) {
+    } else if (ctx.arrayItemType) {
       // console.log("##&& enter ArrayType", ctx.aType()[0].getText())
       this.processArrayType(ctx)
     } else if (ctx.KEYOF()) {
@@ -408,7 +413,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     this.registerAstChild(memberType, ctx)
     this.setAstChildRegistration(
       astType => { memberType.parentType = astType },
-      ctx.aType()[0]
+      ctx.memberParentType
     )
   }
 
@@ -419,7 +424,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     this.registerAstChild(arrayType, ctx)
     this.setAstChildRegistration(
       astType => { arrayType.itemType = astType },
-      ctx.aType()[0]
+      ctx.arrayItemType
     )
   }
 
@@ -493,7 +498,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
 
     this.setAstChildRegistration(child => {
       functionType.returnType = child
-    }, ctx.aType()[0])
+    }, ctx.returnType)
 
     this.proccessGenericParameter(ctx, functionType)
 

@@ -1,24 +1,22 @@
 import { createStandaloneRtoModule, generateRtoModules, parseTypeOnly } from "../../src/api"
-import Checker from "../../src/checker/Checker"
-import { readModules } from "../../src/typeonly-reader/reader-api"
+import { createChecker } from "../../src/checker/Checker"
 
 describe("Check type of interface", () => {
 
   test("interface with primitive types", async () => {
     const source = `
-      type A = {
+      export type A = {
         a: number,
         b: string
       }
     `
 
-    const modules = await readModules({
+    const checker = await createChecker({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
-    const checker = new Checker(modules)
     const result = checker.check("./mod1", "A", { a: 12, b: 22 })
 
     expect(result.conform).toBe(false)

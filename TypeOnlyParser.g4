@@ -117,9 +117,9 @@ aType:
   | signatureType
   | literal
   | tupleType
+  | memberParentType = aType OPEN_BRACKET memberName CLOSE_BRACKET
+  | arrayItemType = aType NL* OPEN_BRACKET NL* CLOSE_BRACKET
   | KEYOF aType
-  | aType memberTypeBracket = OPEN_BRACKET memberName CLOSE_BRACKET
-  | aType NL* OPEN_BRACKET NL* CLOSE_BRACKET
   | anonymousInterface
   | typeWithParenthesis
   | aType NL* INTERSECTION NL* aType
@@ -127,7 +127,7 @@ aType:
   | genericInstance
   | (NL* genericParameters)? OPEN_PARENTHESE (
     NL* functionParameter (NL* COMMA NL* functionParameter)*
-  )? NL* CLOSE_PARENTHESE NL* ARROW NL* aType;
+  )? NL* CLOSE_PARENTHESE NL* ARROW NL* returnType = aType;
 
 memberName: STRING_LITERAL | INTEGER_LITERAL | IDENTIFIER;
 

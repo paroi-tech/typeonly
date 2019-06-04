@@ -6,7 +6,7 @@ describe("Check nameType with string", () => {
 
   test("primitive types", async () => {
     const source = `
-    type A = B
+    export type A = B
     type B = number
 `
     const modules = await readModules({

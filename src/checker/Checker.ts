@@ -1,4 +1,5 @@
-import { ArrayType, CompositeType, Interface, LiteralType, Modules, Property, TupleType, Type, TypeName } from "../typeonly-reader"
+import { ImportRef } from "../rto-factory/AstImportTool"
+import { ArrayType, CompositeType, FunctionType, GenericInstance, GenericParameterName, ImportedTypeRef, Interface, KeyofType, LiteralType, LocalTypeRef, MemberNameLiteral, MemberType, Module, Modules, Property, TupleType, Type, TypeName } from "../typeonly-reader"
 import { readModules, ReadModulesOptions } from "../typeonly-reader/reader-api"
 
 export interface CheckResult {
@@ -40,16 +41,19 @@ export default class Checker {
 
     }
 
+  //  private module: Module =
+
   constructor(private modules: Modules) {
   }
 
   check(moduleName: string, typeName: string, val: unknown): CheckResult {
+    // this.module = this.modules[moduleName]
     const module = this.modules[moduleName]
     if (!module)
       throw new Error(`Unknown module: ${moduleName}`)
     const namedType = module.namedTypes[typeName]
-    if (!namedType)
-      throw new Error(`Unknown type: ${typeName}`)
+    if (!namedType || !namedType.exported)
+      throw new Error(`Module '${moduleName}' has no exported type: ${typeName}`)
     const result = this.checkType(namedType, val)
 
     if (result.done)
@@ -61,6 +65,7 @@ export default class Checker {
     }
   }
 
+
   private checkType(type: Type, val: unknown): InternalResult {
     const checker = this.typeCheckers[type.kind]
     if (!checker)
@@ -68,9 +73,9 @@ export default class Checker {
     return checker(type, val)
   }
 
+
   private checkTypeName(type: TypeName, val: unknown): InternalResult {
     if (type.group === "primitive") {
-      console.log(type)
       if (typeof val !== type.refName) {
         return { done: false, unmatch: { type, val } }
       }
@@ -92,23 +97,40 @@ export default class Checker {
     }
 
     if (type.group === "standard")
-      throw new Error(`Not yet implemented.`)
+      throw new Error(`Standard not yet implemented.`)
 
 
     if (type.group === "global")
-      throw new Error(`Not yet implemented.`)
+      throw new Error(`Global type not yet implemented.`)
 
     return { done: false, unmatch: { type, val } }
   }
+
 
   private checkInterface(type: Interface, val: unknown): InternalResult {
     if (!val || typeof val !== "object") {
       return { done: false, unmatch: { type, val } }
     }
 
+    if (type.indexSignature) {
+      for (const [propName, childVal] of Object.entries(val as object)) {
+        if (type.indexSignature.keyType === "number" && isNaN(Number(propName))) {
+          return { done: false, unmatch: { type, val } }
+        }
+        const result = this.checkType(type.indexSignature.type, childVal)
+        if (!result.done)
+          return result
+      }
+
+      return { done: true }
+    }
+
+    if (type.mappedIndexSignature)
+      throw new Error(`MappedIndexSignature not yet implemented.`)
+
+
     const obj = val as object
     const remaining = new Set(Object.keys(obj))
-
     for (const property of Object.values(type.properties)) {
       remaining.delete(property.name)
       const prop = obj[property.name]
@@ -132,11 +154,13 @@ export default class Checker {
     return { done: true }
   }
 
+
   private checkLiteralType(type: LiteralType, val: unknown): InternalResult {
     if (type.literal !== val)
       return { done: false, unmatch: { type, val } }
     return { done: true }
   }
+
 
   private checkArrayType(type: ArrayType, val: unknown): InternalResult {
     if (!Array.isArray(val))
@@ -149,6 +173,7 @@ export default class Checker {
     }
     return { done: true }
   }
+
 
   private checkTupleType(type: TupleType, val: unknown): InternalResult {
     if (!Array.isArray(val))
@@ -169,6 +194,8 @@ export default class Checker {
 
     return { done: true }
   }
+
+
   private checkCompositeType(type: CompositeType, val: unknown): InternalResult {
     if (type.op === "union") {
       for (const itemType of type.types) {
@@ -187,34 +214,113 @@ export default class Checker {
   }
 
 
-  private checkFunctionType(type: any, val: unknown): InternalResult {
-    // TODO
-    throw new Error("Method not implemented.")
+  private checkKeyofType(type: KeyofType, val: unknown): InternalResult {
+    return this.checkKeyofTypeWith(type.type, val)
   }
-  private checkGenericInstance(type: any, val: unknown): InternalResult {
-    // TODO
-    throw new Error("Method not implemented.")
+
+  private checkKeyofTypeWith(type: Type, val: unknown): InternalResult {
+    if (type.kind === "interface") {
+      for (const propertyName of Object.keys(type.properties)) {
+        if (propertyName === val)
+          return { done: true }
+      }
+      return { done: false, unmatch: { type, val } }
+    }
+
+    if (type.kind === "array" || type.kind === "tuple"
+      || (type.kind === "literal" && typeof type.literal === "string")) {
+      if (isNaN(Number(val)))
+        return { done: false, unmatch: { type, val } }
+
+      return { done: true }
+    }
+
+    if (type.kind === "localRef" || type.kind === "importedRef")
+      return this.checkKeyofTypeWith(type.ref, val)
+
+    if (type.kind === "composite" && type.op === "intersection") {
+      for (const itemType of type.types) {
+        if (this.checkKeyofTypeWith(itemType, val).done)
+          return { done: true }
+      }
+      return { done: false, unmatch: { type, val } }
+    }
+
+    throw new Error(`Cannot use keyof on: ${type.kind}.`)
   }
-  private checkGenericParameterName(type: any, val: unknown): InternalResult {
-    // TODO
-    throw new Error("Method not implemented.")
+
+  private checkLocalTypeRef(type: LocalTypeRef, val: unknown): InternalResult {
+    return this.checkType(type.ref, val)
   }
-  private checkImportedTypeRef(type: any, val: unknown): InternalResult {
-    // TODO
-    throw new Error("Method not implemented.")
-  }
-  private checkKeyofType(type: any, val: unknown): InternalResult {
-    // TODO
-    throw new Error("Method not implemented.")
-  }
-  private checkLocalTypeRef(type: any, val: unknown): InternalResult {
-    // TODO
-    throw new Error("Method not implemented.")
-  }
-  private checkMemberType(type: any, val: unknown): InternalResult {
-    // TODO
-    throw new Error("Method not implemented.")
+
+  private checkImportedTypeRef(type: ImportedTypeRef, val: unknown): InternalResult {
+    return this.checkType(type.ref, val)
   }
 
 
+  private checkMemberType(type: MemberType, val: unknown): InternalResult {
+
+    return this.checkMemberTypeWith(type.parentType, val, type.memberName)
+  }
+
+  private checkMemberTypeWith(type: Type, val: unknown, memberName: string | MemberNameLiteral): InternalResult {
+    if (typeof memberName === "string")
+      throw new Error(`Generic parameter name not implemented as member name`)
+
+    const literalType = typeof memberName.literal
+    if (literalType !== "string" && literalType !== "number")
+      throw new Error(`Cannot use a ${literalType} literal as a member name`)
+    const name = memberName.literal
+
+    if (type.kind === "interface") {
+      const memberType = type.properties[name]
+      if (!memberType)
+        throw new Error(`Missing member '${name}' in interface`)
+      return this.checkType(memberType.type, val)
+    }
+
+    if (type.kind === "array") {
+      if (typeof name !== "number")
+        throw new Error(`Cannot use a member type on array with a string literal '${name}'`)
+      return this.checkType(type.itemType, val)
+    }
+    if (type.kind === "tuple") {
+      if (typeof name !== "number")
+        throw new Error(`Cannot use a member type on tuple with a string literal '${name}'`)
+      const memberType = type.itemTypes[name]
+      if (!memberType)
+        throw new Error(`Missing member '${name}' in tuple`)
+      return this.checkType(memberType, val)
+    }
+
+    if (type.kind === "localRef" || type.kind === "importedRef") {
+      return this.checkMemberTypeWith(type.ref, val, memberName)
+    }
+
+    if (type.kind === "composite" && type.op === "intersection") {
+      for (const itemType of type.types) {
+        if (this.checkMemberTypeWith(itemType, val, memberName).done)
+          return { done: true }
+      }
+      return { done: false, unmatch: { type, val } }
+    }
+
+    throw new Error(`Cannot use member type of: ${type.kind}.`)
+  }
+
+  private checkFunctionType(type: FunctionType, val: unknown): InternalResult {
+    if (typeof val === "function")
+      return { done: true }
+    return { done: false, unmatch: { type, val } }
+  }
+
+  private checkGenericInstance(type: GenericInstance, val: unknown): InternalResult {
+    // TODO checkGenericInstance
+    throw new Error("Method not implemented.")
+  }
+
+  private checkGenericParameterName(type: GenericParameterName, val: unknown): InternalResult {
+    // TODO checkGenericParameterName
+    throw new Error("Method not implemented.")
+  }
 }
