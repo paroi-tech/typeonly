@@ -1,35 +1,74 @@
-# TypeOnly - `@paleo/typeonly`
-Parse TypeOnly code.
+# TypeOnly
+
+TypeOnly is a language to describe typing for JavaScript and JSON data. TypeOnly is a strict subset of TypeScript: any code that compiles with TypeOnly will also compile with TypeScript.
+
+Applications built on top of this language:
+
+* [**@typeonly/reader**](https://github.com/typeonly/reader): Brings typing metadata at run time;
+* [**@typeonly/checker**](https://github.com/typeonly/checker): Checks data conformity, for example a JSON data.
 
 ## How to use the Command Line Interface
 
-Example:
+Compile a typing source file:
 
 ```sh
-node dist/cli.js --src file.d.ts
+npx typeonly --source-dir src/ --output-dir dist-rto/ my-file.d.ts
 ```
-This command will generate one file `file.rto.json`
 
-If you want to generate an ast file :
-
-```sh
-node dist/cli.js --ast --src file.d.ts
-```
-This command will generate one file `file.ast.json`
+This command generates a compiled file `dist-rto/my-file.rto.json`.
 
 Available options:
+
 ```
--h, --help                   Print this help message.
-  --ast                        Generate ast in file.ast.json .
+  -h, --help                   Print this help message.
   -o, --output-dir directory   The output directory (optional).
   -s, --source-dir directory   The source directory (optional when is used with option --ast).
   -e, --encoding string        Encoding for input and output file(s) (default is utf8).
+  --ast                        Generate AST files instead of RTO files (optional).
   --src file ...               The input file to process (by default at last position).
+```
+
+## How to use the API from Node.js
+
+Install as a dependency:
+
+```sh
+npm install typeonly
+```
+
+Then, use it:
+
+```js
+const { generateRtoModules } = require("typeonly")
+
+generateRtoModules({
+  modulePaths: ["./my-file"],
+  readFiles: {
+    sourceDir: `${__dirname}/src`,
+  },
+  writeFiles: {
+    outputDir: `${__dirname}/dist-rto`,
+    prettify: 2
+  }
+}).catch(console.log)
+```
+
+## Known Limitations
+
+There is some kind of source code that can currently be parsed without error with TypeOnly, although it is invalid in TypeScript. This is a temporary limitation of our implementation. Do not use it! TypeOnly will always remain a strict subset of TypeScript. If you write some code that is incompatible with TypeScript, then future versions of TypeOnly could break your code.
+
+An example of invalid TypeScript code that mistakenly can be parsed by the current version of TypeOnly:
+
+```ts
+interface I1 {
+  [name: string]: boolean
+  p1: number // TS Error: Property 'p1' of type 'number' is not assignable to string index type 'boolean'.
+}
 ```
 
 ## Contribute
 
-### Install and build
+### Install and Build
 
 We need a JVM (Java Virtual Machine) to build the parser because we use [ANTLR](https://www.antlr.org/), which is a Java program. So, at first, install a JVM on your system.
 

@@ -2,6 +2,7 @@
 ._*
 
 node_modules
+.npmrc
 
 /dist
 /bundle-tsd/declarations
@@ -9,5 +10,3 @@ node_modules
 /.antlr
 /antlr-*.jar
 /antlr-parser
-
-/tmp

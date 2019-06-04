@@ -1,18 +1,21 @@
 {
-  "name": "@tomko/typeonly",
-  "version": "0.0.0",
-  "private": true,
-  "description": "",
+  "name": "typeonly",
+  "version": "0.1.0",
+  "description": "A language to describe typing for JavaScript and JSON data.",
   "author": "tomko.team",
   "scripts": {
-    "antlr": "java -cp \"antlr-4.7.2-complete.jar\" org.antlr.v4.Tool -Dlanguage=JavaScript TypeOnlyLexer.g4 TypeOnlyParser.g4 -o antlr-parser",
-    "rick_antlr": "java -cp \"antlr-4.7.2-complete.jar\" org.antlr.v4.Tool -Dlanguage=JavaScript tmp/TestLexer.g4 tmp/TestParser.g4 -o antlr-parser",
-    "clear": "rimraf 'dist/*' 'antlr-parser/*'",
+    "antlr": "java -cp \"antlr-4.7.2-complete.jar\" org.antlr.v4.Tool -Dlanguage=JavaScript -o antlr-parser TypeOnlyParser.g4 TypeOnlyLexer.g4",
+    "clear": "rimraf 'dist/*' 'antlr-parser/*' 'bundle-tsd/declarations/*'",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
-    "build": "npm run clear && npm run antlr && npm run tsc",
+    "bundle-tsd": "node bundle-tsd/bundle-tsd",
+    "build": "npm run clear && npm run antlr && npm run tsc && npm run bundle-tsd",
     "lint": "tslint -p tsconfig.json -t verbose",
     "test": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/typeonly/typeonly.git"
   },
   "dependencies": {
     "antlr4": "^4.7.2",
@@ -22,12 +25,26 @@
   "devDependencies": {
     "@types/command-line-args": "^5.0.0",
     "@types/command-line-usage": "^5.0.1",
-    "@types/jest": "^24.0.12",
-    "@types/node": "^12.0.0",
+    "@types/jest": "^24.0.13",
+    "@types/node": "^12.0.4",
     "jest": "^24.8.0",
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.2",
-    "tslint": "^5.16.0",
-    "typescript": "^3.4.5"
-  }
+    "tslint": "^5.17.0",
+    "typescript": "^3.5.1"
+  },
+  "main": "dist/api.js",
+  "types": "dist/universal-ddl.d.ts",
+  "bin": "./dist/cli.js",
+  "license": "CC0-1.0",
+  "keywords": [
+    "typing",
+    "runtime",
+    "interface",
+    "type",
+    "typescript",
+    "subset",
+    "parser",
+    "ast"
+  ]
 }

@@ -25,11 +25,6 @@ const optionDefinitions: OptionDefinition[] = [
     description: "Print this help message.",
   },
   {
-    name: "ast",
-    type: Boolean,
-    description: "Generate ast in {underline file.ast.json} ."
-  },
-  {
     name: "output-dir",
     alias: "o",
     type: String,
@@ -40,7 +35,7 @@ const optionDefinitions: OptionDefinition[] = [
     name: "source-dir",
     alias: "s",
     type: String,
-    description: "The source directory (optional when is used with option --ast).",
+    description: "The source directory (optional when used with option {underline --ast}).",
     typeLabel: "{underline directory}"
   },
   {
@@ -49,12 +44,11 @@ const optionDefinitions: OptionDefinition[] = [
     type: String,
     description: "Encoding for input and output file(s) (default is {underline utf8})."
   },
-  // {
-  //   name: "force",
-  //   alias: "f",
-  //   type: Boolean,
-  //   description: "Overwrite output files."
-  // },
+  {
+    name: "ast",
+    type: Boolean,
+    description: "Generate AST files instead of RTO files (optional)."
+  },
   {
     name: "src",
     description: "The input file to process (by default at last position).",
@@ -111,7 +105,7 @@ function printHelp() {
       optionList: optionDefinitions
     },
     {
-      content: "Project home: {underline https://github.com/paleo/typeonly}"
+      content: "Project home: {underline https://github.com/typeonly/typeonly}"
     }
   ]
   const usage = commandLineUsage(sections)
