@@ -1,6 +1,6 @@
 {
   "name": "typeonly",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A language to describe typing for JavaScript and JSON data.",
   "author": "tomko.team",
   "scripts": {
@@ -34,7 +34,7 @@
     "typescript": "^3.5.1"
   },
   "main": "dist/api.js",
-  "types": "dist/universal-ddl.d.ts",
+  "types": "dist/typeonly.d.ts",
   "bin": "./dist/cli.js",
   "license": "CC0-1.0",
   "keywords": [
