@@ -4,18 +4,18 @@ TypeOnly is a language to describe typing for JavaScript and JSON data. TypeOnly
 
 Applications built on top of this language:
 
-* [**@typeonly/reader**](https://github.com/typeonly/reader): Brings typing metadata at run time;
-* [**@typeonly/checker**](https://github.com/typeonly/checker): Checks data conformity, for example a JSON data.
+* [**@typeonly/reader**](https://github.com/tomko-team/typeonly-reader): Brings typing metadata at run time;
+* [**@typeonly/checker**](https://github.com/tomko-team/typeonly-checker): Checks data conformity, for example a JSON data.
 
 ## How to use the Command Line Interface
 
 Compile a typing source file:
 
 ```sh
-npx typeonly --source-dir src/ --output-dir dist-rto/ my-file.d.ts
+npx typeonly --source-dir src/ --output-dir dist-rto/ file-name.d.ts
 ```
 
-This command generates a compiled file `dist-rto/my-file.rto.json`.
+This command generates a compiled file `dist-rto/file-name.rto.json`.
 
 Available options:
 
@@ -42,7 +42,7 @@ Then, use it:
 const { generateRtoModules } = require("typeonly")
 
 generateRtoModules({
-  modulePaths: ["./my-file"],
+  modulePaths: ["./file-name"],
   readFiles: {
     sourceDir: `${__dirname}/src`,
   },

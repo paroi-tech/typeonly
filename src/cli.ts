@@ -91,13 +91,13 @@ function printHelp() {
   const sections = [
     {
       header: "TypeOnly",
-      content: "Parse TypeOnly code."
+      content: "TypeOnly Parser."
     },
     {
       header: "Synopsis",
       content: [
-        "$ node {underline dist/cli.js} {bold --src} {underline file}",
-        "$ node {underline dist/cli.js} {bold --help}"
+        "$ npx typeonly {bold --source-dir} {underline src/} {underline file-name.d.ts}",
+        "$ npx typeonly {bold --help}"
       ]
     },
     {
@@ -105,7 +105,7 @@ function printHelp() {
       optionList: optionDefinitions
     },
     {
-      content: "Project home: {underline https://github.com/typeonly/typeonly}"
+      content: "Project home: {underline https://github.com/tomko-team/typeonly}"
     }
   ]
   const usage = commandLineUsage(sections)

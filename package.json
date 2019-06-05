@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/typeonly/typeonly.git"
+    "url": "git+https://github.com/tomko-team/typeonly.git"
   },
   "dependencies": {
     "antlr4": "^4.7.2",
