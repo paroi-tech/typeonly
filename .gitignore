@@ -1,0 +1,8 @@
+.DS_Store
+._*
+
+node_modules
+.npmrc
+
+/dist
+/bundle-tsd/declarations
