@@ -12,6 +12,11 @@
     "lint": "tslint -p tsconfig.json -t verbose",
     "test": "jest --watch"
   },
+  "dependencies": {
+    "@typeonly/reader": "^0.1.0",
+    "command-line-args": "^5.1.1",
+    "command-line-usage": "^5.0.5"
+  },
   "devDependencies": {
     "@types/command-line-args": "^5.0.0",
     "@types/command-line-usage": "^5.0.1",
@@ -38,10 +43,5 @@
     "type",
     "interface",
     "typescript"
-  ],
-  "dependencies": {
-    "@typeonly/reader": "^0.1.0",
-    "command-line-args": "^5.1.1",
-    "command-line-usage": "^5.0.5"
-  }
+  ]
 }
