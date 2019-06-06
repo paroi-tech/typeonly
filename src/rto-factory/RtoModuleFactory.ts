@@ -175,7 +175,9 @@ export default class RtoModuleFactory {
     return {
       kind: "member",
       parentType: this.createRtoType(astNode.parentType),
-      memberName: astNode.memberName
+      memberName: typeof astNode.memberName === "string" ? astNode.memberName : {
+        literal: astNode.memberName.literal
+      }
     }
   }
 

@@ -186,7 +186,7 @@ function normalizeModulePaths(files: string[], sourceDir: string): string[] {
 }
 
 function normalizeDir(path: string): string {
-  return path.replace(/\/+$/, "")
+  return path.replace(/\\/g, "/").replace(/\/+$/, "")
 }
 
 interface BaseNameAndDir {
