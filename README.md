@@ -7,10 +7,10 @@ Checks data conformity to [TypeOnly](https://github.com/tomko-team/typeonly) def
 Check JSON data file:
 
 ```sh
-npx @typeonly/checker -m src/file-name.rto.json dir/data.json -t root-type-name
+npx @typeonly/checker -m dist-rto/file-name.rto.json data.json -t root-type-name
 ```
 
-This return positive message if data is conform and error if not.
+This prints a confirmation message if data is conform or an error if not.
 
 Available options:
 
@@ -34,6 +34,18 @@ npm install @typeonly/checker
 Then, use it:
 
 ```js
+const { createChecker } = require("@typeonly/checker")
+
+async function f() {
+  const checker = await createChecker({
+    modulePaths: ["./file-name"],
+    readFiles: {
+      baseDir: `${__dirname}/src`
+    }
+  })
+
+  const result = checker.check("./file-name", "TypeName", data)
+}
 ```
 
 ## Known Limitations

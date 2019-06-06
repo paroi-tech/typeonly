@@ -1,5 +1,5 @@
 import { readModules } from "@typeonly/reader"
-import { createStandaloneRtoModule, generateRtoModules, parseTypeOnly } from "typeonly"
+import { createStandaloneRtoModule, parseTypeOnly } from "typeonly"
 import { createChecker, createCheckerFromModules } from "../src/api"
 
 describe("Check Types", () => {
