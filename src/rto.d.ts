@@ -75,7 +75,7 @@ export interface RtoTypeName {
 }
 
 export type RtoSpecialTypeName = "any" | "unknown" | "object" | "void" | "never"
-export type RtoPrimitiveTypeName = "string" | "number" | "bigint" | "boolean" | "undefined" | "null" | "symbol"
+export type RtoPrimitiveTypeName = "string" | "number" | "bigint" | "boolean" | "symbol" | "undefined" | "null"
 
 export interface RtoGenericParameterName {
   kind: "genericParameterName"

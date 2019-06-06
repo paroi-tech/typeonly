@@ -54,7 +54,7 @@ interface I1 { a: string, b: string; c: string }
   })
 
   const validTypeNames = {
-    "primitive": ["number", "string", "boolean", "bigint"],
+    "primitive": ["number", "string", "boolean", "bigint", "symbol"],
     "standard": ["Number", "String", "Boolean", "Bigint", "Date", "Symbol"],
     "typescript": ["any", "void", "object", "unknown", "never"],
     "identifier": validIdentifiers,

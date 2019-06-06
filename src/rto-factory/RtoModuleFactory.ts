@@ -335,7 +335,7 @@ export default class RtoModuleFactory {
 function findKindOfName(typeName: string): "ts" | "primitive" | "standard" | undefined {
   if (["any", "unknown", "object", "void", "never"].includes(typeName))
     return "ts"
-  if (["string", "number", "bigint", "boolean", "undefined", "null", "symbol"].includes(typeName))
+  if (["string", "number", "bigint", "boolean", "symbol", "undefined", "null"].includes(typeName))
     return "primitive"
   if (["String", "Number", "Bigint", "Boolean", "Symbol", "Date"].includes(typeName))
     return "standard"
