@@ -1,6 +1,6 @@
 # TypeOnly
 
-TypeOnly is a language to describe typing for JavaScript and JSON data. TypeOnly is a strict subset of TypeScript: any code that compiles with TypeOnly will also compile with TypeScript. See also: [A more detailed presentation of the TypeOnly language](https://github.com/tomko-team/typeonly/typeonly-language.md).
+TypeOnly is a language to describe typing for JavaScript and JSON data. TypeOnly is a strict subset of TypeScript: any code that compiles with TypeOnly will also compile with TypeScript. See also: [A more detailed presentation of the TypeOnly language](https://github.com/tomko-team/typeonly/blob/master/typeonly-language.md).
 
 Applications built on top of this language:
 
