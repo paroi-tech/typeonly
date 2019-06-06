@@ -1,4 +1,5 @@
-import { ArrayType, CompositeType, FunctionType, GenericInstance, GenericParameterName, ImportedTypeRef, Interface, KeyofType, LiteralType, LocalTypeRef, MemberNameLiteral, MemberType, Module, Modules, Property, TupleType, Type, TypeName } from "@typeonly/reader"
+import { ArrayType, CompositeType, FunctionType, GenericInstance, GenericParameterName, ImportedTypeRef, Interface, KeyofType, LiteralType, LocalTypeRef, MemberNameLiteral, MemberType, Modules, TupleType, Type, TypeName } from "@typeonly/reader"
+import { TypeOnlyChecker } from "./api"
 
 export interface CheckResult {
   conform: boolean
@@ -15,7 +16,7 @@ interface Unmatch {
   type: Type
 }
 
-export default class Checker {
+export default class Checker implements TypeOnlyChecker {
   private typeCheckers: {
     [K in Type["kind"]]: (type: any, val: unknown) => InternalResult
   } = {
@@ -35,13 +36,10 @@ export default class Checker {
 
     }
 
-  //  private module: Module =
-
   constructor(private modules: Modules) {
   }
 
   check(moduleName: string, typeName: string, val: unknown): CheckResult {
-    // this.module = this.modules[moduleName]
     const module = this.modules[moduleName]
     if (!module)
       throw new Error(`Unknown module: ${moduleName}`)
@@ -214,6 +212,13 @@ export default class Checker {
 
   private checkKeyofTypeWith(type: Type, val: unknown): InternalResult {
     if (type.kind === "interface") {
+      if (type.indexSignature) {
+        if (type.indexSignature.keyType === typeof val)
+          return { done: true }
+      }
+      if (type.mappedIndexSignature) {
+        throw new Error(`Keyof interface with mappedIndexSignature not yet implemented`)
+      }
       for (const propertyName of Object.keys(type.properties)) {
         if (propertyName === val)
           return { done: true }

@@ -1,11 +1,11 @@
-import { createStandaloneRtoModule, generateRtoModules, parseTypeOnly } from "typeonly"
+import { createStandaloneRtoModule, parseTypeOnly } from "typeonly"
 import { createChecker } from "../src/api"
 
-describe("Check type of interface", () => {
+describe("Check Interface", () => {
 
   test("interface with primitive types", async () => {
     const source = `
-      export type A = {
+      export interface A {
         a: number,
         b: string
       }
@@ -17,80 +17,127 @@ describe("Check type of interface", () => {
         ast: parseTypeOnly({ source })
       })
     })
-    const result = checker.check("./mod1", "A", { a: 12, b: 22 })
+
+    const result = checker.check("./mod1", "A",
+      {
+        a: 12,
+        b: 22
+      }
+    )
 
     expect(result.conform).toBe(false)
-    expect(result.error).not.toBeUndefined()
-
-
+    expect(result.error).toBeDefined()
   })
 
 
 
-  //   test("interface with array type", () => {
-  //     const source = `
-  //     type A = {
-  //       a: number[],
-  //       b: string
-  //     }
-  // `
-  //     const ast = parseTypeOnly({ source })
-  //     const checker = new Checker(ast)
-  //     const response = checker.check("A", { a: [12, "23"], b: "ab" })
-  //     expect(response.valid).toBe(false)
-  //     expect(response.error).not.toBeUndefined()
-  //   })
+  test("interface with array type", async () => {
+    const source = `
+      export type A = {
+        a: number[],
+        b: string
+      }
+  `
+    const checker = await createChecker({
+      modulePaths: ["./mod1"],
+      rtoModuleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
+    })
 
-  //   test("interface with literal type", () => {
-  //     const source = `
-  //     type A = {
-  //       a: "test",
-  //       b: string
-  //     }
-  // `
-  //     const ast = parseTypeOnly({ source })
-  //     const checker = new Checker(ast)
-  //     const response = checker.check("A", { a: "test1", b: "ab" })
-  //     expect(response.valid).toBe(false)
-  //     expect(response.error).not.toBeUndefined()
-  //   })
+    const result = checker.check("./mod1", "A",
+      {
+        a: [12, "23"],
+        b: "ab"
+      }
+    )
 
-  //   test("interface with tuple", () => {
-  //     const source = `
-  //     type A = {
-  //       a: [string, number],
-  //       b: string
-  //     }
-  // `
-  //     const ast = parseTypeOnly({ source })
-  //     const checker = new Checker(ast)
-  //     const response = checker.check("A", { a: ["sd", "23"], b: "ab" })
-  //     expect(response.valid).toBe(false)
-  //     expect(response.error).not.toBeUndefined()
+    expect(result.conform).toBe(false)
+    expect(result.error).toBeDefined()
+  })
 
-  //   })
+  test("interface with literal type", async () => {
+    const source = `
+      export type A = {
+        a: "test",
+        b: string
+      }
+  `
 
-  //   test("check interface with depth", () => {
-  //     const source = `
-  //     type A = {
-  //       a: {
-  //         c: { d: boolean }[]
-  //       },
-  //       b: string
-  //     }
-  // `
-  //     const ast = parseTypeOnly({ source })
-  //     const checker = new Checker(ast)
-  //     const response = checker.check("A", {
-  //       a: {
-  //         c: [{
-  //           d: false
-  //         }]
-  //       },
-  //       b: "ab"
-  //     })
-  //     expect(response.valid).toBe(true)
-  //     expect(response.error).toBeUndefined()
-  //   })
+    const checker = await createChecker({
+      modulePaths: ["./mod1"],
+      rtoModuleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
+    })
+
+    const result = checker.check("./mod1", "A",
+      {
+        a: "test1",
+        b: "ab"
+      }
+    )
+
+    expect(result.conform).toBe(false)
+    expect(result.error).toBeDefined()
+  })
+
+  test("interface with tuple", async () => {
+    const source = `
+      export interface A {
+        a: [string, number],
+        b: string
+      }
+  `
+    const checker = await createChecker({
+      modulePaths: ["./mod1"],
+      rtoModuleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
+    })
+
+    const result = checker.check("./mod1", "A",
+      {
+        a: ["sd", "23"],
+        b: "ab"
+      }
+    )
+
+    expect(result.conform).toBe(false)
+    expect(result.error).toBeDefined()
+  })
+
+  test("check interface with depth", async () => {
+    const source = `
+      export type A = {
+        a: {
+          c: { d: boolean }[]
+        },
+        b: string
+      }
+  `
+    const checker = await createChecker({
+      modulePaths: ["./mod1"],
+      rtoModuleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
+    })
+
+    const result = checker.check("./mod1", "A",
+      {
+        a: {
+          c: [
+            {
+              d: false
+            }
+          ]
+        },
+        b: "ab"
+      }
+    )
+
+    expect(result.conform).toBe(true)
+    expect(result.error).toBeUndefined()
+  })
 
 })
