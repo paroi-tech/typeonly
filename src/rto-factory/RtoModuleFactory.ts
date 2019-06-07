@@ -68,7 +68,6 @@ export default class RtoModuleFactory {
     }
     const module: RtoModule = {}
     if (this.importTool) {
-      // module.path = this.importTool.path
       Object.assign(module, this.importTool.createRtoImports())
     }
     if (this.namedTypeList.length > 0)
@@ -235,22 +234,14 @@ export default class RtoModuleFactory {
     if (astNode.entries) {
       for (const entry of astNode.entries) {
         if (entry.whichEntry === "indexSignature") {
-          // if (result.indexSignature || result.mappedIndexSignature)
-          //   throw new Error(`An interface cannot have several index signatures`)
           result.indexSignature = this.createRtoIndexSignature(entry)
         } else if (entry.whichEntry === "mappedIndexSignature") {
-          // if (result.indexSignature || result.mappedIndexSignature || result.properties)
-          //   throw new Error(`An interface cannot have other entries with a mapped index signature`)
           result.mappedIndexSignature = this.createRtoMappedIndexSignature(entry)
         } else if (entry.whichEntry === "property") {
-          // if (result.mappedIndexSignature)
-          //   throw new Error(`An interface cannot have other entries with a mapped index signature`)
           if (!result.properties)
             result.properties = []
           result.properties.push(this.createRtoProperty(entry))
         } else if (entry.whichEntry === "functionProperty") {
-          // if (result.mappedIndexSignature)
-          //   throw new Error(`An interface cannot have other entries with a mapped index signature`)
           if (!result.properties)
             result.properties = []
           result.properties.push(this.createRtoPropertyFromFunctionProperty(entry))

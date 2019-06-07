@@ -19,16 +19,9 @@ declaration:
 importDecl: classicImport | namespacedImport;
 
 classicImport:
-  IMPORT NL* (
-    (
-      // (defaultImportName (NL* COMMA NL* namedImportPart)?)
-      namedImportPart
-    ) NL* FROM NL*
-  )? STRING_LITERAL;
+  IMPORT NL* (namedImportContent NL* FROM NL*)? STRING_LITERAL;
 
-// defaultImportName: IDENTIFIER;
-
-namedImportPart:
+namedImportContent:
   OPEN_BRACE NL* namedMember (NL* COMMA NL* namedMember)* NL* CLOSE_BRACE;
 
 namedMember: IDENTIFIER (NL* AS NL* IDENTIFIER)?;

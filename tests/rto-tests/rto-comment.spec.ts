@@ -43,7 +43,6 @@ describe("RTO Specification for Comment", () => {
 
     expect(rtoModule.namedTypes!.length).toBe(1)
     const rtoNamedType = rtoModule.namedTypes![0] as RtoInterface & RtoBaseNamedType
-    console.log(rtoNamedType)
     expect(rtoNamedType.docComment).toBe("something")
     expect(rtoNamedType.exported).toBe(true)
     expect(rtoNamedType.generic).toBeUndefined()

@@ -13,7 +13,6 @@ export interface AstClassicImport extends AstCommentable {
   whichDeclaration: "import"
   whichImport: "classic"
   from: string
-  // defaultName?: string
   namedMembers?: AstImportNamedMember[]
 }
 

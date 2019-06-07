@@ -23,13 +23,10 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     this.childTypes = new Map()
     this.compositeMap = new Map()
     this.ast = {}
-    // console.log("enter declarations", ctx.getText())
   }
 
   exitDeclarations(ctx: AntlrRuleContext) {
     this.addStandaloneCommentsTo(this.comments.grabStandaloneCommentsAfterLast())
-
-    // console.log("exit declarations", ctx.getText())
     this.checkMissingChildren()
   }
 
@@ -40,11 +37,8 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
       // tslint:disable-next-line: no-eval
       from: eval(ctx.STRING_LITERAL().getText())
     }
-    // if (ctx.defaultImportName()) {
-    //   classicImport.defaultName = ctx.defaultImportName().IDENTIFIER().getText()
-    // }
-    if (ctx.namedImportPart().namedMember()) {
-      const namedMembers = ctx.namedImportPart().namedMember()
+    if (ctx.namedImportContent().namedMember()) {
+      const namedMembers = ctx.namedImportContent().namedMember()
       const members: AstImportNamedMember[] = []
       namedMembers.forEach((member, index) => {
         const mb: AstImportNamedMember = {
@@ -61,7 +55,6 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     if (!this.ast!.declarations)
       this.ast!.declarations = []
     this.ast!.declarations.push(classicImport)
-    // console.log("enter classicImport", ctx.namedImportPart().namedMember()[0].IDENTIFIER()[0].getText())
   }
 
   enterNamespacedImport(ctx: AntlrRuleContext) {
@@ -76,7 +69,6 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     if (!this.ast!.declarations)
       this.ast!.declarations = []
     this.ast!.declarations.push(namespacedImport)
-    // console.log("enter namespacedImport", ctx.getText())
   }
 
 
@@ -93,12 +85,9 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
       this.currentNamedInterface.extends = names
     }
     this.proccessGenericParameter(ctx, this.currentNamedInterface)
-
-    // console.log("enter interface", ctx.getText())
   }
 
   exitNamedInterface(ctx: AntlrRuleContext) {
-    // console.log("exit interface", ctx.getText())
     this.addGrabbedCommentsResultTo(this.comments.grabCommentsOf(ctx), {
       annotate: this.currentNamedInterface!,
     })
@@ -124,7 +113,6 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
 
       this.registerAstChild(interf, ctx.parentCtx)
     }
-    // console.log("enter anoInterface", ctx.parentCtx.getText())
   }
 
   exitAnonymousInterface(ctx: AntlrRuleContext) {
@@ -165,7 +153,6 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     )
   }
 
-  // AstNamedType
   enterNamedType(ctx: AntlrRuleContext) {
     const namedType: Partial<AstNamedType> = {
       whichDeclaration: "type",
@@ -175,16 +162,12 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
       namedType.exported = true
     this.currentNamedType = namedType
 
-    // console.log("ZE", ctx.aType().getText(), "==", namedType.type)
     this.setAstChildRegistration(type => namedType.type = type, ctx.aType())
 
     this.proccessGenericParameter(ctx, namedType)
-
-    // console.log("enter namedType decl", ctx.getText())
   }
 
   exitNamedType(ctx: AntlrRuleContext) {
-    // console.log("exit namedType decl", ctx.getText())
     this.addGrabbedCommentsResultTo(this.comments.grabCommentsOf(ctx), {
       annotate: this.currentNamedType!,
     })
@@ -197,9 +180,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     this.checkMissingChildren()
   }
 
-  // AstProperty
   enterProperty(ctx: AntlrRuleContext) {
-    // console.log("enter property", this.namedTypeStack.length)
     if (this.interfaceStack.length === 0)
       throw new Error("Missing interfaceStack")
 
@@ -225,10 +206,6 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     this.setAstChildRegistration(type => property.type = type, ctx.aType())
   }
 
-  exitProperty(ctx: AntlrRuleContext) {
-
-    // console.log("exit property", this.namedTypeStack.length)
-  }
 
   enterIndexSignature(ctx: AntlrRuleContext) {
     if (this.interfaceStack.length === 0)
@@ -255,7 +232,6 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     current.entries.push(indexSignature as AstIndexSignature)
 
     this.setAstChildRegistration(type => indexSignature.type = type, ctx.aType())
-    // console.log("enter IndexSignature", ctx.getText())
   }
 
   enterMappedIndexSignature(ctx) {
@@ -283,7 +259,6 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
 
     this.setAstChildRegistration(type => mappedIndexSignature.keyInType = type, ctx.aType()[0])
     this.setAstChildRegistration(type => mappedIndexSignature.type = type, ctx.aType()[1])
-    // console.log("enter MappedIndexSignature", ctx.getText())
   }
 
   enterLiteral(ctx: AntlrRuleContext) {
@@ -297,7 +272,6 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
       literal.stringDelim = firstChar
     }
     this.registerAstChild(literal, ctx.parentCtx)
-    // console.log("enter literal", ctx.parentCtx.getText())
   }
 
   enterTupleType(ctx: AntlrRuleContext) {
@@ -316,7 +290,6 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
         itemType
       )
     })
-    // console.log("enter Tuple type", ctx.getText())
   }
 
   enterGenericInstance(ctx: AntlrRuleContext) {
@@ -352,25 +325,18 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
         })
       }
     }
-
-    // console.log("enter generic type", ctx.getText())
   }
 
   enterAType(ctx: AntlrRuleContext) {
     if (ctx.returnType) {
-      // console.log("##&& function type== ", ctx.getText())
       this.processFunctionType(ctx)
     } else if (ctx.UNION() || ctx.INTERSECTION()) {
-      // console.log("##&& open composite== ", ctx.getText())
       this.processCompositeType(ctx)
     } else if (ctx.memberParentType) {
-      // console.log("##&& enter MemberType", ctx.memberName().getText())
       this.processMemberType(ctx)
     } else if (ctx.arrayItemType) {
-      // console.log("##&& enter ArrayType", ctx.aType()[0].getText())
       this.processArrayType(ctx)
     } else if (ctx.KEYOF()) {
-      // console.log("##&& enter keyof", ctx.aType()[0].getText())
       this.processKeyOf(ctx)
     }
   }
@@ -436,20 +402,15 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     }
     const aTypes = ctx.aType()
     aTypes.forEach((aType, index) => {
-      // console.log("### enter iteration, index:", index, "for:", ctx.getText())
       this.setAstChildRegistration(
         astType => {
           compositeType.types[index] = astType
-          // console.log("### register child of composite, index:", index, "for:", ctx.getText())
         },
         aType
       )
-      // console.log("### end of iteration, index:", index, "for:", ctx.getText())
     })
     this.registerAstChild(compositeType, ctx)
     this.compositeMap.set(ctx, compositeType)
-
-    // console.log("## CompositeType === ", aTypes.map(child => child.getText()).join(", "))
   }
 
   processEndOfCompositeType(ctx: AntlrRuleContext) {
@@ -501,16 +462,12 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     }, ctx.returnType)
 
     this.proccessGenericParameter(ctx, functionType)
-
-    // console.log("enter function type", ctx.aType().getText())
   }
 
   enterTypeWithParenthesis(ctx: AntlrRuleContext) {
     this.setAstChildRegistration(child => {
       this.registerAstChild(child, ctx.parentCtx)
     }, ctx.aType())
-
-    // console.log("enter type with parenthesis", ctx.getText())
   }
 
   enterFunctionProperty(ctx: AntlrRuleContext) {
@@ -570,8 +527,6 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     }
 
     this.registerAstChild(inlineImportType, ctx.parentCtx)
-
-    // console.log("Inline Import", ctx.IDENTIFIER().getText())
   }
 
   proccessGenericParameter(ctx: AntlrRuleContext, astNode: { generic?: AstGenericParameter[] }) {
@@ -610,7 +565,6 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     if (this.childTypes.has(aType))
       throw new Error(`Child type already defined for: ${aType.getText()}`)
     this.childTypes.set(aType, cb)
-    // console.log("checkMap", this.childTypes.get(aType))
     if (aType.typeName() || aType.signatureType())
       this.registerAstChild(aType.getText(), aType)
   }

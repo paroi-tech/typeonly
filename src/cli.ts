@@ -75,10 +75,7 @@ async function cli() {
   const options = parseOptions()
   if (!options)
     return
-  // console.log(options["src"].toString())
-  // if (options.) {
-  //   console.log(Object.keys(options))
-  // }
+
   if (options["help"]) {
     printHelp()
     return

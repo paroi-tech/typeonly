@@ -1,5 +1,5 @@
 import { parseTypeOnly } from "../../src/api"
-import { AstNamedType, AstMemberType } from "../../src/ast"
+import { AstMemberType, AstNamedType } from "../../src/ast"
 
 describe("AST Specification for MemberType", () => {
 
