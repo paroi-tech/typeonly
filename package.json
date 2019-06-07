@@ -13,13 +13,9 @@
     "test": "jest --watch"
   },
   "dependencies": {
-    "@typeonly/reader": "^0.1.0",
-    "command-line-args": "^5.1.1",
-    "command-line-usage": "^5.0.5"
+    "@typeonly/reader": "^0.1.0"
   },
   "devDependencies": {
-    "@types/command-line-args": "^5.0.0",
-    "@types/command-line-usage": "^5.0.1",
     "@types/jest": "^24.0.13",
     "@types/node": "^10.14.8",
     "jest": "^24.8.0",
