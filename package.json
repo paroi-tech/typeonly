@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/reader",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Brings TypeOnly metadata at run time.",
   "author": "tomko.team",
   "scripts": {

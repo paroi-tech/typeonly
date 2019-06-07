@@ -1,6 +1,5 @@
 import * as fs from "fs"
 import { join } from "path"
-// import { RtoModule } from "typeonly"
 import { promisify } from "util"
 import Project from "./reader/Project"
 import { Modules } from "./typeonly-reader"
@@ -18,6 +17,10 @@ export interface ReadModulesOptions {
     encoding?: string
   }
   rtoModuleProvider?: RtoModuleProvider
+  /**
+   * Of type: `RtoModules`.
+   */
+  rtoModules?: any
 }
 
 /**
@@ -27,12 +30,25 @@ export type RtoModuleProvider = (modulePath: string) => Promise<any> | any
 
 export async function readModules(options: ReadModulesOptions): Promise<Modules> {
   let { modulePaths, rtoModuleProvider } = options
-  if (rtoModuleProvider) {
+  if (rtoModuleProvider || options.rtoModules) {
+    if (options.readFiles)
+      throw new Error(`Do not use 'readFiles' with 'rtoModuleProvider' or 'rtoModules'`)
+    if (!rtoModuleProvider) {
+      if (rtoModuleProvider)
+        throw new Error(`Do not use 'rtoModuleProvider' with 'rtoModules'`)
+      const rtoModules = options.rtoModules as any
+      rtoModuleProvider = modulePath => {
+        const rtoModule = rtoModules[modulePath]
+        if (!rtoModule)
+          throw new Error(`Unknown module: ${modulePath}`)
+        return rtoModule
+      }
+    }
     if (!modulePaths)
       throw new Error(`Missing parameter 'modulePaths'`)
   } else {
     if (!options.readFiles)
-      throw new Error(`An option 'readFiles' or 'rtoProvider' is required`)
+      throw new Error(`An option 'readFiles', 'rtoModuleProvider' or 'rtoModules' is required`)
     rtoModuleProvider = makeReadSourceFileRtoModuleProvider({
       baseDir: options.readFiles.baseDir,
       encoding: options.readFiles.encoding || "utf8"
