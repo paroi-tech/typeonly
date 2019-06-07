@@ -1,6 +1,6 @@
 {
   "name": "typeonly",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A language to describe typing for JavaScript and JSON data.",
   "author": "tomko.team",
   "scripts": {
