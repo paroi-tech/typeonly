@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 import commandLineArgs = require("command-line-args")
 import commandLineUsage = require("command-line-usage")
-import { existsSync, readFileSync, writeFileSync } from "fs"
+import { readFileSync, writeFileSync } from "fs"
 import { basename, dirname, join } from "path"
 import { generateRtoModules, parseTypeOnly } from "./api"
 import { TypeOnlyAst } from "./ast"
-import { parseTypeOnlyToAst } from "./parser/parse-typeonly"
-import { RtoModule } from "./rto"
 
 class InvalidArgumentError extends Error {
   readonly causeCode = "invalidArgument"
@@ -45,6 +43,11 @@ const optionDefinitions: OptionDefinition[] = [
     description: "Encoding for input and output file(s) (default is {underline utf8})."
   },
   {
+    name: "prettify",
+    type: Boolean,
+    description: "Prettify RTO files (optional)."
+  },
+  {
     name: "ast",
     type: Boolean,
     description: "Generate AST files instead of RTO files (optional)."
@@ -67,10 +70,6 @@ async function cli() {
   const options = parseOptions()
   if (!options)
     return
-  // console.log(options["src"].toString())
-  // if (options.) {
-  //   console.log(Object.keys(options))
-  // }
   if (options["help"]) {
     printHelp()
     return
@@ -132,9 +131,10 @@ async function processFiles(options: object) {
 
 function createAstJsonFile(file: string, options: object) {
   file = options["source-dir"] ? join(options["source-dir"], file) : file
+  const encoding: string = options["encoding"] || "utf8"
   let source: string
   try {
-    source = readFileSync(file, { encoding: options["encoding"] || "utf8" }) as any
+    source = readFileSync(file, { encoding })
   } catch (err) {
     throw new InvalidArgumentError(`Cannot read file: ${file}`)
   }
@@ -146,9 +146,7 @@ function createAstJsonFile(file: string, options: object) {
 
   const ast: TypeOnlyAst = parseTypeOnly({ source })
   const outFile = join(options["output-dir"] || bnad.directory, `${fileName}.ast.json`)
-  writeFileSync(outFile, JSON.stringify(ast, undefined, "\t"), {
-    encoding: options["encoding"] || "utf8",
-  })
+  writeFileSync(outFile, JSON.stringify(ast, undefined, "\t"), { encoding })
 }
 
 async function createRtoJsonFiles(options: object) {
@@ -158,17 +156,16 @@ async function createRtoJsonFiles(options: object) {
   const outputDir = normalizeDir(options["output-dir"] || options["source-dir"])
 
   const modulePaths = normalizeModulePaths(options["src"], sourceDir)
-  const encoding = options["encoding"] || "utf8"
+  const encoding: string = options["encoding"] || "utf8"
   await generateRtoModules({
     modulePaths,
     readFiles: {
-      encoding,
       sourceDir,
+      encoding,
     },
     writeFiles: {
-      encoding,
       outputDir,
-      prettify: "\t"
+      prettify: options["prettify"] ? "\t" : undefined
     }
   })
 }

@@ -152,7 +152,7 @@ keyof T1
 A member type is the type of a property in a parent type. Example:
 
 ```ts
-T1["a"]
+T1["prop1"]
 ```
 
 ## Generic Instance

@@ -24,6 +24,7 @@ Available options:
   -o, --output-dir directory   The output directory (optional).
   -s, --source-dir directory   The source directory (optional when is used with option --ast).
   -e, --encoding string        Encoding for input and output file(s) (default is utf8).
+  --prettify                   Prettify RTO files (optional).
   --ast                        Generate AST files instead of RTO files (optional).
   --src file ...               The input file to process (by default at last position).
 ```
