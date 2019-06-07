@@ -1,6 +1,5 @@
 import * as fs from "fs"
 import { join } from "path"
-// import { RtoModule } from "typeonly"
 import { promisify } from "util"
 import Project from "./reader/Project"
 import { Modules } from "./typeonly-reader"
