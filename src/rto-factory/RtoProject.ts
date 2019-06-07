@@ -23,14 +23,14 @@ export default class RtoProject {
       await factory.loadImports(modulePath => this.importModule(modulePath))
     for (const factory of this.factories.values()) {
       const module = factory.createRtoModule()
-      this.options.rtoModuleListener(module, factory.getModulePath())
+      await this.options.rtoModuleListener(module, factory.getModulePath())
     }
   }
 
   private async importModule(relPath: RelativeModulePath): Promise<RtoModuleFactory> {
     const modulePath = toModulePath({
       ...relPath,
-      removeExtensions: [".ts", ".d.ts"]
+      removeExtensions: [".d.ts", ".ts"]
     })
     let factory = this.factories.get(modulePath)
     if (!factory) {

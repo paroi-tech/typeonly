@@ -1,5 +1,5 @@
 import * as fs from "fs"
-import { join } from "path"
+import { dirname, join, resolve } from "path"
 import { promisify } from "util"
 import { TypeOnlyAstProvider } from "../api"
 import { parseTypeOnlyToAst } from "../parser/parse-typeonly"
@@ -8,6 +8,7 @@ import { RtoModuleListener } from "./RtoProject"
 
 const readFile = promisify(fs.readFile)
 const writeFile = promisify(fs.writeFile)
+const mkdir = promisify(fs.mkdir)
 
 export interface RtoProjectOutputOptions {
   writeFiles?: WriteRtoFilesOptions
@@ -47,6 +48,8 @@ export class RtoProjectOutput {
   private async writeModuleFile(module: RtoModule, modulePath: string, options: WriteRtoFilesOptions) {
     const data = JSON.stringify(module, undefined, options.prettify)
     const outputFile = `${join(options.outputDir, modulePath)}.rto.json`
+    await ensureDirectoryExists(options.outputDir)
+    await ensureDirectoryExists(dirname(outputFile), { createIntermediate: true })
     await writeFile(outputFile, data, { encoding: options.encoding })
   }
 }
@@ -69,4 +72,15 @@ async function readModuleFile(sourceDir: string, modulePath: string, encoding: s
   } catch {
   }
   throw new Error(`Cannot open module file: ${path}.d.ts`)
+}
+
+async function ensureDirectoryExists(path: string, { createIntermediate = false } = {}) {
+  if (!await fsExists(path))
+    await mkdir(path, { recursive: createIntermediate })
+}
+
+function fsExists(path: string): Promise<boolean> {
+  return new Promise<boolean>(resolve => {
+    fs.stat(path, error => resolve(!error))
+  })
 }

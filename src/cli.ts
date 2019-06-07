@@ -1,12 +1,20 @@
 #!/usr/bin/env node
 import commandLineArgs = require("command-line-args")
 import commandLineUsage = require("command-line-usage")
-import { existsSync, readFileSync, writeFileSync } from "fs"
+import { readFileSync, writeFileSync } from "fs"
 import { basename, dirname, join } from "path"
 import { generateRtoModules, parseTypeOnly } from "./api"
 import { TypeOnlyAst } from "./ast"
-import { parseTypeOnlyToAst } from "./parser/parse-typeonly"
-import { RtoModule } from "./rto"
+
+process.on("uncaughtException", err => {
+  console.error("uncaughtException", err)
+  process.exit(1)
+})
+
+process.on("unhandledRejection", err => {
+  console.trace("unhandledRejection", err)
+  process.exit(1)
+})
 
 class InvalidArgumentError extends Error {
   readonly causeCode = "invalidArgument"
