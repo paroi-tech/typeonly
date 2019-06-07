@@ -42,22 +42,3 @@ export interface AntlrToken {
   line: number
   column: number
 }
-
-// /**
-//  * Helper for ANTLR4.
-//  * @param ctx A `ParseTree` instance: of type `TerminalNode` or `RuleContext`.
-//  */
-// export function ruleNameOf(ctx: ParseTree): string | undefined {
-//   if (isAntlrRuleContext(ctx))
-//     return ctx.parser.ruleNames[ctx.ruleIndex]
-//   else if (isAntlrTerminalNode(ctx))
-//     return ctx.parentCtx.parser.symbolicNames[ctx.symbol.type]
-// }
-
-// export function isAntlrRuleContext(ctx: ParseTree): ctx is AntlrRuleContext {
-//   return !!ctx["parser"] && ctx["ruleIndex"] !== undefined
-// }
-
-// export function isAntlrTerminalNode(ctx: ParseTree): ctx is AntlrTerminalNode {
-//   return !!ctx["parentCtx"] && !!ctx["symbol"]
-// }

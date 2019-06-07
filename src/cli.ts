@@ -6,6 +6,16 @@ import { basename, dirname, join } from "path"
 import { generateRtoModules, parseTypeOnly } from "./api"
 import { TypeOnlyAst } from "./ast"
 
+process.on("uncaughtException", err => {
+  console.error("uncaughtException", err)
+  process.exit(1)
+})
+
+process.on("unhandledRejection", err => {
+  console.trace("unhandledRejection", err)
+  process.exit(1)
+})
+
 class InvalidArgumentError extends Error {
   readonly causeCode = "invalidArgument"
   constructor(message: string) {

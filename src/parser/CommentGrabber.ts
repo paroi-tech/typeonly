@@ -52,7 +52,6 @@ export default class CommentGrabber {
     this.lastTokenIndex = ctx.stop.tokenIndex
 
     const tokens = getHiddenTokens({ tokenStream, tokenIndex: ctx.start.tokenIndex, direction: "left", NEWLINE })
-    // console.log("GRAB LEFT ON:\n", debugTokensToText(tokens, this.parsingContext))
 
     const { docComment, standaloneComments } = this.grabDocAndStandaloneComments(tokens)
     const inlineComments = this.grabInlineComments(ctx)
@@ -63,16 +62,11 @@ export default class CommentGrabber {
     }
     if (docComment)
       result.docComment = docComment.text
-    // console.log("GRAB LEFT ON → ", JSON.stringify(result, undefined, 2))
     return result
   }
 
   grabStandaloneCommentsAfterLast(ctx?: AntlrRuleContext): GrabbedComment[] {
     const { tokenStream, tokenTypes: { NEWLINE } } = this.parsingContext
-    // let tokens: AntlrToken[] | null
-    // if (this.lastTokenIndex === -1)
-    //   tokens = tokenStream.tokens
-    // else
     const tokens = getHiddenTokens({
       tokenStream,
       tokenIndex: this.lastTokenIndex,
@@ -81,7 +75,6 @@ export default class CommentGrabber {
       startIndex: ctx ? ctx.start.start : undefined,
       stopIndex: ctx ? ctx.stop.stop : undefined,
     })
-    // console.log("GRAB RIGHT AFTER LAST:\n", debugTokensToText(tokens, this.parsingContext))
     const { standaloneComments } = this.grabDocAndStandaloneComments(tokens, "standaloneOnly")
     return standaloneComments
   }
@@ -101,9 +94,7 @@ export default class CommentGrabber {
     if (!tokens)
       return []
     const { tokenTypes: { MULTILINE_COMMENT: ML_COM, SINGLE_LINE_COMMENT: SL_COM, NEWLINE } } = this.parsingContext
-    // console.log("before:\n", debugTokensToText(tokens, this.parsingContext))
     tokens = keepWholeLineComments(tokens, this.parsingContext)
-    // console.log("keepWholeLineComments:\n", debugTokensToText(tokens, this.parsingContext))
     const blocks: Block[] = []
     let curSingleLinesBlock: SingleLinesBlock | undefined
     for (const token of tokens) {
@@ -132,15 +123,6 @@ export default class CommentGrabber {
   }
 
   private blocksToDocAndStandaloneComments(blocks: Block[], mode?: "standaloneOnly"): DocAndStandaloneComments {
-    // blocks.forEach(block => {
-    //   if (block.syntax === "classic") {
-    //     console.log(">> blocksToDocAndStandaloneComments CLASSIC:\n",
-    //       debugTokensToText([block.multiLineComment], this.parsingContext))
-    //   } else {
-    //     console.log(">> blocksToDocAndStandaloneComments INLINE:\n",
-    //       debugTokensToText(block.singleLineComments, this.parsingContext))
-    //   }
-    // })
     const standaloneComments: GrabbedComment[] = []
     let docComment: GrabbedComment | undefined
     for (const block of blocks) {
@@ -276,7 +258,6 @@ function formatInlineComment(source: string, start: number, stop: number, mode?:
 
 function formatMultiLineComment(source: string, start: number, stop: number, mode?: "asInline")
   : { doc: boolean, text: string } {
-  // const index = start + (source[start + 2] === " " ? 3 : 2)
   const length = stop - start - 3
   if (length <= 0)
     return { doc: false, text: "" }
@@ -351,11 +332,3 @@ function getHiddenTokens(options: GetHiddenTokensOptions): AntlrToken[] | null {
     result.reverse()
   return result
 }
-
-// function debugTokensToText(tokens: AntlrToken[] | null, parsingContext: CommentParsingContext) {
-//   if (!tokens)
-//     return "-no-tokens-"
-//   return tokens.map(({ tokenIndex, type, start, stop }) => {
-//     return `[${tokenIndex}] ${type}: ${parsingContext.source.substring(start, stop + 1).replace(/\n/g, "\u23ce")}`
-//   }).join("\n")
-// }

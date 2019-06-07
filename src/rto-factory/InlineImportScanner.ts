@@ -1,4 +1,4 @@
-import { AstArrayType, AstCompositeType, AstFunctionParameter, AstFunctionProperty, AstFunctionType, AstGenericInstance, AstGenericParameter, AstIndexSignature, AstInlineImportType, AstInterface, AstKeyofType, AstLiteralType, AstMappedIndexSignature, AstMemberType, AstProperty, AstTupleType, AstType } from "../ast"
+import { AstArrayType, AstCompositeType, AstFunctionParameter, AstFunctionProperty, AstFunctionType, AstGenericInstance, AstGenericParameter, AstIndexSignature, AstInlineImportType, AstInterface, AstKeyofType, AstMappedIndexSignature, AstMemberType, AstProperty, AstTupleType, AstType } from "../ast"
 import AstImportTool from "./AstImportTool"
 
 export default class InlineImportScanner {

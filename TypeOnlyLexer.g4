@@ -532,10 +532,3 @@ fragment UNICODE_CONNECTOR_PUNCTUATION:
   | [\uFF65];
 fragment ZWNJ: '\u200C';
 fragment ZWJ: '\u200D';
-
-// fragment RegularExpressionFirstChar: ~[*\r\n\u2028\u2029\\/[] |
-// RegularExpressionBackslashSequence | '[' RegularExpressionClassChar* ']'; fragment
-// RegularExpressionChar: ~[\r\n\u2028\u2029\\/[] | RegularExpressionBackslashSequence | '['
-// RegularExpressionClassChar* ']'; fragment RegularExpressionClassChar: ~[\r\n\u2028\u2029\]\\] |
-// RegularExpressionBackslashSequence; fragment RegularExpressionBackslashSequence: '\\'
-// ~[\r\n\u2028\u2029];
