@@ -107,9 +107,20 @@ export default class RtoModuleFactory {
   private fillRtoNamed(astNode: AstNamedInterface | AstNamedType) {
     const base = this.getBaseNamedType(astNode.name)
     const type = astNode.whichDeclaration === "interface"
-      ? this.createRtoInterface(astNode)
+      ? (astNode.extends ? this.convertExtendsToRtoIntersection(astNode) : this.createRtoInterface(astNode))
       : this.createRtoType(astNode.type)
     Object.assign(base, type)
+  }
+
+  private convertExtendsToRtoIntersection(astNode: AstNamedInterface): RtoCompositeType {
+    const typeNames = astNode.extends!
+    const types = typeNames.map(child => this.createRtoType(child))
+    types.push(this.createRtoInterface(astNode))
+    return {
+      kind: "composite",
+      op: "intersection",
+      types
+    }
   }
 
   private createRtoType(astNode: AstType): RtoType {

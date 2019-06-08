@@ -6,7 +6,7 @@ Applications built on top of this language:
 
 * [**@typeonly/reader**](https://github.com/tomko-team/typeonly-reader): Brings typing metadata at run time;
 * [**@typeonly/checker**](https://github.com/tomko-team/typeonly-checker): Checks data conformity, for example a JSON data.
-* [**@typeonly/checker-cli**](https://github.com/tomko-team/typeonly-checker-cli): A CLI to check JSON files conformity with TypeOnly typing.
+* [**@typeonly/checker-cli**](https://github.com/tomko-team/typeonly-checker-cli): A CLI for _@typeonly/checker_.
 
 ## How to use the Command Line Interface
 
