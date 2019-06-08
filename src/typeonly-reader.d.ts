@@ -166,6 +166,7 @@ export interface Properties {
 }
 
 export interface Property extends Commentable {
+  of: Interface
   name: string
   type: Type
   optional: boolean
@@ -173,6 +174,7 @@ export interface Property extends Commentable {
 }
 
 export interface IndexSignature extends Commentable {
+  of: Interface
   keyName: string
   keyType: "string" | "number"
   type: Type
@@ -181,6 +183,7 @@ export interface IndexSignature extends Commentable {
 }
 
 export interface MappedIndexSignature extends Commentable {
+  of: Interface
   keyName: string
   keyInType: Type
   type: Type

@@ -238,19 +238,20 @@ export default class ModuleFactory {
     }
     if (rtoNode.properties) {
       rtoNode.properties.forEach(entry => {
-        const property = this.createProperty(entry)
+        const property = this.createProperty(entry, result)
         result.properties[property.name] = property
       })
     }
     if (rtoNode.indexSignature)
-      result.indexSignature = this.createIndexSignature(rtoNode.indexSignature)
+      result.indexSignature = this.createIndexSignature(rtoNode.indexSignature, result)
     if (rtoNode.mappedIndexSignature)
-      result.mappedIndexSignature = this.createMappedIndexSignature(rtoNode.mappedIndexSignature)
+      result.mappedIndexSignature = this.createMappedIndexSignature(rtoNode.mappedIndexSignature, result)
     return result
   }
 
-  private createProperty(entry: RtoProperty): Property {
+  private createProperty(entry: RtoProperty, of: Interface): Property {
     const property: Property = {
+      of,
       name: entry.name,
       type: this.createType(entry.type),
       optional: !!entry.optional,
@@ -261,8 +262,9 @@ export default class ModuleFactory {
     return property
   }
 
-  private createIndexSignature(entry: RtoIndexSignature): IndexSignature {
+  private createIndexSignature(entry: RtoIndexSignature, of: Interface): IndexSignature {
     const indexSignature: IndexSignature = {
+      of,
       keyName: entry.keyName,
       keyType: entry.keyType,
       type: this.createType(entry.type),
@@ -274,8 +276,9 @@ export default class ModuleFactory {
     return indexSignature
   }
 
-  private createMappedIndexSignature(entry: RtoMappedIndexSignature): MappedIndexSignature {
+  private createMappedIndexSignature(entry: RtoMappedIndexSignature, of: Interface): MappedIndexSignature {
     const mappedIndexSignature: MappedIndexSignature = {
+      of,
       keyName: entry.keyName,
       keyInType: this.createType(entry.keyInType),
       type: this.createType(entry.type),
