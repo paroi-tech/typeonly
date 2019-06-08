@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/checker",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Checks data conformity, for example a JSON data.",
   "author": "tomko.team",
   "scripts": {
@@ -13,7 +13,7 @@
     "test": "jest --watch"
   },
   "dependencies": {
-    "@typeonly/reader": "^0.1.0"
+    "@typeonly/reader": "^0.1.2"
   },
   "devDependencies": {
     "@types/jest": "^24.0.13",

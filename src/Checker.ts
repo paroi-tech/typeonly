@@ -1,19 +1,22 @@
-import { ArrayType, CompositeType, FunctionType, GenericInstance, GenericParameterName, ImportedTypeRef, Interface, KeyofType, LiteralType, LocalTypeRef, MemberNameLiteral, MemberType, Modules, TupleType, Type, TypeName } from "@typeonly/reader"
+import { ArrayType, CompositeType, FunctionType, GenericInstance, GenericParameterName, ImportedTypeRef, IndexSignature, Interface, KeyofType, LiteralType, LocalTypeRef, MemberNameLiteral, MemberType, Modules, Property, TupleType, Type, TypeName } from "@typeonly/reader"
 import { TypeOnlyChecker } from "./api"
+import { makeErrorMessage, typeAsString } from "./error-message"
 
 export interface CheckResult {
   conform: boolean
   error?: string
 }
 
-type InternalResult = { done: true, unmatch?: undefined } | {
-  done: false,
-  unmatch: Unmatch
+type InternalResult = { conform: true, unmatch?: undefined } | {
+  conform: false
+  unmatchs: Unmatch[]
 }
 
-interface Unmatch {
-  val: unknown,
+export interface Unmatch {
+  val: unknown
   type: Type
+  cause?: string
+  parentContextMsg?: string
 }
 
 export default class Checker implements TypeOnlyChecker {
@@ -33,7 +36,6 @@ export default class Checker implements TypeOnlyChecker {
       localRef: (type, val) => this.checkLocalTypeRef(type, val),
       member: (type, val) => this.checkMemberType(type, val),
       tuple: (type, val) => this.checkTupleType(type, val),
-
     }
 
   constructor(private modules: Modules) {
@@ -48,163 +50,187 @@ export default class Checker implements TypeOnlyChecker {
       throw new Error(`Module '${moduleName}' has no exported type: ${typeName}`)
     const result = this.checkType(namedType, val)
 
-    if (result.done)
+    if (result.conform)
       return { conform: true }
 
     return {
       conform: false,
-      error: `Expected type ${result.unmatch.type.kind}, received: '${typeof result.unmatch.val}'.`
+      error: makeErrorMessage(result.unmatchs)
     }
   }
 
-
-  private checkType(type: Type, val: unknown): InternalResult {
+  private checkType(type: Type, val: unknown, parentContextMessage?: () => string): InternalResult {
     const checker = this.typeCheckers[type.kind]
     if (!checker)
       throw new Error(`Unexpected kind: ${type.kind}`)
-    return checker(type, val)
+    const result = checker(type, val)
+    if (!result.conform && parentContextMessage) {
+      const last = result.unmatchs[result.unmatchs.length - 1]
+      if (last)
+        last.parentContextMsg = parentContextMessage()
+    }
+    return result
   }
-
 
   private checkTypeName(type: TypeName, val: unknown): InternalResult {
     if (type.group === "primitive") {
       if (typeof val !== type.refName) {
-        return { done: false, unmatch: { type, val } }
+        return { conform: false, unmatchs: [{ type, val }] }
       }
-      return { done: true }
+      return { conform: true }
     }
 
     if (type.group === "ts") {
       if (type.refName === "object" && typeof val !== "object") {
-        return { done: false, unmatch: { type, val } }
+        return { conform: false, unmatchs: [{ type, val }] }
       }
       if (type.refName === "void" && typeof val !== undefined) {
-        return { done: false, unmatch: { type, val } }
+        return { conform: false, unmatchs: [{ type, val }] }
       }
       if (type.refName === "never") {
-        return { done: false, unmatch: { type, val } }
+        return { conform: false, unmatchs: [{ type, val }] }
       }
 
-      return { done: true }
+      return { conform: true }
     }
 
     if (type.group === "standard")
       throw new Error(`Standard not yet implemented.`)
 
-
     if (type.group === "global")
       throw new Error(`Global type not yet implemented.`)
 
-    return { done: false, unmatch: { type, val } }
+    throw new Error(`Unexpected group: ${type.group}.`)
   }
-
 
   private checkInterface(type: Interface, val: unknown): InternalResult {
     if (!val || typeof val !== "object") {
-      return { done: false, unmatch: { type, val } }
+      return { conform: false, unmatchs: [{ type, val }] }
     }
+    const obj = val as object
 
     if (type.indexSignature) {
-      for (const [propName, childVal] of Object.entries(val as object)) {
-        if (type.indexSignature.keyType === "number" && isNaN(Number(propName))) {
-          return { done: false, unmatch: { type, val } }
-        }
-        const result = this.checkType(type.indexSignature.type, childVal)
-        if (!result.done)
-          return result
-      }
-
-      return { done: true }
+      const result = this.checkIndexSignature(type.indexSignature, obj)
+      if (!result.conform)
+        return result
     }
 
     if (type.mappedIndexSignature)
       throw new Error(`MappedIndexSignature not yet implemented.`)
 
-
-    const obj = val as object
     const remaining = new Set(Object.keys(obj))
     for (const property of Object.values(type.properties)) {
       remaining.delete(property.name)
-      const prop = obj[property.name]
-      if (prop === undefined) {
-        if (!property.optional) {
-          // this.lastError = `Required property '${property.name}'`
-          return { done: false, unmatch: { type, val } }
-        }
-      } else {
-        const childResult = this.checkType(property.type, prop)
-        if (!childResult.done)
-          return childResult
-      }
+      const result = this.checkProperty(property, obj)
+      if (!result.conform)
+        return result
     }
 
-    if (remaining.size > 0) {
-      // this.lastError = `Unexpected properties: ${Array.from(remaining.values()).join(", ")}`
-      return { done: false, unmatch: { type, val } }
-    }
+    // if (remaining.size > 0) {
+    //   const cause = `Unexpected properties: ${Array.from(remaining.values()).join(", ")}`
+    //   return { conform: false, unmatchs: [{ type, val, cause }] }
+    // }
 
-    return { done: true }
+    return { conform: true }
   }
 
+  private checkProperty(property: Property, obj: object): InternalResult {
+    const prop = obj[property.name]
+    if (prop === undefined) {
+      if (!property.optional) {
+        const cause = `Missing property '${property.name}'`
+        return { conform: false, unmatchs: [{ type: property.of, val: obj, cause }] }
+      }
+    } else {
+      const childResult = this.checkType(property.type, prop, () => `property '${property.name}'`)
+      if (!childResult.conform) {
+        childResult.unmatchs.push({ type: property.of, val: obj })
+        return childResult
+      }
+    }
+    return { conform: true }
+  }
+
+  private checkIndexSignature(indexSignature: IndexSignature, obj: object): InternalResult {
+    for (const [propName, childVal] of Object.entries(obj)) {
+      if (indexSignature.keyType === "number" && isNaN(Number(propName))) {
+        const cause = `Property name ${propName} is not a number`
+        return { conform: false, unmatchs: [{ type: indexSignature.of, val: obj, cause }] }
+      }
+      const result = this.checkType(indexSignature.type, childVal, () => `property '${propName}' (from index signature)`)
+      if (!result.conform) {
+        result.unmatchs.push({ type: indexSignature.of, val: obj })
+        return result
+      }
+    }
+    return { conform: true }
+  }
 
   private checkLiteralType(type: LiteralType, val: unknown): InternalResult {
     if (type.literal !== val)
-      return { done: false, unmatch: { type, val } }
-    return { done: true }
+      return { conform: false, unmatchs: [{ type, val }] }
+    return { conform: true }
   }
-
 
   private checkArrayType(type: ArrayType, val: unknown): InternalResult {
-    if (!Array.isArray(val))
-      return { done: false, unmatch: { type, val } }
-
-    for (const item of val) {
-      const childResult = this.checkType(type.itemType, item)
-      if (!childResult.done)
-        return childResult
+    if (!Array.isArray(val)) {
+      const cause = "is not an array"
+      return { conform: false, unmatchs: [{ type, val, cause }] }
     }
-    return { done: true }
+
+    for (const [index, item] of (val as unknown[]).entries()) {
+      const childResult = this.checkType(type.itemType, item, () => `array item ${index}`)
+      if (!childResult.conform) {
+        childResult.unmatchs.push({ type, val })
+        return childResult
+      }
+    }
+    return { conform: true }
   }
 
-
   private checkTupleType(type: TupleType, val: unknown): InternalResult {
-    if (!Array.isArray(val))
-      return { done: false, unmatch: { type, val } }
+    if (!Array.isArray(val)) {
+      const cause = "is not an array"
+      return { conform: false, unmatchs: [{ type, val, cause }] }
+    }
 
     const items = type.itemTypes
     if (val.length !== items.length) {
-      // this.lastError = `Invalid tuple size: expected ${items.length}, received: '${val.length}'.`
-      return { done: false, unmatch: { type, val } }
+      const cause = `expected tuple size ${items.length}, received: '${val.length}'`
+      return { conform: false, unmatchs: [{ type, val, cause }] }
     }
 
     for (const [index, item] of items.entries()) {
       const prop = val[index]
-      const childResult = this.checkType(item, prop)
-      if (!childResult.done)
+      const childResult = this.checkType(item, prop, () => `tuple item ${index}`)
+      if (!childResult.conform) {
+        childResult.unmatchs.push({ type, val })
         return childResult
+      }
     }
 
-    return { done: true }
+    return { conform: true }
   }
-
 
   private checkCompositeType(type: CompositeType, val: unknown): InternalResult {
     if (type.op === "union") {
       for (const itemType of type.types) {
-        if (this.checkType(itemType, val).done)
-          return { done: true }
+        if (this.checkType(itemType, val).conform)
+          return { conform: true }
       }
-
-      // this.lastError = `Expected types '${Array.from(type.types.values()).join(" or ")}', received: '${typeof val}'.`
-      return { done: false, unmatch: { type, val } }
-
+      const cause = `no matching type in: ${type.types.map(typeAsString).join(" or ")}`
+      return { conform: false, unmatchs: [{ type, val, cause }] }
     } else {
-
-      // this.lastError = `Expected types '${type.types}', received: '${typeof val}'.`
-      return { done: false, unmatch: { type, val } }
+      for (const itemType of type.types) {
+        const result = this.checkType(itemType, val, () => `intersection type`)
+        if (!result.conform) {
+          result.unmatchs.push({ type, val })
+          return result
+        }
+      }
+      return { conform: true }
     }
   }
-
 
   private checkKeyofType(type: KeyofType, val: unknown): InternalResult {
     return this.checkKeyofTypeWith(type.type, val)
@@ -214,48 +240,50 @@ export default class Checker implements TypeOnlyChecker {
     if (type.kind === "interface") {
       if (type.indexSignature) {
         if (type.indexSignature.keyType === typeof val)
-          return { done: true }
+          return { conform: true }
       }
       if (type.mappedIndexSignature) {
         throw new Error(`Keyof interface with mappedIndexSignature not yet implemented`)
       }
       for (const propertyName of Object.keys(type.properties)) {
         if (propertyName === val)
-          return { done: true }
+          return { conform: true }
       }
-      return { done: false, unmatch: { type, val } }
+      return { conform: false, unmatchs: [{ type, val }] }
     }
 
     if (type.kind === "array" || type.kind === "tuple"
       || (type.kind === "literal" && typeof type.literal === "string")) {
-      if (isNaN(Number(val)))
-        return { done: false, unmatch: { type, val } }
-
-      return { done: true }
+      if (isNaN(Number(val))) {
+        const cause = `is not a number`
+        return { conform: false, unmatchs: [{ type, val, cause }] }
+      }
+      return { conform: true }
     }
 
     if (type.kind === "localRef" || type.kind === "importedRef")
       return this.checkKeyofTypeWith(type.ref, val)
 
-    if (type.kind === "composite" && type.op === "intersection") {
+    if (type.kind === "composite") {
+      if (type.op !== "intersection")
+        throw new Error(`Cannot use keyof on a union type.`)
       for (const itemType of type.types) {
-        if (this.checkKeyofTypeWith(itemType, val).done)
-          return { done: true }
+        if (this.checkKeyofTypeWith(itemType, val).conform)
+          return { conform: true }
       }
-      return { done: false, unmatch: { type, val } }
+      return { conform: false, unmatchs: [{ type, val }] }
     }
 
     throw new Error(`Cannot use keyof on: ${type.kind}.`)
   }
 
   private checkLocalTypeRef(type: LocalTypeRef, val: unknown): InternalResult {
-    return this.checkType(type.ref, val)
+    return this.checkType(type.ref, val, () => `type '${type.refName}'`)
   }
 
   private checkImportedTypeRef(type: ImportedTypeRef, val: unknown): InternalResult {
-    return this.checkType(type.ref, val)
+    return this.checkType(type.ref, val, () => `imported type '${type.refName}'`)
   }
-
 
   private checkMemberType(type: MemberType, val: unknown): InternalResult {
 
@@ -275,13 +303,13 @@ export default class Checker implements TypeOnlyChecker {
       const memberType = type.properties[name]
       if (!memberType)
         throw new Error(`Missing member '${name}' in interface`)
-      return this.checkType(memberType.type, val)
+      return this.checkType(memberType.type, val, () => `property '${name}'`)
     }
 
     if (type.kind === "array") {
       if (typeof name !== "number")
         throw new Error(`Cannot use a member type on array with a string literal '${name}'`)
-      return this.checkType(type.itemType, val)
+      return this.checkType(type.itemType, val, () => `array item ${name}`)
     }
     if (type.kind === "tuple") {
       if (typeof name !== "number")
@@ -289,19 +317,21 @@ export default class Checker implements TypeOnlyChecker {
       const memberType = type.itemTypes[name]
       if (!memberType)
         throw new Error(`Missing member '${name}' in tuple`)
-      return this.checkType(memberType, val)
+      return this.checkType(memberType, val, () => `tuple item ${name}`)
     }
 
     if (type.kind === "localRef" || type.kind === "importedRef") {
       return this.checkMemberTypeWith(type.ref, val, memberName)
     }
 
-    if (type.kind === "composite" && type.op === "intersection") {
+    if (type.kind === "composite") {
+      if (type.op !== "intersection")
+        throw new Error(`Cannot use member type on a union type.`)
       for (const itemType of type.types) {
-        if (this.checkMemberTypeWith(itemType, val, memberName).done)
-          return { done: true }
+        if (this.checkMemberTypeWith(itemType, val, memberName).conform)
+          return { conform: true }
       }
-      return { done: false, unmatch: { type, val } }
+      return { conform: false, unmatchs: [{ type, val }] }
     }
 
     throw new Error(`Cannot use member type of: ${type.kind}.`)
@@ -309,17 +339,18 @@ export default class Checker implements TypeOnlyChecker {
 
   private checkFunctionType(type: FunctionType, val: unknown): InternalResult {
     if (typeof val === "function")
-      return { done: true }
-    return { done: false, unmatch: { type, val } }
+      return { conform: true }
+    const cause = `is not a function.`
+    return { conform: false, unmatchs: [{ type, val, cause }] }
   }
 
   private checkGenericInstance(type: GenericInstance, val: unknown): InternalResult {
     // TODO checkGenericInstance
-    throw new Error("Method not implemented.")
+    throw new Error("Checking of generic instance is not implemented.")
   }
 
   private checkGenericParameterName(type: GenericParameterName, val: unknown): InternalResult {
     // TODO checkGenericParameterName
-    throw new Error("Method not implemented.")
+    throw new Error("Checking of generic parameter name is not implemented.")
   }
 }
