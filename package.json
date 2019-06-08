@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/checker-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A CLI to check JSON files conformity with TypeOnly typing.",
   "author": "tomko.team",
   "scripts": {
@@ -14,7 +14,7 @@
     "@typeonly/checker": "^0.1.2",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^5.0.5",
-    "typeonly": "^0.1.1"
+    "typeonly": "^0.1.3"
   },
   "devDependencies": {
     "@types/command-line-args": "^5.0.0",
