@@ -11,7 +11,7 @@
     "lint": "tslint -p tsconfig.json -t verbose"
   },
   "dependencies": {
-    "@typeonly/checker": "^0.1.0",
+    "@typeonly/checker": "^0.1.2",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^5.0.5",
     "typeonly": "^0.1.1"

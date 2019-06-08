@@ -7,7 +7,7 @@ A CLI to check JSON files conformity with [TypeOnly](https://github.com/tomko-te
 Check JSON data file:
 
 ```sh
-npx @typeonly/checker-cli -s src/file-name.d.ts -t root-type-name data.json
+npx @typeonly/checker-cli -s src/file-name.d.ts -t RootTypeName data.json
 ```
 
 This prints a confirmation message if data is conform or an error if not.

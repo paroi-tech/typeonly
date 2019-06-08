@@ -122,7 +122,7 @@ function printHelp() {
     {
       header: "Synopsis",
       content: [
-        "$ npx @typeonly/checker-cli {bold -s} {underline src/file-name.d.ts} {bold -t} {underline root-type-name} {underline dir/data.json}",
+        "$ npx @typeonly/checker-cli {bold -s} {underline src/file-name.d.ts} {bold -t} {underline RootTypeName} {underline dir/data.json}",
         "$ npx @typeonly/checker-cli {bold --help}"
       ]
     },
@@ -219,11 +219,7 @@ async function checkFromTypingFile(options: object) {
 
   const checker = await createChecker({
     modulePaths: [sourceModulePath],
-    rtoModuleProvider: async (modulePath: string) => {
-      if (!rtoModules[modulePath])
-        throw new Error(`Cannot find module: ${modulePath}`)
-      return rtoModules[modulePath]
-    }
+    rtoModules
   })
 
   const result = checker.check(sourceModulePath, typeName, jsonData)
@@ -233,16 +229,6 @@ async function checkFromTypingFile(options: object) {
   } else {
     console.error(result.error)
     process.exit(1)
-  }
-}
-
-
-function readTypingFileSync(typingFile: string, encoding: string): string {
-  try {
-    const data = readFileSync(typingFile, { encoding }) as any
-    return data
-  } catch (err) {
-    throw new InvalidArgumentError(`Cannot read file: ${typingFile}`)
   }
 }
 
