@@ -26,6 +26,7 @@
       true,
       "no-public"
     ],
+    "no-conditional-assignment": false,
     "no-consecutive-blank-lines": false,
     "no-console": false,
     "no-empty": [
