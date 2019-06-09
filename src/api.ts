@@ -29,6 +29,7 @@ export interface GenerateRtoModulesOptions {
     encoding?: string
   }
   astProvider?: TypeOnlyAstProvider
+  defineGlobals?: (globals: Set<string>) => Set<string>
   writeFiles?: boolean | {
     encoding?: string
     outputDir?: string
@@ -73,7 +74,10 @@ export async function generateRtoModules(options: GenerateRtoModulesOptions): Pr
   })
   const project = new RtoProject({
     astProvider,
-    rtoModuleListener: output.listener
+    rtoModuleListener: output.listener,
+    moduleFactoryOptions: {
+      defineGlobals: options.defineGlobals
+    }
   })
   await project.addModules(options.modulePaths)
   if (options.returnRtoModules) {
@@ -86,6 +90,7 @@ export async function generateRtoModules(options: GenerateRtoModulesOptions): Pr
 
 export interface CreateStandaloneRtoModuleOptions {
   ast: TypeOnlyAst
+  defineGlobals?: (globals: Set<string>) => Set<string>
   /**
    * Default value is `false`.
    */
@@ -93,7 +98,7 @@ export interface CreateStandaloneRtoModuleOptions {
 }
 
 export function createStandaloneRtoModule(options: CreateStandaloneRtoModuleOptions): RtoModule {
-  const factory = new RtoModuleFactory(options.ast)
+  const factory = new RtoModuleFactory(options.ast, undefined, { defineGlobals: options.defineGlobals })
   const rtoModule = factory.createRtoModule()
   if (options.freeze)
     deepFreezePojo(rtoModule)

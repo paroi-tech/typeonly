@@ -1,11 +1,12 @@
 import { TypeOnlyAstProvider } from "../api"
 import { RelativeModulePath, toModulePath } from "../helpers/module-path-helpers"
 import { RtoModule } from "../rto"
-import RtoModuleFactory from "./RtoModuleFactory"
+import RtoModuleFactory, { RtoModuleFactoryOptions } from "./RtoModuleFactory"
 
 export interface RtoProjectOptions {
   astProvider: TypeOnlyAstProvider
   rtoModuleListener: RtoModuleListener
+  moduleFactoryOptions?: RtoModuleFactoryOptions
 }
 
 export type RtoModuleListener = (module: RtoModule, modulePath: string) => Promise<void> | void
@@ -35,7 +36,7 @@ export default class RtoProject {
     let factory = this.factories.get(modulePath)
     if (!factory) {
       const ast = await this.options.astProvider(modulePath)
-      factory = new RtoModuleFactory(ast, modulePath)
+      factory = new RtoModuleFactory(ast, modulePath, this.options.moduleFactoryOptions)
       this.factories.set(modulePath, factory)
     }
     return factory

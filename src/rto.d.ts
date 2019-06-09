@@ -70,7 +70,7 @@ export interface RtoGenericParameter {
 
 export interface RtoTypeName {
   kind: "name"
-  group: "ts" | "primitive" | "standard" | "global"
+  group: "ts" | "primitive" | "global"
   refName: RtoSpecialTypeName | RtoPrimitiveTypeName | string
 }
 

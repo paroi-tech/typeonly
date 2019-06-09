@@ -4,6 +4,14 @@ import AstImportTool, { ImportRef } from "./AstImportTool"
 import InlineImportScanner from "./InlineImportScanner"
 import { RtoModuleLoader } from "./internal-types"
 
+const tsTypeNames = new Set(["any", "unknown", "object", "void", "never"])
+const primitiveTypeNames = new Set(["string", "number", "bigint", "boolean", "symbol", "undefined", "null"])
+const defaultGlobals = new Set(["String", "Number", "Bigint", "Boolean", "Symbol", "Date"])
+
+export interface RtoModuleFactoryOptions {
+  defineGlobals?: (globals: Set<string>) => Set<string>
+}
+
 export default class RtoModuleFactory {
   private rtoTypeCreators: {
     [K in Exclude<AstType, string>["whichType"]]: (astNode: any) => RtoType
@@ -19,11 +27,13 @@ export default class RtoModuleFactory {
       inlineImport: astNode => this.createRtoImportedRefFromInline(astNode),
       interface: astNode => this.createRtoInterface(astNode),
     }
+  private globals: Set<string>
   private namedTypeList: RtoBaseNamedType[] = []
   private namedTypes = new Map<string, RtoBaseNamedType>()
   private importTool?: AstImportTool
 
-  constructor(private ast: TypeOnlyAst, private pathInProject?: string) {
+  constructor(private ast: TypeOnlyAst, private modulePath?: string, options: RtoModuleFactoryOptions = {}) {
+    this.globals = new Set(options.defineGlobals ? options.defineGlobals(defaultGlobals) : defaultGlobals)
     if (ast.declarations)
       ast.declarations.forEach(astDecl => this.registerAstDeclaration(astDecl))
   }
@@ -34,9 +44,9 @@ export default class RtoModuleFactory {
   }
 
   getModulePath(): string {
-    if (!this.pathInProject)
+    if (!this.modulePath)
       throw new Error(`Missing module path`)
-    return this.pathInProject
+    return this.modulePath
   }
 
   async loadImports(moduleLoader: RtoModuleLoader) {
@@ -125,7 +135,7 @@ export default class RtoModuleFactory {
 
   private createRtoType(astNode: AstType): RtoType {
     if (typeof astNode === "string") {
-      const kindOfName = findKindOfName(astNode)
+      const kindOfName = this.findKindOfName(astNode)
       if (kindOfName)
         return createRtoTypeName(kindOfName, astNode)
       if (this.namedTypes.get(astNode))
@@ -334,21 +344,21 @@ export default class RtoModuleFactory {
       throw new Error(`Unknown named type: ${name}`)
     return result
   }
+
+  private findKindOfName(typeName: string): "ts" | "primitive" | "global" | undefined {
+    if (tsTypeNames.has(typeName))
+      return "ts"
+    if (primitiveTypeNames.has(typeName))
+      return "primitive"
+    if (this.globals.has(typeName))
+      return "global"
+  }
 }
 
-function findKindOfName(typeName: string): "ts" | "primitive" | "standard" | undefined {
-  if (["any", "unknown", "object", "void", "never"].includes(typeName))
-    return "ts"
-  if (["string", "number", "bigint", "boolean", "symbol", "undefined", "null"].includes(typeName))
-    return "primitive"
-  if (["String", "Number", "Bigint", "Boolean", "Symbol", "Date"].includes(typeName))
-    return "standard"
-}
-
-function createRtoTypeName(kindOfName: "ts" | "primitive" | "standard" | "global", refName: string): RtoTypeName {
+function createRtoTypeName(group: "ts" | "primitive" | "global", refName: string): RtoTypeName {
   return {
     kind: "name",
-    group: kindOfName,
+    group,
     refName
   }
 }
