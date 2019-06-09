@@ -473,7 +473,7 @@ describe("Reader Specification for Types", () => {
     expect(namedType.kind).toBe("interface")
     expect(namedType.name).toBe("T1")
     expect(namedType.indexSignature).toBeUndefined()
-    expect(namedType.properties).toEqual({})
+    expect(namedType.properties).toBeUndefined()
     expect(namedType.mappedIndexSignature).toBeDefined()
     expect(namedType.mappedIndexSignature!.keyName).toBe("A")
     expect(namedType.mappedIndexSignature!.type).toEqual(

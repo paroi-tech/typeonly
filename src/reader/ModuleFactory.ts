@@ -234,13 +234,13 @@ export default class ModuleFactory {
   private createInterface(rtoNode: RtoInterface): Interface {
     const result: Interface = {
       kind: "interface",
-      properties: {}
     }
     if (rtoNode.properties) {
-      rtoNode.properties.forEach(entry => {
-        const property = this.createProperty(entry, result)
+      result.properties = {}
+      for (const rtoProp of rtoNode.properties) {
+        const property = this.createProperty(rtoProp, result)
         result.properties[property.name] = property
-      })
+      }
     }
     if (rtoNode.indexSignature)
       result.indexSignature = this.createIndexSignature(rtoNode.indexSignature, result)

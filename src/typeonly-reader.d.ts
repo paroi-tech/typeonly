@@ -75,7 +75,7 @@ export interface GenericParameter {
 
 export interface TypeName {
   kind: "name"
-  group: "ts" | "primitive" | "standard" | "global"
+  group: "ts" | "primitive" | "global"
   refName: SpecialTypeName | PrimitiveTypeName | string
 }
 
@@ -158,7 +158,7 @@ export interface Interface {
   kind: "interface"
   indexSignature?: IndexSignature
   mappedIndexSignature?: MappedIndexSignature
-  properties: Properties
+  properties?: Properties
 }
 
 export interface Properties {
