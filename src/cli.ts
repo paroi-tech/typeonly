@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import commandLineArgs = require("command-line-args")
 import commandLineUsage = require("command-line-usage")
-import { readFileSync, writeFileSync } from "fs"
+import { readdirSync, readFileSync, writeFileSync } from "fs"
 import { basename, dirname, join } from "path"
 import { generateRtoModules, parseTypeOnly } from "./api"
 import { TypeOnlyAst } from "./ast"
@@ -43,7 +43,7 @@ const optionDefinitions: OptionDefinition[] = [
     name: "source-dir",
     alias: "s",
     type: String,
-    description: "The source directory (optional when used with option {underline --ast}).",
+    description: "The source directory (optional when used with option {underline --ast} or with a single source file).",
     typeLabel: "{underline directory}"
   },
   {
@@ -64,7 +64,7 @@ const optionDefinitions: OptionDefinition[] = [
   },
   {
     name: "src",
-    description: "The input file to process (by default at last position).",
+    description: "Input files to process (by default at last position).",
     type: String,
     multiple: true,
     defaultOption: true,
@@ -73,7 +73,7 @@ const optionDefinitions: OptionDefinition[] = [
 ]
 
 cli().catch(error => {
-  console.error(`Error: ${error.message}`)
+  console.error(`Error: ${error.message}`, error)
 })
 
 async function cli() {
@@ -131,11 +131,11 @@ function parseOptions(): object | undefined {
 }
 
 async function processFiles(options: object) {
-  if (!options["src"])
-    throw new InvalidArgumentError("Missing source file(s).")
-  if (options["ast"])
+  if (options["ast"]) {
+    if (!options["src"])
+      throw new InvalidArgumentError("Missing source file(s).")
     options["src"].map((file: string) => createAstJsonFile(file, options))
-  else
+  } else
     await createRtoJsonFiles(options)
 }
 
@@ -149,23 +149,32 @@ function createAstJsonFile(file: string, options: object) {
     throw new InvalidArgumentError(`Cannot read file: ${file}`)
   }
 
-  const bnad = baseNameAndDir(file)
-  let fileName = bnad.fileName
+  let fileName = basename(file)
   if (fileName.endsWith(".ts"))
     fileName = fileName.substring(0, fileName.length - (fileName.endsWith(".d.ts") ? 5 : 3))
 
   const ast: TypeOnlyAst = parseTypeOnly({ source })
-  const outFile = join(options["output-dir"] || bnad.directory, `${fileName}.ast.json`)
+  const outFile = join(options["output-dir"] || dirname(file), `${fileName}.ast.json`)
   writeFileSync(outFile, JSON.stringify(ast, undefined, "\t"), { encoding })
 }
 
 async function createRtoJsonFiles(options: object) {
-  if (!options["source-dir"])
-    throw new Error("Missing source-dir option")
-  const sourceDir = normalizeDir(options["source-dir"])
-  const outputDir = normalizeDir(options["output-dir"] || options["source-dir"])
+  let srcList = options["src"] || []
+  let sourceDir: string
+  if (!options["source-dir"]) {
+    if (srcList.length === 1)
+      sourceDir = dirname(srcList[0])
+    else
+      throw new Error("Missing 'source-dir' option.")
+  } else
+    sourceDir = options["source-dir"]
+  sourceDir = normalizeDir(sourceDir)
+  const outputDir = normalizeDir(options["output-dir"] || sourceDir)
 
-  const modulePaths = normalizeModulePaths(options["src"], sourceDir)
+  if (srcList.length === 0)
+    srcList = getTypingFilesInDir(sourceDir)
+
+  const modulePaths = normalizeModulePaths(srcList, sourceDir)
   const encoding: string = options["encoding"] || "utf8"
   await generateRtoModules({
     modulePaths,
@@ -178,6 +187,12 @@ async function createRtoJsonFiles(options: object) {
       prettify: options["prettify"] ? "\t" : undefined
     }
   })
+}
+
+function getTypingFilesInDir(dir: string): string[] {
+  const files = readdirSync(dir)
+  return files
+    .filter(fileName => fileName.endsWith(".d.ts"))
 }
 
 function normalizeModulePaths(files: string[], sourceDir: string): string[] {
@@ -194,16 +209,4 @@ function normalizeModulePaths(files: string[], sourceDir: string): string[] {
 
 function normalizeDir(path: string): string {
   return path.replace(/\\/g, "/").replace(/\/+$/, "")
-}
-
-interface BaseNameAndDir {
-  directory: string
-  fileName: string
-}
-
-function baseNameAndDir(file: string): BaseNameAndDir {
-  return {
-    directory: dirname(file),
-    fileName: basename(file),
-  }
 }

@@ -23,11 +23,11 @@ Available options:
 ```
   -h, --help                   Print this help message.
   -o, --output-dir directory   The output directory (optional).
-  -s, --source-dir directory   The source directory (optional when is used with option --ast).
+  -s, --source-dir directory   The source directory (optional when is used with option --ast or with a single source file).
   -e, --encoding string        Encoding for input and output file(s) (default is utf8).
   --prettify                   Prettify RTO files (optional).
   --ast                        Generate AST files instead of RTO files (optional).
-  --src file ...               The input file to process (by default at last position).
+  --src file ...               Input files to process (by default at last position).
 ```
 
 ## How to use the API from Node.js
