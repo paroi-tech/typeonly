@@ -38,7 +38,7 @@ const optionDefinitions: OptionDefinition[] = [
     description: "The typing file (one file allowed).",
     type: String,
     multiple: false,
-    typeLabel: "{underline file.d.ts} ..."
+    typeLabel: "{underline file.d.ts}"
   },
   {
     name: "source-encoding",
@@ -56,7 +56,7 @@ const optionDefinitions: OptionDefinition[] = [
     description: "The rto.json file to process (one file allowed).",
     type: String,
     multiple: false,
-    typeLabel: "{underline file.rto.json} ..."
+    typeLabel: "{underline file.rto.json}"
   },
   {
     name: "rto-dir",
@@ -71,6 +71,11 @@ const optionDefinitions: OptionDefinition[] = [
     description: "The type name of the root element in JSON.",
   },
   {
+    name: "non-strict",
+    type: Boolean,
+    description: "Enable non-strict mode (accept extra properties).",
+  },
+  {
     name: "json-encoding",
     alias: "e",
     type: String,
@@ -82,7 +87,7 @@ const optionDefinitions: OptionDefinition[] = [
     type: String,
     multiple: false,
     defaultOption: true,
-    typeLabel: "{underline file.json} ..."
+    typeLabel: "{underline file.json}"
   }
 ]
 
@@ -174,15 +179,16 @@ async function checkFromRtoFile(options: object) {
     modulePath = modulePath.slice(0, -9)
 
   const checker = await createChecker({
-    modulePaths: [modulePath],
-    readFiles: {
+    readModules: {
+      modulePaths: [modulePath],
       baseDir
-    }
+    },
+    acceptAdditionalProperties: !!options["non-strict"]
   })
 
   const result = checker.check(modulePath, typeName, data)
 
-  if (result.conform) {
+  if (result.valid) {
     console.info("The JSON file is conform.")
   } else {
     console.error(result.error)
@@ -218,13 +224,16 @@ async function checkFromTypingFile(options: object) {
 
 
   const checker = await createChecker({
-    modulePaths: [sourceModulePath],
-    rtoModules
+    readModules: {
+      modulePaths: [sourceModulePath],
+      rtoModules
+    },
+    acceptAdditionalProperties: !!options["non-strict"]
   })
 
   const result = checker.check(sourceModulePath, typeName, jsonData)
 
-  if (result.conform) {
+  if (result.valid) {
     console.info("The JSON file is conform.")
   } else {
     console.error(result.error)

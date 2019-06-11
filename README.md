@@ -16,14 +16,15 @@ Available options:
 
 ```
   -h, --help                       Print this help message.
-  -s, --source file.d.ts ...       The typing file (one file allowed).
+  -s, --source file.d.ts           The typing file (one file allowed).
   --source-encoding string         Encoding for typing files (default is utf8).
   --source-dir directory           The source directory that contains typing files (optional).
-  --rto-module file.rto.json ...   The rto.json file to process (one file allowed).
+  --rto-module file.rto.json       The rto.json file to process (one file allowed).
   --rto-dir directory              The source directory for rto.json file (optional).
   -t, --type string                The type name of the root element in JSON.
+  --non-strict                     Enable non-strict mode (accept extra properties).
   -e, --json-encoding string       Encoding for JSON file to check (default is utf8).
-  --json file.json ...             The JSON file to check (by default at last position, one file allowed).
+  --json file.json                 The JSON file to check (by default at last position, one file allowed).
 ```
 
 ## Known Limitations
