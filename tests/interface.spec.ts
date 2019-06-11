@@ -12,10 +12,12 @@ describe("Check Interface", () => {
     `
 
     const checker = await createChecker({
-      modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      readModules: {
+        modulePaths: ["./mod1"],
+        rtoModuleProvider: async () => createStandaloneRtoModule({
+          ast: parseTypeOnly({ source })
+        })
+      }
     })
 
     const result = checker.check("./mod1", "A",
@@ -25,7 +27,7 @@ describe("Check Interface", () => {
       }
     )
 
-    expect(result.conform).toBe(false)
+    expect(result.valid).toBe(false)
     expect(result.error).toBeDefined()
   })
 
@@ -39,10 +41,12 @@ describe("Check Interface", () => {
       }
   `
     const checker = await createChecker({
-      modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      readModules: {
+        modulePaths: ["./mod1"],
+        rtoModuleProvider: async () => createStandaloneRtoModule({
+          ast: parseTypeOnly({ source })
+        })
+      }
     })
 
     const result = checker.check("./mod1", "A",
@@ -52,7 +56,7 @@ describe("Check Interface", () => {
       }
     )
 
-    expect(result.conform).toBe(false)
+    expect(result.valid).toBe(false)
     expect(result.error).toBeDefined()
   })
 
@@ -65,10 +69,12 @@ describe("Check Interface", () => {
   `
 
     const checker = await createChecker({
-      modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      readModules: {
+        modulePaths: ["./mod1"],
+        rtoModuleProvider: async () => createStandaloneRtoModule({
+          ast: parseTypeOnly({ source })
+        })
+      }
     })
 
     const result = checker.check("./mod1", "A",
@@ -78,7 +84,7 @@ describe("Check Interface", () => {
       }
     )
 
-    expect(result.conform).toBe(false)
+    expect(result.valid).toBe(false)
     expect(result.error).toBeDefined()
   })
 
@@ -90,10 +96,12 @@ describe("Check Interface", () => {
       }
   `
     const checker = await createChecker({
-      modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      readModules: {
+        modulePaths: ["./mod1"],
+        rtoModuleProvider: async () => createStandaloneRtoModule({
+          ast: parseTypeOnly({ source })
+        })
+      }
     })
 
     const result = checker.check("./mod1", "A",
@@ -103,7 +111,7 @@ describe("Check Interface", () => {
       }
     )
 
-    expect(result.conform).toBe(false)
+    expect(result.valid).toBe(false)
     expect(result.error).toBeDefined()
   })
 
@@ -117,10 +125,12 @@ describe("Check Interface", () => {
       }
   `
     const checker = await createChecker({
-      modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      readModules: {
+        modulePaths: ["./mod1"],
+        rtoModuleProvider: async () => createStandaloneRtoModule({
+          ast: parseTypeOnly({ source })
+        })
+      }
     })
 
     const result = checker.check("./mod1", "A",
@@ -136,7 +146,7 @@ describe("Check Interface", () => {
       }
     )
 
-    expect(result.conform).toBe(true)
+    expect(result.valid).toBe(true)
     expect(result.error).toBeUndefined()
   })
 

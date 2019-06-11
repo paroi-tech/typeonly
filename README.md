@@ -18,8 +18,8 @@ const { createChecker } = require("@typeonly/checker")
 
 async function f() {
   const checker = await createChecker({
-    modulePaths: ["./file-name"],
-    readFiles: {
+    readModules: {
+      modulePaths: ["./file-name"],
       baseDir: `${__dirname}/src`
     }
   })

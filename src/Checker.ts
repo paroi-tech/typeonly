@@ -1,10 +1,10 @@
-import { ArrayType, CompositeType, FunctionType, GenericInstance, GenericParameterName, ImportedTypeRef, IndexSignature, Interface, KeyofType, LiteralType, LocalTypeRef, MemberNameLiteral, MemberType, Modules, Property, TupleType, Type, TypeName } from "@typeonly/reader"
-import { TypeOnlyChecker } from "./api"
+import { ArrayType, CompositeType, FunctionType, GenericInstance, GenericParameterName, ImportedTypeRef, IndexSignature, Interface, KeyofType, LiteralType, LocalTypeRef, MemberNameLiteral, MemberType, Modules, Properties, Property, TupleType, Type, TypeName } from "@typeonly/reader"
+import { CheckerOptions, TypeOnlyChecker } from "./api"
 import { makeErrorMessage, typeAsString } from "./error-message"
 import { hasAncestor } from "./helpers"
 
 export interface CheckResult {
-  conform: boolean
+  valid: boolean
   error?: string
 }
 
@@ -23,26 +23,45 @@ export interface Unmatch {
   score?: number
 }
 
+interface Scope {
+  interfaceScope?: InterfaceScope
+}
+
+interface InterfaceScope {
+  firstInvalid?: InternalInvalidResult
+  remainingPropNames: Set<string>
+  validPropCount: number
+  invalidPropCount: number
+}
+
+interface InterfaceContext {
+  type: Type
+  val: object
+  scopeOwner: boolean
+  scope: Scope
+  interfaceScope: InterfaceScope
+}
+
 export default class Checker implements TypeOnlyChecker {
   private typeCheckers: {
-    [K in Type["kind"]]: (type: any, val: unknown) => InternalResult
+    [K in Type["kind"]]: (type: any, val: unknown, scope?: Scope) => InternalResult
   } = {
       name: (type, val) => this.checkTypeName(type, val),
-      interface: (type, val) => this.checkInterface(type, val),
+      localRef: (type, val, scope) => this.checkLocalTypeRef(type, val, scope),
+      importedRef: (type, val, scope) => this.checkImportedTypeRef(type, val, scope),
+      interface: (type, val, scope) => this.checkInterface(type, val, scope),
       array: (type, val) => this.checkArrayType(type, val),
-      composite: (type, val) => this.checkCompositeType(type, val),
+      composite: (type, val, scope) => this.checkCompositeType(type, val, scope),
       function: (type, val) => this.checkFunctionType(type, val),
       genericInstance: (type, val) => this.checkGenericInstance(type, val),
       genericParameterName: (type, val) => this.checkGenericParameterName(type, val),
-      importedRef: (type, val) => this.checkImportedTypeRef(type, val),
       keyof: (type, val) => this.checkKeyofType(type, val),
       literal: (type, val) => this.checkLiteralType(type, val),
-      localRef: (type, val) => this.checkLocalTypeRef(type, val),
       member: (type, val) => this.checkMemberType(type, val),
       tuple: (type, val) => this.checkTupleType(type, val),
     }
 
-  constructor(private modules: Modules) {
+  constructor(private modules: Modules, private options: CheckerOptions = {}) {
   }
 
   check(moduleName: string, typeName: string, val: unknown): CheckResult {
@@ -55,19 +74,19 @@ export default class Checker implements TypeOnlyChecker {
     const result = this.checkType(namedType, val)
 
     if (result.valid)
-      return { conform: true }
+      return { valid: true }
 
     return {
-      conform: false,
+      valid: false,
       error: makeErrorMessage(result.unmatchs)
     }
   }
 
-  private checkType(type: Type, val: unknown, parentContextMessage?: () => string): InternalResult {
+  private checkType(type: Type, val: unknown, parentContextMessage?: () => string, scope?: Scope): InternalResult {
     const checker = this.typeCheckers[type.kind]
     if (!checker)
       throw new Error(`Unexpected kind: ${type.kind}`)
-    const result = checker(type, val)
+    const result = checker(type, val, scope)
     if (!result.valid && parentContextMessage) {
       const last = result.unmatchs[result.unmatchs.length - 1]
       if (last)
@@ -108,84 +127,113 @@ export default class Checker implements TypeOnlyChecker {
     throw new Error(`Unexpected group: ${type.group}.`)
   }
 
-  private checkInterface(type: Interface, val: unknown): InternalResult {
-    if (!val || typeof val !== "object") {
+  private checkInterface(type: Interface, val: unknown, scope: Scope | undefined): InternalResult {
+    if (!val || typeof val !== "object")
       return { valid: false, unmatchs: [{ type, val }] }
-    }
-    const obj = val as object
 
-    if (type.indexSignature) {
-      const result = this.checkIndexSignature(type.indexSignature, obj)
-      if (!result.valid)
-        return result
-    }
+    const context = this.makeInterfaceContext(type, val as object, scope)
 
     if (type.mappedIndexSignature)
       throw new Error(`MappedIndexSignature not yet implemented.`)
 
-    if (type.properties) {
-      const result = this.checkProperties(type, obj)
-      if (!result.valid)
-        return result
-    }
+    if (type.indexSignature)
+      this.checkIndexSignature(type.indexSignature, context)
 
-    return { valid: true }
+    if (type.properties)
+      this.checkProperties(type.properties, context)
+
+    if (context.scopeOwner)
+      this.endOfInterfaceScopeOwner(context)
+
+    return (context.scopeOwner && context.interfaceScope.firstInvalid) || { valid: true }
   }
 
-  private checkProperties(type: Interface, obj: object): InternalResult {
-    const remaining = new Set(Object.keys(obj))
-    let firstInvalid: InternalInvalidResult | undefined
-    let invalidCount = 0
-    const properties = Object.values(type.properties || {})
-    for (const property of properties) {
-      remaining.delete(property.name)
-      const result = this.checkProperty(property, obj)
-      if (!result.valid) {
-        if (!firstInvalid)
-          firstInvalid = result
-        ++invalidCount
+  private makeInterfaceContext(type: Type, val: object, scope: Scope | undefined): InterfaceContext {
+    let interfaceScope: InterfaceScope
+    let scopeOwner: boolean
+    if (scope && scope.interfaceScope) {
+      interfaceScope = scope.interfaceScope
+      scopeOwner = false
+    } else {
+      interfaceScope = {
+        remainingPropNames: new Set(Object.keys(val)),
+        validPropCount: 0,
+        invalidPropCount: 0
       }
+      scope = { interfaceScope }
+      scopeOwner = true
     }
-    if (firstInvalid) {
-      const last = firstInvalid.unmatchs[firstInvalid.unmatchs.length - 1]
-      last.score = (properties.length - invalidCount) / (properties.length + remaining.size)
-      return firstInvalid
-    }
-
-    // if (remaining.size > 0) {
-    //   const cause = `Unexpected properties: ${Array.from(remaining.values()).join(", ")}`
-    //   return { conform: false, unmatchs: [{ type, val, cause }] }
-    // }
-    return { valid: true }
+    return { type, val, scope, interfaceScope, scopeOwner }
   }
 
-  private checkProperty(property: Property, obj: object): InternalResult {
-    const prop = obj[property.name]
+  private endOfInterfaceScopeOwner(context: InterfaceContext) {
+    const { interfaceScope: scope, type, val } = context
+
+    if (!this.options.acceptAdditionalProperties && !scope.firstInvalid && scope.remainingPropNames.size > 0) {
+      const cause = `Unexpected properties: ${Array.from(scope.remainingPropNames).join(", ")}`
+      scope.firstInvalid = { valid: false, unmatchs: [{ type, val, cause }] }
+    }
+
+    if (scope.firstInvalid) {
+      const last = scope.firstInvalid.unmatchs[scope.firstInvalid.unmatchs.length - 1]
+      const total = scope.validPropCount + scope.invalidPropCount + scope.remainingPropNames.size
+      last.score = total === 0 ? 0 : scope.validPropCount / total
+    }
+  }
+
+  private checkIndexSignature(indexSignature: IndexSignature, context: InterfaceContext) {
+    const { val, interfaceScope } = context
+    for (const [propName, childVal] of Object.entries(val)) {
+      let valid = true
+      if (indexSignature.keyType === "number" && isNaN(Number(propName))) {
+        if (!interfaceScope.firstInvalid) {
+          const cause = `Property name ${propName} is not a number`
+          interfaceScope.firstInvalid = { valid: false, unmatchs: [{ type: indexSignature.of, val, cause }] }
+        }
+        valid = false
+      }
+      const result = this.checkType(indexSignature.type, childVal, () => `property '${propName}' (from index signature)`)
+      if (!result.valid) {
+        if (!interfaceScope.firstInvalid) {
+          result.unmatchs.push({ type: indexSignature.of, val })
+          interfaceScope.firstInvalid = result
+        }
+        valid = false
+      }
+      if (valid)
+        ++interfaceScope.validPropCount
+      else
+        ++interfaceScope.invalidPropCount
+      interfaceScope.remainingPropNames.delete(propName)
+    }
+  }
+
+  private checkProperties(properties: Properties, context: InterfaceContext) {
+    const { val, interfaceScope } = context
+    for (const property of Object.values(properties)) {
+      const result = this.checkProperty(property, val)
+      if (!result.valid) {
+        if (!interfaceScope.firstInvalid)
+          interfaceScope.firstInvalid = result
+        ++interfaceScope.invalidPropCount
+      } else
+        ++interfaceScope.validPropCount
+      interfaceScope.remainingPropNames.delete(property.name)
+    }
+  }
+
+  private checkProperty(property: Property, val: object): InternalResult {
+    const prop = val[property.name]
     if (prop === undefined) {
       if (!property.optional) {
         const cause = `Missing property '${property.name}'`
-        return { valid: false, unmatchs: [{ type: property.of, val: obj, cause }] }
+        return { valid: false, unmatchs: [{ type: property.of, val, cause }] }
       }
     } else {
       const childResult = this.checkType(property.type, prop, () => `property '${property.name}'`)
       if (!childResult.valid) {
-        childResult.unmatchs.push({ type: property.of, val: obj })
+        childResult.unmatchs.push({ type: property.of, val })
         return childResult
-      }
-    }
-    return { valid: true }
-  }
-
-  private checkIndexSignature(indexSignature: IndexSignature, obj: object): InternalResult {
-    for (const [propName, childVal] of Object.entries(obj)) {
-      if (indexSignature.keyType === "number" && isNaN(Number(propName))) {
-        const cause = `Property name ${propName} is not a number`
-        return { valid: false, unmatchs: [{ type: indexSignature.of, val: obj, cause }] }
-      }
-      const result = this.checkType(indexSignature.type, childVal, () => `property '${propName}' (from index signature)`)
-      if (!result.valid) {
-        result.unmatchs.push({ type: indexSignature.of, val: obj })
-        return result
       }
     }
     return { valid: true }
@@ -237,46 +285,57 @@ export default class Checker implements TypeOnlyChecker {
     return { valid: true }
   }
 
-  private checkCompositeType(type: CompositeType, val: unknown): InternalResult {
-    if (type.op === "union") {
-      let bestInvalid: InternalInvalidResult | undefined
-      let bestInvalidScore = 0
-      for (const itemType of type.types) {
-        const result = this.checkType(itemType, val)
-        if (result.valid)
-          return { valid: true }
-        const last = result.unmatchs[result.unmatchs.length - 1]
-        if (last.score && last.score > bestInvalidScore) {
-          bestInvalid = result
-          bestInvalidScore = last.score
-        }
+  private checkCompositeType(type: CompositeType, val: unknown, scope: Scope | undefined): InternalResult {
+    if (type.op === "union")
+      return this.checkCompositeUnion(type, val)
+    else
+      return this.checkCompositeIntersection(type, val, scope)
+  }
+
+  private checkCompositeUnion(type: CompositeType, val: unknown): InternalResult {
+    let bestInvalid: InternalInvalidResult | undefined
+    let bestInvalidScore = 0
+    for (const itemType of type.types) {
+      const result = this.checkType(itemType, val)
+      if (result.valid)
+        return { valid: true }
+      const last = result.unmatchs[result.unmatchs.length - 1]
+      if (last.score && last.score > bestInvalidScore) {
+        bestInvalid = result
+        bestInvalidScore = last.score
       }
-      const cause = `no matching type in: ${type.types.map(typeAsString).join(" or ")}`
-      if (bestInvalid) {
-        bestInvalid.unmatchs.push({ type, val, cause })
-        return bestInvalid
-      } else
-        return { valid: false, unmatchs: [{ type, val, cause }] }
-    } else {
-      let totalScore: number = 0
-      let firstInvalid: InternalInvalidResult | undefined
-      for (const itemType of type.types) {
-        const result = this.checkType(itemType, val, () => `intersection type`)
-        if (!result.valid) {
-          if (!firstInvalid)
-            firstInvalid = result
-          const last = result.unmatchs[result.unmatchs.length - 1]
-          if (last.score)
-            totalScore += last.score
-        }
-      }
-      if (firstInvalid) {
-        const score = (totalScore > 0 && type.types.length > 0) ? (totalScore / type.types.length) : undefined
-        firstInvalid.unmatchs.push({ type, val, score })
-        return firstInvalid
-      }
-      return { valid: true }
     }
+
+    const cause = `no matching type in: ${type.types.map(typeAsString).join(" or ")}`
+    if (bestInvalid) {
+      bestInvalid.unmatchs.push({ type, val, cause })
+      return bestInvalid
+    } else
+      return { valid: false, unmatchs: [{ type, val, cause }] }
+  }
+
+  private checkCompositeIntersection(type: CompositeType, val: unknown, scope: Scope | undefined): InternalResult {
+    const context = (val && typeof val === "object")
+      ? this.makeInterfaceContext(type, val as object, scope)
+      : undefined
+
+    for (const itemType of type.types) {
+      const result = this.checkType(itemType, val, () => `intersection type`, (context && context.scope) || scope)
+      if (!result.valid && (!context || !context.interfaceScope.firstInvalid)) {
+        const score = result.unmatchs[result.unmatchs.length - 1].score
+        result.unmatchs.push({ type, val, score })
+        return result
+      }
+    }
+
+    if (context) {
+      if (context.scopeOwner)
+        this.endOfInterfaceScopeOwner(context)
+      if (context.scopeOwner && context.interfaceScope.firstInvalid)
+        return context.interfaceScope.firstInvalid
+    }
+
+    return { valid: true }
   }
 
   private checkKeyofType(type: KeyofType, val: unknown): InternalResult {
@@ -324,12 +383,12 @@ export default class Checker implements TypeOnlyChecker {
     throw new Error(`Cannot use keyof on: ${type.kind}.`)
   }
 
-  private checkLocalTypeRef(type: LocalTypeRef, val: unknown): InternalResult {
-    return this.checkType(type.ref, val, () => `type '${type.refName}'`)
+  private checkLocalTypeRef(type: LocalTypeRef, val: unknown, scope: Scope | undefined): InternalResult {
+    return this.checkType(type.ref, val, () => `type '${type.refName}'`, scope)
   }
 
-  private checkImportedTypeRef(type: ImportedTypeRef, val: unknown): InternalResult {
-    return this.checkType(type.ref, val, () => `imported type '${type.refName}'`)
+  private checkImportedTypeRef(type: ImportedTypeRef, val: unknown, scope: Scope | undefined): InternalResult {
+    return this.checkType(type.ref, val, () => `imported type '${type.refName}'`, scope)
   }
 
   private checkMemberType(type: MemberType, val: unknown): InternalResult {
