@@ -18,9 +18,7 @@ const { readModules } = require("@typeonly/reader")
 async function main() {
   const modules = await readModules({
     modulePaths: ["./file-name"],
-    readFiles: {
-      sourceDir: `${__dirname}/dist-rto`
-    }
+    baseDir: `${__dirname}/dist-rto`
   })
 
   console.log(modules["./file-name"].namedTypes["T1"].refName)

@@ -2,7 +2,7 @@ import * as fs from "fs"
 import { join } from "path"
 import { promisify } from "util"
 import Project from "./reader/Project"
-import { Modules } from "./typeonly-reader"
+import { Modules, Type } from "./typeonly-reader"
 
 const readdir = promisify(fs.readdir)
 const readFile = promisify(fs.readFile)
@@ -12,10 +12,8 @@ export interface ReadModulesOptions {
    * Optional when `"readFiles"` is defined, then all the `.rto.json` files in `"baseDir"` are loaded.
    */
   modulePaths?: string[]
-  readFiles?: {
-    baseDir: string
-    encoding?: string
-  }
+  baseDir?: string
+  encoding?: string
   rtoModuleProvider?: RtoModuleProvider
   /**
    * Of type: `RtoModules`.
@@ -31,8 +29,8 @@ export type RtoModuleProvider = (modulePath: string) => Promise<any> | any
 export async function readModules(options: ReadModulesOptions): Promise<Modules> {
   let { modulePaths, rtoModuleProvider } = options
   if (rtoModuleProvider || options.rtoModules) {
-    if (options.readFiles)
-      throw new Error(`Do not use 'readFiles' with 'rtoModuleProvider' or 'rtoModules'`)
+    if (options.baseDir)
+      throw new Error(`Do not use 'baseDir' with 'rtoModuleProvider' or 'rtoModules'`)
     if (!rtoModuleProvider) {
       if (rtoModuleProvider)
         throw new Error(`Do not use 'rtoModuleProvider' with 'rtoModules'`)
@@ -47,14 +45,14 @@ export async function readModules(options: ReadModulesOptions): Promise<Modules>
     if (!modulePaths)
       throw new Error(`Missing parameter 'modulePaths'`)
   } else {
-    if (!options.readFiles)
-      throw new Error(`An option 'readFiles', 'rtoModuleProvider' or 'rtoModules' is required`)
+    if (!options.baseDir)
+      throw new Error(`An option 'baseDir', 'rtoModuleProvider' or 'rtoModules' is required`)
     rtoModuleProvider = makeReadSourceFileRtoModuleProvider({
-      baseDir: options.readFiles.baseDir,
-      encoding: options.readFiles.encoding || "utf8"
+      baseDir: options.baseDir,
+      encoding: options.encoding || "utf8"
     })
     if (!modulePaths)
-      modulePaths = await getModulePathsInDir(options.readFiles.baseDir)
+      modulePaths = await getModulePathsInDir(options.baseDir)
   }
   const project = new Project({ rtoModuleProvider })
   const modules = await project.parseModules(modulePaths)
@@ -83,4 +81,27 @@ async function readRtoFile(baseDir: string, modulePath: string, encoding: string
   } catch {
     throw new Error(`Cannot open module file: ${path}.rto.json`)
   }
+}
+
+export function literals(type: Type, only: "string"): string[]
+export function literals(type: Type, only: "number"): number[]
+export function literals(type: Type, only: "bigint"): Array<bigint>
+export function literals(type: Type, only: "boolean"): boolean[]
+export function literals(type: Type): Array<string | number | bigint | boolean>
+export function literals(type: Type, only?: string): any[] {
+  let children: Type[]
+  if (type.kind !== "composite" || type.op !== "union") {
+    if (type.kind === "literal")
+      children = [type]
+    else
+      throw new Error(`Should be a union`)
+  } else
+    children = type.types
+  return children.map(child => {
+    if (child.kind !== "literal")
+      throw new Error(`Should be a 'literal': '${type.kind}'`)
+    if (only && typeof child.literal !== only)
+      throw new Error(`Literal should be a '${only}': '${typeof child.literal}'`)
+    return child.literal
+  })
 }
