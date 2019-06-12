@@ -24,7 +24,7 @@ function valueAsString(val: unknown): string {
     case "number":
     case "boolean":
     case "bigint":
-      return `'${primitiveValueAsString(val)}n'`
+      return `'${primitiveValueAsString(val)}'`
     case "object":
       if (val === null)
         return "null"

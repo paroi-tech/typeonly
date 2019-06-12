@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/checker",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Checks data conformity, for example a JSON data.",
   "author": "tomko.team",
   "scripts": {
