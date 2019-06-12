@@ -29,7 +29,9 @@ function valueAsString(val: unknown): string {
     case "bigint":
       return `${val}n`
     case "object":
-      return "{ ... }"
+      if (val === null)
+        return "null"
+      return objectAsString(val as object)
     case "function":
     case "symbol":
     case "undefined":
@@ -37,6 +39,17 @@ function valueAsString(val: unknown): string {
     default:
       throw new Error(`Unexpected typeof: ${t}`)
   }
+}
+
+function objectAsString(obj: object) {
+  return `{${Object.entries(obj).map(([key, val]) => {
+    const t = typeof val
+    if (t === "string")
+      return `${key}: ${JSON.stringify(val)}`
+    if (t === "number" || t === "bigint" || t === "boolean")
+      return `${key}: ${val}`
+    return key
+  }).join(", ")}}`
 }
 
 export function typeAsString(type: Type): string {
