@@ -19,15 +19,14 @@ export function makeErrorMessage(unmatchs: Unmatch[]): string {
 }
 
 function valueAsString(val: unknown): string {
-  const t = typeof val
-  switch (t) {
+  switch (typeof val) {
     case "string":
-      return JSON.stringify(val)
+      return `'${JSON.stringify(val.length <= 12 ? val : val.substr(0, 12) + "…")}'`
     case "number":
     case "boolean":
-      return String(val)
+      return `'${val}'`
     case "bigint":
-      return `${val}n`
+      return `'${val}n'`
     case "object":
       if (val === null)
         return "null"
@@ -35,9 +34,9 @@ function valueAsString(val: unknown): string {
     case "function":
     case "symbol":
     case "undefined":
-      return t
+      return typeof val
     default:
-      throw new Error(`Unexpected typeof: ${t}`)
+      throw new Error(`Unexpected typeof: ${typeof val}`)
   }
 }
 
