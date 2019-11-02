@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.com/tomko-team/typeonly-reader.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly-reader)
 [![Dependencies Status](https://david-dm.org/tomko-team/typeonly-reader/status.svg)](https://david-dm.org/tomko-team/typeonly-reader)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/795a3bf921524597bac9af7df8b79026)](https://www.codacy.com/manual/paleo/typeonly-reader?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tomko-team/typeonly-reader&amp;utm_campaign=Badge_Grade)
 [![npm](https://img.shields.io/npm/dm/@typeonly/reader)](https://www.npmjs.com/package/@typeonly/reader)
 ![Type definitions](https://img.shields.io/npm/types/@typeonly/reader)
 ![GitHub](https://img.shields.io/github/license/tomko-team/typeonly-reader)
