@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/checker-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A CLI to validate JSON files, using TypeScript typing definitions.",
   "author": "tomko.team",
   "scripts": {
