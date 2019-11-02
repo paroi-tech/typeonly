@@ -1,5 +1,6 @@
 # TypeOnly
 
+[![Build Status](https://travis-ci.com/tomko-team/typeonly.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly)
 [![Dependencies Status](https://david-dm.org/paleo/direct-vuex/status.svg)](https://david-dm.org/paleo/direct-vuex)
 [![npm](https://img.shields.io/npm/dm/typeonly)](https://www.npmjs.com/package/typeonly)
 ![Type definitions](https://img.shields.io/npm/types/typeonly)
