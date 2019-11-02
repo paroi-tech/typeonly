@@ -11,7 +11,7 @@
 
 ## Tutorial: How to programmatically validate JSON data
 
-First, follow [the TypeOnly tutorial](https://github.com/tomko-team/typeonly/blob/master/README.md#tutorial-parse-typescript-definitions-with-the-cli) in order to generate RTO files (with the `.rto.json` extension) in a `dist-rto/` directory, from TypeScript definitions.
+At first, it is necessary to follow [the tutorial](https://github.com/tomko-team/typeonly/blob/master/README.md#tutorial-parse-typescript-definitions-with-the-cli) of TypeOnly in order to generate RTO files (with the `.rto.json` extension) from TypeScript definitions. After this step, the RTO files are in a `dist-rto/` directory.
 
 Now, add `@typeonly/checker` to the project:
 
