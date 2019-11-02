@@ -1,4 +1,5 @@
-
+before_install:
+  - wget https://www.antlr.org/download/antlr-4.7.2-complete.jar
 language: node_js
 node_js:
   - 10
