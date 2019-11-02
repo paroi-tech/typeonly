@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.com/tomko-team/typeonly.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly)
 [![Dependencies Status](https://david-dm.org/paleo/direct-vuex/status.svg)](https://david-dm.org/paleo/direct-vuex)
+[![Codacy Status](https://api.codacy.com/project/badge/Grade/22f07556743948e98d1814087c801906)](https://www.codacy.com/manual/paleo/typeonly?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tomko-team/typeonly&amp;utm_campaign=Badge_Grade)
 [![npm](https://img.shields.io/npm/dm/typeonly)](https://www.npmjs.com/package/typeonly)
 ![Type definitions](https://img.shields.io/npm/types/typeonly)
 ![GitHub](https://img.shields.io/github/license/tomko-team/typeonly)

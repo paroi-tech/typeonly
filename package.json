@@ -1,6 +1,6 @@
 {
   "name": "typeonly",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Parse typing definitions from TypeScript and brings them at runtime.",
   "author": "tomko.team",
   "scripts": {
