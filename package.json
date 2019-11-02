@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/reader",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Brings typing definitions from TypeScript at runtime.",
   "author": "tomko.team",
   "scripts": {
