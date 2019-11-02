@@ -1,7 +1,7 @@
 {
   "name": "typeonly",
-  "version": "0.1.5",
-  "description": "A language to describe typing for JavaScript and JSON data.",
+  "version": "0.2.0",
+  "description": "Parse typing definitions from TypeScript and brings them at runtime.",
   "author": "tomko.team",
   "scripts": {
     "antlr": "java -cp \"antlr-4.7.2-complete.jar\" org.antlr.v4.Tool -Dlanguage=JavaScript -o antlr-parser TypeOnlyParser.g4 TypeOnlyLexer.g4",
@@ -11,23 +11,25 @@
     "bundle-tsd": "node bundle-tsd/bundle-tsd",
     "build": "npm run clear && npm run antlr && npm run tsc && npm run bundle-tsd",
     "lint": "tslint -p tsconfig.json -t verbose",
-    "test": "jest --watch"
+    "test:watch": "jest --watch",
+    "test": "jest",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "antlr4": "^4.7.2",
     "command-line-args": "^5.1.1",
-    "command-line-usage": "^5.0.5"
+    "command-line-usage": "^6.0.2"
   },
   "devDependencies": {
     "@types/command-line-args": "^5.0.0",
     "@types/command-line-usage": "^5.0.1",
-    "@types/jest": "^24.0.13",
-    "@types/node": "^10.14.8",
-    "jest": "^24.8.0",
-    "rimraf": "^2.6.3",
-    "ts-jest": "^24.0.2",
-    "tslint": "^5.17.0",
-    "typescript": "^3.5.1"
+    "@types/jest": "^24.0.21",
+    "@types/node": "^10.17.3",
+    "jest": "^24.9.0",
+    "rimraf": "^3.0.0",
+    "ts-jest": "^24.1.0",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.4"
   },
   "main": "dist/api.js",
   "types": "dist/typeonly.d.ts",
@@ -38,13 +40,8 @@
   },
   "license": "CC0-1.0",
   "keywords": [
-    "typing",
-    "runtime",
-    "interface",
-    "type",
     "typescript",
-    "subset",
-    "parser",
-    "ast"
+    "types",
+    "runtime"
   ]
 }

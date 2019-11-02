@@ -6,7 +6,8 @@
     "useTab": false
   },
   "editor.codeActionsOnSave": {
-    "source.fixAll": true
+    "source.fixAll": true,
+    "source.organizeImports": true
   },
   "editor.formatOnSave": true,
   "editor.insertSpaces": true,
@@ -20,7 +21,7 @@
   "files.trimTrailingWhitespace": true,
   "javascript.preferences.quoteStyle": "double",
   "search.useIgnoreFiles": true,
-  "todo-tree.customHighlight": {
+  "todo-tree.highlights.customHighlight": {
     "TODO": {
       "icon": "check",
       "iconColour": "#cc4"
@@ -31,14 +32,14 @@
       "iconColour": "#f5a542"
     }
   },
-  "todo-tree.defaultHighlight": {
+  "todo-tree.highlights.defaultHighlight": {
     "icon": "alert",
     "type": "text",
     "foreground": "#632",
     "background": "#dd8",
-    "opacity": 50,
+    "opacity": 50
   },
-  "todo-tree.highlightDelay": 50,
+  "todo-tree.highlights.highlightDelay": 50,
   "tslint.configFile": "tslint.json",
   "tslint.jsEnable": true,
   "typescript.locale": "en",
