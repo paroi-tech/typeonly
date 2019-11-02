@@ -1,16 +1,81 @@
 # @typeonly/checker-cli
 
-A CLI to check JSON files conformity with [TypeOnly](https://github.com/tomko-team/typeonly) typing.
+[![Build Status](https://travis-ci.com/tomko-team/typeonly-checker-cli.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly-checker-cli)
+[![Dependencies Status](https://david-dm.org/tomko-team/typeonly-checker-cli/status.svg)](https://david-dm.org/tomko-team/typeonly-checker-cli)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8a2c29e43ddf401fa7e5f80e96efdcc2)](https://www.codacy.com/manual/paleo/typeonly-checker-cli?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tomko-team/typeonly-checker-cli&amp;utm_campaign=Badge_Grade)
+[![npm](https://img.shields.io/npm/dm/@typeonly/checker-cli)](https://www.npmjs.com/package/@typeonly/checker-cli)
+![Type definitions](https://img.shields.io/npm/types/@typeonly/checker-cli)
+![GitHub](https://img.shields.io/github/license/tomko-team/typeonly-checker-cli)
 
-## How to use the Command Line Interface
+[TypeOnly](https://github.com/tomko-team/typeonly) aims to be the pure typing part of TypeScript. This package provides a Command Line Interface to validate JSON with TypeScript definitions, using the TypeOnly parser.
 
-Check JSON data file:
+## Tutorial: How to check the conformity of a JSON file using the CLI
+
+Create a file _"drawing.d.ts"_ with the following code:
+
+```ts
+// drawing.d.ts
+
+export interface Drawing {
+  color: ColorName
+  dashed?: boolean
+  shape: Rectangle | Circle
+}
+
+export type ColorName = "red" | "green" | "blue"
+
+export interface Rectangle {
+  kind: "rectangle",
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
+export interface Circle {
+  kind: "circle",
+  x: number
+  y: number
+  radius: number
+}
+```
+
+Then, create a JSON file _"drawing.json"_ that must be of type `Drawing`:
+
+```json
+{
+  "color": "green",
+  "shape": {
+    "kind": "circle",
+    "x": 100,
+    "y": 100,
+    "radius": "wrong value"
+  }
+}
+```
+
+We are ready to check the JSON file:
+
+```sh
+$ npx @typeonly/checker-cli -s drawing.d.ts -t "Drawing" drawing.json
+In property 'radius', value '"wrong value"' is not conform to number.
+```
+
+A mistake is detected in the JSON file. Fix it by replacing the value of the property `"radius"` with a valid number. For example: `"radius": 50`. And run the command again:
+
+```sh
+$ npx @typeonly/checker-cli -s drawing.d.ts -t "Drawing" drawing.json
+```
+
+Good. The checker no longer complain.
+
+## Options of Command Line Interface
+
+Example of command:
 
 ```sh
 npx @typeonly/checker-cli -s src/file-name.d.ts -t RootTypeName data.json
 ```
-
-This prints a confirmation message if data is conform or an error if not.
 
 Available options:
 
@@ -27,16 +92,8 @@ Available options:
   --json file.json                 The JSON file to check (by default at last position, one file allowed).
 ```
 
-## Known Limitations
-
-Generics are not implemented yet.
-
 ## Contribute
 
-### Development environment
+With VS Code, our recommanded plugin is:
 
-With VS Code, our recommanded plugins are:
-
-- **ANTLR4 grammar syntax support** from Mike Lischke (`mike-lischke.vscode-antlr4`)
-- **Todo Tree** from Gruntfuggly (`gruntfuggly.todo-tree`)
 - **TSLint** from Microsoft (`ms-vscode.vscode-typescript-tslint-plugin`)

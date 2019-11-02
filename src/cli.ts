@@ -188,9 +188,7 @@ async function checkFromRtoFile(options: object) {
 
   const result = checker.check(modulePath, typeName, data)
 
-  if (result.valid) {
-    console.info("The JSON file is conform.")
-  } else {
+  if (!result.valid) {
     console.error(result.error)
     process.exit(1)
   }
@@ -233,9 +231,7 @@ async function checkFromTypingFile(options: object) {
 
   const result = checker.check(sourceModulePath, typeName, jsonData)
 
-  if (result.valid) {
-    console.info("The JSON file is conform.")
-  } else {
+  if (!result.valid) {
     console.error(result.error)
     process.exit(1)
   }
