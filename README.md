@@ -1,7 +1,7 @@
 # TypeOnly
 
 [![Build Status](https://travis-ci.com/tomko-team/typeonly.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly)
-[![Dependencies Status](https://david-dm.org/paleo/direct-vuex/status.svg)](https://david-dm.org/paleo/direct-vuex)
+[![Dependencies Status](https://david-dm.org/tomko-team/typeonly/status.svg)](https://david-dm.org/tomko-team/typeonly)
 [![Codacy Status](https://api.codacy.com/project/badge/Grade/22f07556743948e98d1814087c801906)](https://www.codacy.com/manual/paleo/typeonly?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tomko-team/typeonly&amp;utm_campaign=Badge_Grade)
 [![npm](https://img.shields.io/npm/dm/typeonly)](https://www.npmjs.com/package/typeonly)
 ![Type definitions](https://img.shields.io/npm/types/typeonly)
@@ -33,11 +33,11 @@ The TypeOnly parser is implemented from scratch and does not require TypeScript 
 
 There are three packages built on top of TypeOnly.
 
-How to **check JSON data from the command line**: use the package [**@typeonly/checker-cli**](https://github.com/tomko-team/typeonly-checker-cli).
+How to **check JSON data from the command line**: use the package [@typeonly/checker-cli](https://github.com/tomko-team/typeonly-checker-cli).
 
-How to **check JSON data or a JavaScript object using an API**: use the package [**@typeonly/checker**](https://github.com/tomko-team/typeonly-checker).
+How to **check JSON data or a JavaScript object using an API**: use the package [@typeonly/checker](https://github.com/tomko-team/typeonly-checker).
 
-How to **use typing metadata at runtime**: use the package [**@typeonly/reader**](https://github.com/tomko-team/typeonly-reader).
+How to **use typing metadata at runtime**: use the package [@typeonly/reader](https://github.com/tomko-team/typeonly-reader).
 
 ## Tutorial: Parse TypeScript definitions with the CLI
 
