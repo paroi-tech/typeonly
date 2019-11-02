@@ -5,7 +5,7 @@
 [![Codacy Status](https://api.codacy.com/project/badge/Grade/22f07556743948e98d1814087c801906)](https://www.codacy.com/manual/paleo/typeonly?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tomko-team/typeonly&amp;utm_campaign=Badge_Grade)
 [![npm](https://img.shields.io/npm/dm/typeonly)](https://www.npmjs.com/package/typeonly)
 ![Type definitions](https://img.shields.io/npm/types/typeonly)
-![GitHub](https://img.shields.io/github/license/tomko-team/typeonly)
+[![GitHub](https://img.shields.io/github/license/tomko-team/typeonly)](https://github.com/tomko-team/typeonly)
 
 TypeOnly aims to be the pure typing part of TypeScript. See also: a [detailed description](https://github.com/tomko-team/typeonly/blob/master/typeonly-language.md) of the TypeOnly language. This package is a parser for the TypeOnly language.
 
