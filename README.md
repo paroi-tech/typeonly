@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/tomko-team/typeonly-reader.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly-reader)
 [![Dependencies Status](https://david-dm.org/tomko-team/typeonly-reader/status.svg)](https://david-dm.org/tomko-team/typeonly-reader)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/795a3bf921524597bac9af7df8b79026)](https://www.codacy.com/manual/paleo/typeonly-reader?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tomko-team/typeonly-reader&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/795a3bf921524597bac9af7df8b79026)](https://www.codacy.com/manual/paleo/typeonly-reader?utm_source=github.com&utm_medium=referral&utm_content=tomko-team/typeonly-reader&utm_campaign=Badge_Grade)
 [![npm](https://img.shields.io/npm/dm/@typeonly/reader)](https://www.npmjs.com/package/@typeonly/reader)
 ![Type definitions](https://img.shields.io/npm/types/@typeonly/reader)
 ![GitHub](https://img.shields.io/github/license/tomko-team/typeonly-reader)
@@ -11,7 +11,7 @@
 
 ## Tutorial: Load typing definitions at runtime
 
-At first, it is necessary to follow [the tutorial](https://github.com/tomko-team/typeonly/blob/master/README.md#tutorial-parse-typescript-definitions-with-the-cli) of TypeOnly in order to generate RTO files (with the `.rto.json` extension) from TypeScript definitions. After this step, the RTO files are in a `dist-rto/` directory.
+At first, it is necessary to follow [the tutorial](https://github.com/tomko-team/typeonly/blob/master/README.md#tutorial-parse-typescript-definitions-with-the-cli) of TypeOnly in order to generate RTO files (with the `.rto.json` extension) from TypeScript definitions. After this step, the RTO files are in a `dist-types/` directory.
 
 Now, add `@typeonly/reader` to the project:
 
@@ -23,19 +23,19 @@ Create a file `src/main.js` with the following content:
 
 ```ts
 // src/main.js
-const { readModules, literals } = require("@typeonly/reader")
+const { readModules, literals } = require("@typeonly/reader");
 
 async function main() {
   const modules = await readModules({
     modulePaths: ["./drawing"],
-    baseDir: `${__dirname}/../dist-rto`
-  })
+    baseDir: `${__dirname}/../dist-types`
+  });
 
-  const { ColorName } = modules["./drawing"].namedTypes
-  console.log("Color names:", literals(ColorName, "string"))
+  const { ColorName } = modules["./drawing"].namedTypes;
+  console.log("Color names:", literals(ColorName, "string"));
 }
 
-main().catch(console.error)
+main().catch(console.error);
 ```
 
 If you write this code in a TypeScript source file, simply replace the `require` syntax with a standard `import`.
