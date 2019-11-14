@@ -12,10 +12,10 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@typeonly/checker": "^0.2.2",
+    "@typeonly/checker": "^0.2.3",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^6.1.0",
-    "typeonly": "^0.2.2"
+    "typeonly": "^0.2.3"
   },
   "devDependencies": {
     "@types/command-line-args": "^5.0.0",
