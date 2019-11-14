@@ -1,24 +1,26 @@
 {
+  "[typescript]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true,
+      "source.organizeImports": true
+    },
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.formatOnSave": true
+  },
   "antlr4.format": {
     "continuationIndentWidth": 2,
     "indentWidth": 2,
     "tabWidth": 2,
     "useTab": false
   },
-  "editor.codeActionsOnSave": {
-    "source.fixAll": true,
-    "source.organizeImports": true
-  },
-  "editor.formatOnSave": true,
   "editor.insertSpaces": true,
-  "editor.rulers": [
-    120
-  ],
+  "editor.rulers": [120],
   "editor.tabSize": 2,
   "editor.wordWrap": "wordWrapColumn",
   "editor.wordWrapColumn": 132,
   "files.encoding": "utf8",
   "files.trimTrailingWhitespace": true,
+  "javascript.format.semicolons": "remove",
   "javascript.preferences.quoteStyle": "double",
   "search.useIgnoreFiles": true,
   "todo-tree.highlights.customHighlight": {
@@ -43,5 +45,8 @@
   "tslint.configFile": "tslint.json",
   "tslint.jsEnable": true,
   "typescript.locale": "en",
-  "typescript.preferences.quoteStyle": "double"
+  "typescript.format.semicolons": "remove",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.preferences.quoteStyle": "double",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

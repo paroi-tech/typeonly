@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/tomko-team/typeonly.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly)
 [![Dependencies Status](https://david-dm.org/tomko-team/typeonly/status.svg)](https://david-dm.org/tomko-team/typeonly)
-[![Codacy Status](https://api.codacy.com/project/badge/Grade/22f07556743948e98d1814087c801906)](https://www.codacy.com/manual/paleo/typeonly?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tomko-team/typeonly&amp;utm_campaign=Badge_Grade)
+[![Codacy Status](https://api.codacy.com/project/badge/Grade/22f07556743948e98d1814087c801906)](https://www.codacy.com/manual/paleo/typeonly?utm_source=github.com&utm_medium=referral&utm_content=tomko-team/typeonly&utm_campaign=Badge_Grade)
 [![npm](https://img.shields.io/npm/dm/typeonly)](https://www.npmjs.com/package/typeonly)
 ![Type definitions](https://img.shields.io/npm/types/typeonly)
 [![GitHub](https://img.shields.io/github/license/tomko-team/typeonly)](https://github.com/tomko-team/typeonly)
@@ -14,10 +14,10 @@ TypeOnly aims to be the pure typing part of TypeScript. See also: a [detailed de
 TypeScript typing definitions are not available at runtime. Sometime this forces us to repeat ourselves, as in the following example:
 
 ```ts
-type ColorName = "red" | "green" | "blue"
+type ColorName = "red" | "green" | "blue";
 
 function isColorName(name: string): name is ColorName {
-  return ["red", "green", "blue"].includes(name)
+  return ["red", "green", "blue"].includes(name);
 }
 ```
 
@@ -52,7 +52,7 @@ Edit the file `package.json` and add the following entry in the section `"script
 
 ```json
   "scripts": {
-    "typeonly": "typeonly -o dist-rto/ -s src/"
+    "typeonly": "typeonly -o dist-types/ -s src/"
   },
 ```
 
@@ -62,26 +62,26 @@ Create a subdirectory `src/`, then create a file _"src/drawing.d.ts"_ with the f
 // src/drawing.d.ts
 
 export interface Drawing {
-  color: ColorName
-  dashed?: boolean
-  shape: Rectangle | Circle
+  color: ColorName;
+  dashed?: boolean;
+  shape: Rectangle | Circle;
 }
 
-export type ColorName = "red" | "green" | "blue"
+export type ColorName = "red" | "green" | "blue";
 
 export interface Rectangle {
-  kind: "rectangle",
-  x: number
-  y: number
-  width: number
-  height: number
+  kind: "rectangle";
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 export interface Circle {
-  kind: "circle",
-  x: number
-  y: number
-  radius: number
+  kind: "circle";
+  x: number;
+  y: number;
+  radius: number;
 }
 ```
 
@@ -91,7 +91,7 @@ Now we can execute the TypeOnly parser via our script:
 npm run typeonly
 ```
 
-This command creates a file `dist-rto/drawing.rto.json`. A RTO file (with the `.rto.json` extension) contains metadata extracted from a `.d.ts` typing file.
+This command creates a file `dist-types/drawing.rto.json`. A RTO file (with the `.rto.json` extension) contains metadata extracted from a `.d.ts` typing file.
 
 ## TypeOnly Documentation
 
@@ -100,10 +100,10 @@ This command creates a file `dist-rto/drawing.rto.json`. A RTO file (with the `.
 Compile a typing source file:
 
 ```sh
-npx typeonly --source-dir src/ --output-dir dist-rto/ file-name.d.ts
+npx typeonly --source-dir src/ --output-dir dist-types/ file-name.d.ts
 ```
 
-This command generates a compiled file `dist-rto/file-name.rto.json`.
+This command generates a compiled file `dist-types/file-name.rto.json`.
 
 Available options:
 
@@ -128,18 +128,18 @@ npm install typeonly --save-dev
 Then, use it:
 
 ```js
-const { generateRtoModules } = require("typeonly")
+const { generateRtoModules } = require("typeonly");
 
 generateRtoModules({
   modulePaths: ["./file-name"],
   readFiles: {
-    sourceDir: `${__dirname}/src`,
+    sourceDir: `${__dirname}/src`
   },
   writeFiles: {
-    outputDir: `${__dirname}/dist-rto`,
+    outputDir: `${__dirname}/dist-types`,
     prettify: 2
   }
-}).catch(console.log)
+}).catch(console.log);
 ```
 
 ## Known Limitations
@@ -152,8 +152,8 @@ An example of invalid TypeScript code that mistakenly can be parsed by the curre
 
 ```ts
 interface I1 {
-  [name: string]: boolean
-  p1: number // TS Error: Property 'p1' of type 'number' is not assignable to string index type 'boolean'.
+  [name: string]: boolean;
+  p1: number; // TS Error: Property 'p1' of type 'number' is not assignable to string index type 'boolean'.
 }
 ```
 
