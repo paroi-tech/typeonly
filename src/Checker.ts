@@ -97,10 +97,12 @@ export default class Checker implements TypeOnlyChecker {
 
   private checkTypeName(type: TypeName, val: unknown): InternalResult {
     if (type.group === "primitive") {
-      if (typeof val !== type.refName) {
-        return { valid: false, unmatchs: [{ type, val }] }
-      }
-      return { valid: true }
+      if (type.refName === "null") {
+        if (val === null)
+          return { valid: true }
+      } else if (typeof val === type.refName)
+        return { valid: true }
+      return { valid: false, unmatchs: [{ type, val }] }
     }
 
     if (type.group === "ts") {
@@ -306,7 +308,7 @@ export default class Checker implements TypeOnlyChecker {
       }
     }
 
-    const cause = `no matching type in: ${type.types.map(typeAsString).join(" or ")}`
+    const cause = `no matching type in: ${type.types.map(typeAsString).join(" | ")}`
     if (bestInvalid) {
       bestInvalid.unmatchs.push({ type, val, cause })
       return bestInvalid

@@ -151,6 +151,25 @@ describe("Check Types", () => {
     expect(result.error).toBeUndefined()
   })
 
+  test("CompositeType with null type", async () => {
+    const source = `
+      export type A = string | null
+    `
+
+    const checker = await createChecker({
+      readModules: {
+        modulePaths: ["./mod1"],
+        rtoModuleProvider: async () => createStandaloneRtoModule({
+          ast: parseTypeOnly({ source })
+        })
+      }
+    })
+
+    const result = checker.check("./mod1", "A", null)
+    expect(result.valid).toBe(true)
+    expect(result.error).toBeUndefined()
+  })
+
 
   test("LiteralType", async () => {
     const source = `
