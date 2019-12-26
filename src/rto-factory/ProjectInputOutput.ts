@@ -1,5 +1,5 @@
 import * as fs from "fs"
-import { dirname, join, resolve } from "path"
+import { dirname, join } from "path"
 import { promisify } from "util"
 import { TypeOnlyAstProvider } from "../api"
 import { parseTypeOnlyToAst } from "../parser/parse-typeonly"
@@ -48,8 +48,8 @@ export class RtoProjectOutput {
   private async writeModuleFile(module: RtoModule, modulePath: string, options: WriteRtoFilesOptions) {
     const data = JSON.stringify(module, undefined, options.prettify)
     const outputFile = `${join(options.outputDir, modulePath)}.rto.json`
-    await ensureDirectoryExists(options.outputDir)
-    await ensureDirectoryExists(dirname(outputFile), { createIntermediate: true })
+    await ensureDirectory(options.outputDir)
+    await ensureDirectory(dirname(outputFile), { createIntermediate: true })
     await writeFile(outputFile, data, { encoding: options.encoding })
   }
 }
@@ -74,7 +74,7 @@ async function readModuleFile(sourceDir: string, modulePath: string, encoding: s
   throw new Error(`Cannot open module file: ${path}.d.ts`)
 }
 
-async function ensureDirectoryExists(path: string, { createIntermediate = false } = {}) {
+export async function ensureDirectory(path: string, { createIntermediate = false } = {}) {
   if (!await fsExists(path))
     await mkdir(path, { recursive: createIntermediate })
 }

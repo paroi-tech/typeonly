@@ -33,15 +33,17 @@ interface I4{}; interface I5{};
   test("property separator can be a coma, a semicolon or a new line", () => {
     const source = `
 interface I1 {
-  a: string,
-  b: string;
+  a: string,aa: boolean,
+  b: string;bb: boolean;
+  ;
   c: string
-  d: string
+
+  , d: string
 }
 `
     const ast = parseTypeOnly({ source })
     const namedInterface = ast.declarations![0] as AstNamedInterface
-    expect(namedInterface.entries!.length).toBe(4)
+    expect(namedInterface.entries!.length).toBe(6)
   })
 
   test("inline interface", () => {

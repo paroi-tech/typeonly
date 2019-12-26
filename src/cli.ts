@@ -5,6 +5,8 @@ import { readdirSync, readFileSync, writeFileSync } from "fs"
 import { basename, dirname, join } from "path"
 import { generateRtoModules, parseTypeOnly } from "./api"
 import { TypeOnlyAst } from "./ast"
+import { RtoModules } from "./rto"
+import { ensureDirectory } from "./rto-factory/ProjectInputOutput"
 
 process.on("uncaughtException", err => {
   console.error("uncaughtException", err)
@@ -51,6 +53,12 @@ const optionDefinitions: OptionDefinition[] = [
     alias: "e",
     type: String,
     description: "Encoding for input and output file(s) (default is {underline utf8})."
+  },
+  {
+    name: "bundle",
+    alias: "b",
+    type: String,
+    description: "Generate a bundle file for RTO data (optional)."
   },
   {
     name: "prettify",
@@ -159,7 +167,7 @@ function createAstJsonFile(file: string, options: object) {
 }
 
 async function createRtoJsonFiles(options: object) {
-  let srcList = options["src"] || []
+  let srcList = options["src"] ?? []
   let sourceDir: string
   if (!options["source-dir"]) {
     if (srcList.length === 1)
@@ -169,24 +177,46 @@ async function createRtoJsonFiles(options: object) {
   } else
     sourceDir = options["source-dir"]
   sourceDir = normalizeDir(sourceDir)
-  const outputDir = normalizeDir(options["output-dir"] || sourceDir)
 
   if (srcList.length === 0)
     srcList = getTypingFilesInDir(sourceDir)
 
   const modulePaths = normalizeModulePaths(srcList, sourceDir)
-  const encoding: string = options["encoding"] || "utf8"
-  await generateRtoModules({
-    modulePaths,
-    readFiles: {
-      sourceDir,
-      encoding,
-    },
-    writeFiles: {
-      outputDir,
-      prettify: options["prettify"] ? "\t" : undefined
+  const encoding: string = options["encoding"] ?? "utf8"
+  const prettify = options["prettify"] ? "\t" : undefined
+  let bundleName: string | undefined = options["bundle"]
+
+  if (bundleName) {
+    if (!bundleName.endsWith(".to.json"))
+      bundleName += ".to.json"
+    const rtoModules = await generateRtoModules({
+      modulePaths,
+      readFiles: {
+        sourceDir,
+        encoding,
+      },
+      returnRtoModules: true
+    }) as RtoModules
+    const outputDir = options["output-dir"] ? normalizeDir(options["output-dir"]) : undefined
+    if (outputDir) {
+      await ensureDirectory(outputDir)
+      bundleName = join(outputDir, bundleName)
     }
-  })
+    writeFileSync(bundleName, JSON.stringify(rtoModules, undefined, prettify), { encoding })
+  } else {
+    const outputDir = normalizeDir(options["output-dir"] ?? sourceDir)
+    await generateRtoModules({
+      modulePaths,
+      readFiles: {
+        sourceDir,
+        encoding,
+      },
+      writeFiles: {
+        outputDir,
+        prettify
+      }
+    })
+  }
 }
 
 function getTypingFilesInDir(dir: string): string[] {

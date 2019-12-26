@@ -1,9 +1,10 @@
 {
   "name": "typeonly",
-  "version": "0.2.3",
-  "description": "Parses typing definitions from TypeScript and brings them at runtime.",
+  "version": "0.2.4",
+  "description": "Parses types and interfaces from TypeScript and brings them at runtime.",
   "author": "tomko.team",
   "scripts": {
+    "prepublishOnly": "npm run build && npm run test",
     "antlr": "java -cp \"antlr-4.7.2-complete.jar\" org.antlr.v4.Tool -Dlanguage=JavaScript -o antlr-parser TypeOnlyParser.g4 TypeOnlyLexer.g4",
     "clear": "rimraf 'dist/*' 'antlr-parser/*' 'bundle-tsd/declarations/*'",
     "tsc": "tsc",
@@ -12,8 +13,7 @@
     "build": "npm run clear && npm run antlr && npm run tsc && npm run bundle-tsd",
     "lint": "tslint -p tsconfig.json -t verbose",
     "test:watch": "jest --watch",
-    "test": "jest",
-    "prepublishOnly": "npm run build"
+    "test": "jest"
   },
   "dependencies": {
     "antlr4": "^4.7.2",
@@ -23,13 +23,13 @@
   "devDependencies": {
     "@types/command-line-args": "^5.0.0",
     "@types/command-line-usage": "^5.0.1",
-    "@types/jest": "^24.0.23",
-    "@types/node": "^12.12.7",
+    "@types/jest": "^24.0.24",
+    "@types/node": "^12.12.22",
     "jest": "^24.9.0",
     "rimraf": "^3.0.0",
-    "ts-jest": "^24.1.0",
+    "ts-jest": "^24.2.0",
     "tslint": "^5.20.1",
-    "typescript": "^3.7.2"
+    "typescript": "^3.7.4"
   },
   "main": "dist/api.js",
   "types": "dist/typeonly.d.ts",
@@ -41,7 +41,8 @@
   "license": "CC0-1.0",
   "keywords": [
     "typescript",
-    "types",
+    "type",
+    "interface",
     "runtime"
   ]
 }

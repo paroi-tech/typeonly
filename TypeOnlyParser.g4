@@ -75,7 +75,8 @@ mappedIndexSignature:
     NL* QUESTION_MARK
   )? COLON aType;
 
-propertySeparator: NL+ | NL* SEMI_COLON+ NL* | NL* COMMA NL*;
+propertySeparator: (NL+ (propertyExplicitSeparator NL*)?) | (propertyExplicitSeparator NL*);
+propertyExplicitSeparator: (SEMI_COLON (NL* SEMI_COLON)*) | COMMA;
 
 propertyName: IDENTIFIER | JS_KEYWORD | typeOnlyKeywords;
 typeOnlyKeywords:
