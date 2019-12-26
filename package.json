@@ -4,12 +4,12 @@
   "description": "A CLI to validate JSON files, using TypeScript typing definitions.",
   "author": "tomko.team",
   "scripts": {
+    "prepublishOnly": "npm run build",
     "clear": "rimraf 'dist/*'",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
     "build": "npm run clear && npm run tsc",
-    "lint": "tslint -p tsconfig.json -t verbose",
-    "prepublishOnly": "npm run build"
+    "lint": "tslint -p tsconfig.json -t verbose"
   },
   "dependencies": {
     "@typeonly/checker": "^0.3.0",
