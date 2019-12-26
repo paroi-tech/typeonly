@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import { createChecker } from "@typeonly/checker"
-import commandLineArgs = require("command-line-args")
-import commandLineUsage = require("command-line-usage")
 import { readFileSync } from "fs"
 import { basename, dirname } from "path"
 import { generateRtoModules, RtoModules } from "typeonly"
+import commandLineArgs = require("command-line-args")
+import commandLineUsage = require("command-line-usage")
 
 process.on("uncaughtException", err => {
   console.error("uncaughtException", err)
@@ -179,10 +179,8 @@ async function checkFromRtoFile(options: object) {
     modulePath = modulePath.slice(0, -9)
 
   const checker = await createChecker({
-    readModules: {
-      modulePaths: [modulePath],
-      baseDir
-    },
+    modulePaths: [modulePath],
+    baseDir,
     acceptAdditionalProperties: !!options["non-strict"]
   })
 
@@ -211,7 +209,7 @@ async function checkFromTypingFile(options: object) {
     throw new InvalidArgumentError("Parameter 'source' must end with '.d.ts' or '.ts'")
   sourceModulePath = sourceModulePath.substr(0, sourceModulePath.length - (sourceModulePath.endsWith(".d.ts") ? 5 : 3))
 
-  const rtoModules = await generateRtoModules({
+  const modules = await generateRtoModules({
     modulePaths: [sourceModulePath],
     readFiles: {
       sourceDir,
@@ -220,12 +218,8 @@ async function checkFromTypingFile(options: object) {
     returnRtoModules: true
   }) as RtoModules
 
-
   const checker = await createChecker({
-    readModules: {
-      modulePaths: [sourceModulePath],
-      rtoModules
-    },
+    modules,
     acceptAdditionalProperties: !!options["non-strict"]
   })
 
