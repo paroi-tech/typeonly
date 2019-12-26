@@ -39,7 +39,7 @@ describe("Reader Specification for Types", () => {
     for (const source of sources) {
       const modules = await readModules({
         modulePaths: ["./mod1"],
-        moduleProvider: async () => createStandaloneRtoModule({
+        rtoModuleProvider: async () => createStandaloneRtoModule({
           ast: parseTypeOnly({ source: source["input"] })
         })
       })
@@ -61,7 +61,7 @@ describe("Reader Specification for Types", () => {
 
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -89,7 +89,7 @@ describe("Reader Specification for Types", () => {
 
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -123,7 +123,7 @@ describe("Reader Specification for Types", () => {
 
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -149,7 +149,7 @@ describe("Reader Specification for Types", () => {
       `
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -184,7 +184,7 @@ describe("Reader Specification for Types", () => {
       `
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -220,7 +220,7 @@ describe("Reader Specification for Types", () => {
       `
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -263,7 +263,7 @@ describe("Reader Specification for Types", () => {
       `
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -316,7 +316,7 @@ describe("Reader Specification for Types", () => {
       `
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -369,7 +369,7 @@ describe("Reader Specification for Types", () => {
       `
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -412,7 +412,7 @@ describe("Reader Specification for Types", () => {
         `
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -457,7 +457,7 @@ describe("Reader Specification for Types", () => {
         `
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -511,7 +511,7 @@ describe("Reader Specification for Types", () => {
         `
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -556,7 +556,7 @@ describe("Reader Specification for Types", () => {
         `
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -588,7 +588,7 @@ describe("Reader Specification for Types", () => {
       `
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })

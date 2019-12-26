@@ -7,18 +7,27 @@ import { Modules, Type } from "./typeonly-reader"
 const readdir = promisify(fs.readdir)
 const readFile = promisify(fs.readFile)
 
-export interface ReadModulesOptions {
+export type ReadModulesOptions = SyncReadModulesOptions | AsyncReadModulesOptions
+
+export interface SyncReadModulesOptions {
   /**
    * Optional when `"modules"` is defined.
    */
   modulePaths?: string[]
-  baseDir?: string
-  encoding?: string
-  moduleProvider?: RtoModuleProvider
   /**
    * Of type: `RtoModules`.
    */
-  modules?: any
+  bundle: any
+}
+
+export interface AsyncReadModulesOptions {
+  /**
+   * Optional when `"modules"` is defined.
+   */
+  modulePaths: string[]
+  baseDir?: string
+  encoding?: string
+  rtoModuleProvider?: RtoModuleProvider
 }
 
 /**
@@ -26,40 +35,52 @@ export interface ReadModulesOptions {
  */
 export type RtoModuleProvider = (modulePath: string) => Promise<any> | any
 
-export async function readModules(options: ReadModulesOptions): Promise<Modules> {
-  let { modulePaths, moduleProvider: moduleProvider } = options
-  if (moduleProvider || options.modules) {
+export function readModules(options: SyncReadModulesOptions): Modules
+export function readModules(options: AsyncReadModulesOptions): Promise<Modules>
+export function readModules(options: ReadModulesOptions): any {
+  if (isSyncReadModulesOptions(options))
+    return readModulesSync(options)
+  else
+    return readModulesAsync(options)
+}
+
+export function isSyncReadModulesOptions(options: ReadModulesOptions): options is SyncReadModulesOptions {
+  return !!options["modules"]
+}
+
+function readModulesSync(options: SyncReadModulesOptions): Modules {
+  let { modulePaths, bundle } = options
+  const rtoModuleProvider = (modulePath: string) => {
+    const rtoModule = bundle[modulePath]
+    if (!rtoModule)
+      throw new Error(`Unknown module: ${modulePath}`)
+    return rtoModule
+  }
+  if (!modulePaths)
+    modulePaths = Object.keys(bundle)
+  const project = new Project({ rtoModuleProvider })
+  return project.parseModulesSync(modulePaths)
+}
+
+async function readModulesAsync(options: AsyncReadModulesOptions): Promise<Modules> {
+  let { modulePaths, rtoModuleProvider } = options
+  if (rtoModuleProvider) {
     if (options.baseDir)
-      throw new Error(`Do not use 'baseDir' with 'moduleProvider' or 'modules'`)
-    if (!moduleProvider) {
-      if (moduleProvider)
-        throw new Error(`Do not use 'moduleProvider' with 'modules'`)
-      const modules = options.modules as any
-      moduleProvider = modulePath => {
-        const rtoModule = modules[modulePath]
-        if (!rtoModule)
-          throw new Error(`Unknown module: ${modulePath}`)
-        return rtoModule
-      }
-    }
-    if (!modulePaths) {
-      if (!options.modules)
-        throw new Error(`Missing parameter 'modulePaths'`)
-      modulePaths = Object.keys(options.modules)
-    }
+      throw new Error(`Do not use 'baseDir' with 'rtoModuleProvider' or 'modules'`)
+    if (!modulePaths)
+      throw new Error(`Missing parameter 'modulePaths'`)
   } else {
     if (!options.baseDir)
-      throw new Error(`An option 'baseDir', 'moduleProvider' or 'modules' is required`)
-    moduleProvider = makeReadSourceFileRtoModuleProvider({
+      throw new Error(`An option 'baseDir', 'rtoModuleProvider' or 'modules' is required`)
+    rtoModuleProvider = makeReadSourceFileRtoModuleProvider({
       baseDir: options.baseDir,
       encoding: options.encoding || "utf8"
     })
     if (!modulePaths)
       modulePaths = await getModulePathsInDir(options.baseDir)
   }
-  const project = new Project({ moduleProvider })
-  const modules = await project.parseModules(modulePaths)
-  return modules
+  const project = new Project({ rtoModuleProvider })
+  return await project.parseModulesAsync(modulePaths)
 }
 
 async function getModulePathsInDir(dir: string): Promise<string[]> {

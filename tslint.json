@@ -41,7 +41,7 @@
     "object-literal-sort-keys": false,
     "object-literal-key-quotes": false,
     "only-arrow-functions": false,
-    "prefer-const": true,
+    "prefer-const": [true, {"destructuring": "all"}],
     "quotemark": [
       true,
       "double"

@@ -25,17 +25,12 @@ Create a file `src/main.js` with the following content:
 // src/main.js
 const { readModules, literals } = require("@typeonly/reader");
 
-async function main() {
-  const modules = await readModules({
-    modulePaths: ["./drawing"],
-    baseDir: `${__dirname}/../dist-types`
-  });
+const modules = readModules({
+  bundle: require(`./types.to.json`)
+});
 
-  const { ColorName } = modules["./drawing"].namedTypes;
-  console.log("Color names:", literals(ColorName, "string"));
-}
-
-main().catch(console.error);
+const { ColorName } = modules["./drawing"].namedTypes;
+console.log("Color names:", literals(ColorName, "string"));
 ```
 
 If you write this code in a TypeScript source file, simply replace the `require` syntax with a standard `import`.
