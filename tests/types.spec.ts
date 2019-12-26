@@ -11,7 +11,7 @@ describe("Check Types", () => {
 `
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -30,7 +30,7 @@ describe("Check Types", () => {
     `
     const checker = await createChecker({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -48,7 +48,7 @@ describe("Check Types", () => {
     `
     const checker = await createChecker({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -70,7 +70,7 @@ describe("Check Types", () => {
 
     const checker = await createChecker({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -91,7 +91,7 @@ describe("Check Types", () => {
 
     const checker = await createChecker({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -110,7 +110,7 @@ describe("Check Types", () => {
 
     const checker = await createChecker({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -128,7 +128,7 @@ describe("Check Types", () => {
 
     const checker = await createChecker({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -146,7 +146,7 @@ describe("Check Types", () => {
 
     const checker = await createChecker({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -164,7 +164,7 @@ describe("Check Types", () => {
 
     const checker = await createChecker({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -184,7 +184,7 @@ describe("Check Types", () => {
 
     const checker = await createChecker({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -208,7 +208,7 @@ describe("Check Types", () => {
 
   //   const checker = await createChecker({
   //     modulePaths: ["./mod1"],
-  //     moduleProvider: async () => createStandaloneRtoModule({
+  //     rtoModuleProvider: async () => createStandaloneRtoModule({
   //       ast: parseTypeOnly({ source })
   //     })
   //   })

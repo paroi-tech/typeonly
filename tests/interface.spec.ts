@@ -13,7 +13,7 @@ describe("Check Interface", () => {
 
     const checker = await createChecker({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -40,7 +40,7 @@ describe("Check Interface", () => {
   `
     const checker = await createChecker({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -66,7 +66,7 @@ describe("Check Interface", () => {
 
     const checker = await createChecker({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -91,7 +91,7 @@ describe("Check Interface", () => {
   `
     const checker = await createChecker({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -118,7 +118,7 @@ describe("Check Interface", () => {
   `
     const checker = await createChecker({
       modulePaths: ["./mod1"],
-      moduleProvider: async () => createStandaloneRtoModule({
+      rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
