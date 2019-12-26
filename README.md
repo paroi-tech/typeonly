@@ -100,18 +100,19 @@ This command creates a file `dist-types/drawing.rto.json`. A RTO file (with the 
 Compile a typing source file:
 
 ```sh
-npx typeonly --source-dir src/ --output-dir dist-types/ file-name.d.ts
+npx typeonly --source-dir src/ --bundle dist/bundle.to.json
 ```
 
-This command generates a compiled file `dist-types/file-name.rto.json`.
+This command generates a compiled file `dist/bundle.to.json`.
 
 Available options:
 
 ```
   -h, --help                   Print this help message.
   -o, --output-dir directory   The output directory (optional).
-  -s, --source-dir directory   The source directory (optional when is used with option --ast or with a single source file).
+  -s, --source-dir directory   The source directory (optional when used with option --ast or with a single source file).
   -e, --encoding string        Encoding for input and output file(s) (default is utf8).
+  -b, --bundle string          Generate a bundle file for RTO data (optional).
   --prettify                   Prettify RTO files (optional).
   --ast                        Generate AST files instead of RTO files (optional).
   --src file ...               Input files to process (by default at last position).

@@ -2,7 +2,7 @@
 import commandLineArgs = require("command-line-args")
 import commandLineUsage = require("command-line-usage")
 import { readdirSync, readFileSync, writeFileSync } from "fs"
-import { basename, dirname, join } from "path"
+import { basename, dirname, join, parse } from "path"
 import { generateRtoModules, parseTypeOnly } from "./api"
 import { TypeOnlyAst } from "./ast"
 import { RtoModules } from "./rto"
@@ -189,6 +189,16 @@ async function createRtoJsonFiles(options: object) {
   if (bundleName) {
     if (!bundleName.endsWith(".to.json"))
       bundleName += ".to.json"
+    let outputDir = options["output-dir"] ? normalizeDir(options["output-dir"]) : undefined
+    const parsed = parse(bundleName)
+    if (parsed.dir) {
+      outputDir = outputDir ? join(outputDir, parsed.dir) : parsed.dir
+      bundleName = parsed.base
+    }
+    if (outputDir) {
+      await ensureDirectory(outputDir)
+      bundleName = join(outputDir, bundleName)
+    }
     const rtoModules = await generateRtoModules({
       modulePaths,
       readFiles: {
@@ -197,11 +207,6 @@ async function createRtoJsonFiles(options: object) {
       },
       returnRtoModules: true
     }) as RtoModules
-    const outputDir = options["output-dir"] ? normalizeDir(options["output-dir"]) : undefined
-    if (outputDir) {
-      await ensureDirectory(outputDir)
-      bundleName = join(outputDir, bundleName)
-    }
     writeFileSync(bundleName, JSON.stringify(rtoModules, undefined, prettify), { encoding })
   } else {
     const outputDir = normalizeDir(options["output-dir"] ?? sourceDir)
