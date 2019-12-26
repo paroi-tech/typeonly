@@ -1,9 +1,10 @@
 {
   "name": "@typeonly/reader",
   "version": "0.2.3",
-  "description": "Brings typing definitions from TypeScript at runtime.",
+  "description": "Brings types and interfaces from TypeScript at runtime.",
   "author": "tomko.team",
   "scripts": {
+    "prepublishOnly": "npm run build && npm run test",
     "clear": "rimraf 'dist/*' 'bundle-tsd/declarations/*'",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
@@ -11,18 +12,17 @@
     "build": "npm run clear && npm run tsc && npm run bundle-tsd",
     "lint": "tslint -p tsconfig.json -t verbose",
     "test:watch": "jest --watch",
-    "test": "jest",
-    "prepublishOnly": "npm run build"
+    "test": "jest"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.23",
-    "@types/node": "^12.12.7",
+    "@types/jest": "^24.0.24",
+    "@types/node": "^12.12.22",
     "jest": "^24.9.0",
     "rimraf": "^3.0.0",
-    "ts-jest": "^24.1.0",
+    "ts-jest": "^24.2.0",
     "tslint": "^5.20.1",
-    "typeonly": "^0.2.2",
-    "typescript": "^3.7.2"
+    "typeonly": "^0.2.4",
+    "typescript": "^3.7.4"
   },
   "main": "dist/api.js",
   "types": "dist/reader.d.ts",
@@ -33,7 +33,8 @@
   "license": "CC0-1.0",
   "keywords": [
     "typescript",
-    "types",
+    "type",
+    "interface",
     "runtime"
   ]
 }

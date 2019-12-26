@@ -42,8 +42,11 @@ export async function readModules(options: ReadModulesOptions): Promise<Modules>
         return rtoModule
       }
     }
-    if (!modulePaths)
-      throw new Error(`Missing parameter 'modulePaths'`)
+    if (!modulePaths) {
+      if (!options.rtoModules)
+        throw new Error(`Missing parameter 'modulePaths'`)
+      modulePaths = Object.keys(options.rtoModules)
+    }
   } else {
     if (!options.baseDir)
       throw new Error(`An option 'baseDir', 'rtoModuleProvider' or 'rtoModules' is required`)
