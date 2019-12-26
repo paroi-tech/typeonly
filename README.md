@@ -37,10 +37,7 @@ const data = {
 
 async function main() {
   const checker = await createChecker({
-    readModules: {
-      modulePaths: ["./drawing"],
-      baseDir: `${__dirname}/../dist-types`
-    }
+    modules: require("./types.to.json")
   });
   const result = checker.check("./drawing", "Drawing", data);
   console.log(result);

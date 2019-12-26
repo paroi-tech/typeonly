@@ -5,12 +5,11 @@ export interface CheckerOptions {
   acceptAdditionalProperties?: boolean
 }
 
-export interface CreateCheckerOptions extends CheckerOptions {
-  readModules: ReadModulesOptions
+export interface CreateCheckerOptions extends CheckerOptions, ReadModulesOptions {
 }
 
 export async function createChecker(options: CreateCheckerOptions): Promise<TypeOnlyChecker> {
-  return createCheckerFromModules(await readModules(options.readModules), options)
+  return createCheckerFromModules(await readModules(options), options)
 }
 
 export function createCheckerFromModules(modules: Modules, options?: CheckerOptions): TypeOnlyChecker {

@@ -12,12 +12,10 @@ describe("Check Interface", () => {
     `
 
     const checker = await createChecker({
-      readModules: {
-        modulePaths: ["./mod1"],
-        rtoModuleProvider: async () => createStandaloneRtoModule({
-          ast: parseTypeOnly({ source })
-        })
-      }
+      modulePaths: ["./mod1"],
+      moduleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
     })
 
     const result = checker.check("./mod1", "A",
@@ -41,12 +39,10 @@ describe("Check Interface", () => {
       }
   `
     const checker = await createChecker({
-      readModules: {
-        modulePaths: ["./mod1"],
-        rtoModuleProvider: async () => createStandaloneRtoModule({
-          ast: parseTypeOnly({ source })
-        })
-      }
+      modulePaths: ["./mod1"],
+      moduleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
     })
 
     const result = checker.check("./mod1", "A",
@@ -69,12 +65,10 @@ describe("Check Interface", () => {
   `
 
     const checker = await createChecker({
-      readModules: {
-        modulePaths: ["./mod1"],
-        rtoModuleProvider: async () => createStandaloneRtoModule({
-          ast: parseTypeOnly({ source })
-        })
-      }
+      modulePaths: ["./mod1"],
+      moduleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
     })
 
     const result = checker.check("./mod1", "A",
@@ -96,12 +90,10 @@ describe("Check Interface", () => {
       }
   `
     const checker = await createChecker({
-      readModules: {
-        modulePaths: ["./mod1"],
-        rtoModuleProvider: async () => createStandaloneRtoModule({
-          ast: parseTypeOnly({ source })
-        })
-      }
+      modulePaths: ["./mod1"],
+      moduleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
     })
 
     const result = checker.check("./mod1", "A",
@@ -125,12 +117,10 @@ describe("Check Interface", () => {
       }
   `
     const checker = await createChecker({
-      readModules: {
-        modulePaths: ["./mod1"],
-        rtoModuleProvider: async () => createStandaloneRtoModule({
-          ast: parseTypeOnly({ source })
-        })
-      }
+      modulePaths: ["./mod1"],
+      moduleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
     })
 
     const result = checker.check("./mod1", "A",

@@ -11,7 +11,7 @@ describe("Check Types", () => {
 `
     const modules = await readModules({
       modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
+      moduleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
@@ -29,12 +29,10 @@ describe("Check Types", () => {
       export type A = number[]
     `
     const checker = await createChecker({
-      readModules: {
-        modulePaths: ["./mod1"],
-        rtoModuleProvider: async () => createStandaloneRtoModule({
-          ast: parseTypeOnly({ source })
-        })
-      }
+      modulePaths: ["./mod1"],
+      moduleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
     })
 
     const result = checker.check("./mod1", "A", [12, "90"])
@@ -49,12 +47,10 @@ describe("Check Types", () => {
       export type A = [number, string]
     `
     const checker = await createChecker({
-      readModules: {
-        modulePaths: ["./mod1"],
-        rtoModuleProvider: async () => createStandaloneRtoModule({
-          ast: parseTypeOnly({ source })
-        })
-      }
+      modulePaths: ["./mod1"],
+      moduleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
     })
 
     const result = checker.check("./mod1", "A", [12, "90", 23])
@@ -73,12 +69,10 @@ describe("Check Types", () => {
     `
 
     const checker = await createChecker({
-      readModules: {
-        modulePaths: ["./mod1"],
-        rtoModuleProvider: async () => createStandaloneRtoModule({
-          ast: parseTypeOnly({ source })
-        })
-      }
+      modulePaths: ["./mod1"],
+      moduleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
     })
 
     const result = checker.check("./mod1", "A", 12)
@@ -96,12 +90,10 @@ describe("Check Types", () => {
     `
 
     const checker = await createChecker({
-      readModules: {
-        modulePaths: ["./mod1"],
-        rtoModuleProvider: async () => createStandaloneRtoModule({
-          ast: parseTypeOnly({ source })
-        })
-      }
+      modulePaths: ["./mod1"],
+      moduleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
     })
 
     const result = checker.check("./mod1", "A", "sdds")
@@ -117,12 +109,10 @@ describe("Check Types", () => {
     `
 
     const checker = await createChecker({
-      readModules: {
-        modulePaths: ["./mod1"],
-        rtoModuleProvider: async () => createStandaloneRtoModule({
-          ast: parseTypeOnly({ source })
-        })
-      }
+      modulePaths: ["./mod1"],
+      moduleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
     })
 
     const result = checker.check("./mod1", "A", () => "12")
@@ -137,12 +127,10 @@ describe("Check Types", () => {
     `
 
     const checker = await createChecker({
-      readModules: {
-        modulePaths: ["./mod1"],
-        rtoModuleProvider: async () => createStandaloneRtoModule({
-          ast: parseTypeOnly({ source })
-        })
-      }
+      modulePaths: ["./mod1"],
+      moduleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
     })
 
     const result = checker.check("./mod1", "A", 12)
@@ -157,12 +145,10 @@ describe("Check Types", () => {
     `
 
     const checker = await createChecker({
-      readModules: {
-        modulePaths: ["./mod1"],
-        rtoModuleProvider: async () => createStandaloneRtoModule({
-          ast: parseTypeOnly({ source })
-        })
-      }
+      modulePaths: ["./mod1"],
+      moduleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
     })
 
     const result = checker.check("./mod1", "A", null)
@@ -177,12 +163,10 @@ describe("Check Types", () => {
     `
 
     const checker = await createChecker({
-      readModules: {
-        modulePaths: ["./mod1"],
-        rtoModuleProvider: async () => createStandaloneRtoModule({
-          ast: parseTypeOnly({ source })
-        })
-      }
+      modulePaths: ["./mod1"],
+      moduleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
     })
 
     const result = checker.check("./mod1", "A", "ff")
@@ -199,12 +183,10 @@ describe("Check Types", () => {
     `
 
     const checker = await createChecker({
-      readModules: {
-        modulePaths: ["./mod1"],
-        rtoModuleProvider: async () => createStandaloneRtoModule({
-          ast: parseTypeOnly({ source })
-        })
-      }
+      modulePaths: ["./mod1"],
+      moduleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
     })
 
     const result = checker.check("./mod1", "A", 12)
@@ -226,7 +208,7 @@ describe("Check Types", () => {
 
   //   const checker = await createChecker({
   //     modulePaths: ["./mod1"],
-  //     rtoModuleProvider: async () => createStandaloneRtoModule({
+  //     moduleProvider: async () => createStandaloneRtoModule({
   //       ast: parseTypeOnly({ source })
   //     })
   //   })
