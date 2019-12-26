@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/checker",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "An API to validate JSON data or JavaScript objects, using TypeScript typing definitions.",
   "author": "tomko.team",
   "scripts": {
@@ -15,7 +15,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@typeonly/reader": "^0.3.2"
+    "@typeonly/reader": "^0.3.3"
   },
   "devDependencies": {
     "@types/jest": "^24.0.25",
