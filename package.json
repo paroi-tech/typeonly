@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/reader",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Brings types and interfaces from TypeScript at runtime.",
   "author": "tomko.team",
   "scripts": {
