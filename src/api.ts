@@ -9,16 +9,16 @@ const readFile = promisify(fs.readFile)
 
 export interface ReadModulesOptions {
   /**
-   * Optional when `"readFiles"` is defined, then all the `.rto.json` files in `"baseDir"` are loaded.
+   * Optional when `"modules"` is defined.
    */
   modulePaths?: string[]
   baseDir?: string
   encoding?: string
-  rtoModuleProvider?: RtoModuleProvider
+  moduleProvider?: RtoModuleProvider
   /**
    * Of type: `RtoModules`.
    */
-  rtoModules?: any
+  modules?: any
 }
 
 /**
@@ -27,37 +27,37 @@ export interface ReadModulesOptions {
 export type RtoModuleProvider = (modulePath: string) => Promise<any> | any
 
 export async function readModules(options: ReadModulesOptions): Promise<Modules> {
-  let { modulePaths, rtoModuleProvider } = options
-  if (rtoModuleProvider || options.rtoModules) {
+  let { modulePaths, moduleProvider: moduleProvider } = options
+  if (moduleProvider || options.modules) {
     if (options.baseDir)
-      throw new Error(`Do not use 'baseDir' with 'rtoModuleProvider' or 'rtoModules'`)
-    if (!rtoModuleProvider) {
-      if (rtoModuleProvider)
-        throw new Error(`Do not use 'rtoModuleProvider' with 'rtoModules'`)
-      const rtoModules = options.rtoModules as any
-      rtoModuleProvider = modulePath => {
-        const rtoModule = rtoModules[modulePath]
+      throw new Error(`Do not use 'baseDir' with 'moduleProvider' or 'modules'`)
+    if (!moduleProvider) {
+      if (moduleProvider)
+        throw new Error(`Do not use 'moduleProvider' with 'modules'`)
+      const modules = options.modules as any
+      moduleProvider = modulePath => {
+        const rtoModule = modules[modulePath]
         if (!rtoModule)
           throw new Error(`Unknown module: ${modulePath}`)
         return rtoModule
       }
     }
     if (!modulePaths) {
-      if (!options.rtoModules)
+      if (!options.modules)
         throw new Error(`Missing parameter 'modulePaths'`)
-      modulePaths = Object.keys(options.rtoModules)
+      modulePaths = Object.keys(options.modules)
     }
   } else {
     if (!options.baseDir)
-      throw new Error(`An option 'baseDir', 'rtoModuleProvider' or 'rtoModules' is required`)
-    rtoModuleProvider = makeReadSourceFileRtoModuleProvider({
+      throw new Error(`An option 'baseDir', 'moduleProvider' or 'modules' is required`)
+    moduleProvider = makeReadSourceFileRtoModuleProvider({
       baseDir: options.baseDir,
       encoding: options.encoding || "utf8"
     })
     if (!modulePaths)
       modulePaths = await getModulePathsInDir(options.baseDir)
   }
-  const project = new Project({ rtoModuleProvider })
+  const project = new Project({ moduleProvider })
   const modules = await project.parseModules(modulePaths)
   return modules
 }

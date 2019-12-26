@@ -6,7 +6,7 @@ import ModuleFactory from "./ModuleFactory"
 export type GetModuleFactory = (modulePath: RelativeModulePath) => ModuleFactory
 
 export interface ProjectOptions {
-  rtoModuleProvider: RtoModuleProvider
+  moduleProvider: RtoModuleProvider
 }
 
 export default class Project {
@@ -50,7 +50,7 @@ export default class Project {
     })
     let factory = this.factories.get(modulePath)
     if (!factory) {
-      const rtoModule = await this.options.rtoModuleProvider(modulePath)
+      const rtoModule = await this.options.moduleProvider(modulePath)
       factory = new ModuleFactory(rtoModule, modulePath)
       this.factories.set(modulePath, factory)
       await this.loadImports(factory, modulePath)
