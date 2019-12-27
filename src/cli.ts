@@ -218,7 +218,7 @@ async function checkFromTypingFile(options: object) {
     returnRtoModules: true
   }) as RtoModules
 
-  const checker = await createChecker({
+  const checker = createChecker({
     bundle,
     acceptAdditionalProperties: !!options["non-strict"]
   })
