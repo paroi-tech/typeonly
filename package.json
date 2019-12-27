@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/checker-cli",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A CLI to validate JSON files, using TypeScript typing definitions.",
   "author": "tomko.team",
   "scripts": {
@@ -12,7 +12,7 @@
     "lint": "tslint -p tsconfig.json -t verbose"
   },
   "dependencies": {
-    "@typeonly/checker": "^0.3.0",
+    "@typeonly/checker": "^0.3.2",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^6.1.0",
     "typeonly": "^0.3.0"
