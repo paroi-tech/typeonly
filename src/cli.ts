@@ -209,7 +209,7 @@ async function checkFromTypingFile(options: object) {
     throw new InvalidArgumentError("Parameter 'source' must end with '.d.ts' or '.ts'")
   sourceModulePath = sourceModulePath.substr(0, sourceModulePath.length - (sourceModulePath.endsWith(".d.ts") ? 5 : 3))
 
-  const modules = await generateRtoModules({
+  const bundle = await generateRtoModules({
     modulePaths: [sourceModulePath],
     readFiles: {
       sourceDir,
@@ -219,7 +219,7 @@ async function checkFromTypingFile(options: object) {
   }) as RtoModules
 
   const checker = await createChecker({
-    modules,
+    bundle,
     acceptAdditionalProperties: !!options["non-strict"]
   })
 
