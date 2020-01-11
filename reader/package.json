@@ -1,0 +1,40 @@
+{
+  "name": "@typeonly/reader",
+  "version": "0.3.3",
+  "description": "Brings types and interfaces from TypeScript at runtime.",
+  "author": "tomko.team",
+  "scripts": {
+    "prepublishOnly": "npm run build && npm run test",
+    "clear": "rimraf 'dist/*' 'bundle-tsd/declarations/*'",
+    "tsc": "tsc",
+    "tsc:watch": "tsc --watch",
+    "bundle-tsd": "node bundle-tsd/bundle-tsd",
+    "build": "npm run clear && npm run tsc && npm run bundle-tsd",
+    "lint": "tslint -p tsconfig.json -t verbose",
+    "test:watch": "jest --watch",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.25",
+    "@types/node": "^12.12.22",
+    "jest": "^24.9.0",
+    "rimraf": "^3.0.0",
+    "ts-jest": "^24.2.0",
+    "tslint": "^5.20.1",
+    "typeonly": "^0.3.0",
+    "typescript": "^3.7.4"
+  },
+  "main": "dist/api.js",
+  "types": "dist/reader.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomko-team/typeonly-reader.git"
+  },
+  "license": "CC0-1.0",
+  "keywords": [
+    "typescript",
+    "type",
+    "interface",
+    "runtime"
+  ]
+}
