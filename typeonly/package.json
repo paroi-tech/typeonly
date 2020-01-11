@@ -4,7 +4,7 @@
   "description": "Parses types and interfaces from TypeScript and brings them at runtime.",
   "author": "tomko.team",
   "scripts": {
-    "prepublishOnly": "npm run build && npm run test",
+    "prepublishOnly": "npm run lint && npm run build && npm run test",
     "antlr": "java -cp \"antlr-4.7.2-complete.jar\" org.antlr.v4.Tool -Dlanguage=JavaScript -o antlr-parser TypeOnlyParser.g4 TypeOnlyLexer.g4",
     "clear": "rimraf 'dist/*' 'antlr-parser/*' 'bundle-tsd/declarations/*'",
     "tsc": "tsc",
