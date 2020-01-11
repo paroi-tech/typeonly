@@ -8,7 +8,7 @@
 ![Type definitions](https://img.shields.io/npm/types/@typeonly/reader)
 ![GitHub](https://img.shields.io/github/license/tomko-team/typeonly)
 
-[TypeOnly](https://github.com/tomko-team/typeonly) aims to be the pure typing part of TypeScript. The TypeOnly parser generates RTO files (with the `.rto.json` extension) that contain metadata extracted from `.d.ts` typing files. Then, this package provides an API to read these RTO files. It brings typing metadata at runtime.
+[TypeOnly](https://github.com/tomko-team/typeonly/tree/master/typeonly) aims to be the pure typing part of TypeScript. The TypeOnly parser generates RTO files (with the `.rto.json` extension) that contain metadata extracted from `.d.ts` typing files. Then, this package provides an API to read these RTO files. It brings typing metadata at runtime.
 
 ## Tutorial: Load typing definitions at runtime
 
