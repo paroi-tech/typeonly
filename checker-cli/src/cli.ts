@@ -136,7 +136,7 @@ function printHelp() {
       optionList: optionDefinitions
     },
     {
-      content: "Project home: {underline https://github.com/tomko-team/typeonly-checker-cli}"
+      content: "Project home: {underline https://github.com/tomko-team/typeonly}"
     }
   ]
   const usage = commandLineUsage(sections)

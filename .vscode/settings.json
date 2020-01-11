@@ -48,5 +48,5 @@
   "typescript.format.semicolons": "remove",
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.preferences.quoteStyle": "double",
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "reader/node_modules/typescript/lib"
 }

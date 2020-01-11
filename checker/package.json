@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/checker",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "An API to validate JSON data or JavaScript objects, using TypeScript typing definitions.",
   "author": "tomko.team",
   "scripts": {
@@ -19,20 +19,21 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.25",
-    "@types/node": "^12.12.22",
+    "@types/node": "^12.12.24",
     "jest": "^24.9.0",
     "rimraf": "^3.0.0",
-    "ts-jest": "^24.2.0",
+    "ts-jest": "^24.3.0",
     "tslint": "^5.20.1",
-    "typeonly": "^0.2.4",
+    "typeonly": "^0.3.0",
     "typescript": "^3.7.4"
   },
   "main": "dist/api.js",
   "types": "dist/checker.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tomko-team/typeonly-checker.git"
+    "url": "git+https://github.com/tomko-team/typeonly.git"
   },
+  "homepage": "https://github.com/tomko-team/typeonly/tree/master/checker",
   "license": "CC0-1.0",
   "keywords": [
     "typescript",

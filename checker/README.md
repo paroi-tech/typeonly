@@ -1,17 +1,18 @@
 # @typeonly/checker
 
-[![Build Status](https://travis-ci.com/tomko-team/typeonly-checker.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly-checker)
+<!-- [![Build Status](https://travis-ci.com/tomko-team/typeonly-checker.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly-checker)
 [![Dependencies Status](https://david-dm.org/tomko-team/typeonly-checker/status.svg)](https://david-dm.org/tomko-team/typeonly-checker)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3728d0b89a8f456391e980c46967003f)](https://www.codacy.com/manual/paleo/typeonly-checker?utm_source=github.com&utm_medium=referral&utm_content=tomko-team/typeonly-checker&utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3728d0b89a8f456391e980c46967003f)](https://www.codacy.com/manual/paleo/typeonly-checker?utm_source=github.com&utm_medium=referral&utm_content=tomko-team/typeonly-checker&utm_campaign=Badge_Grade) -->
+[![Build Status](https://travis-ci.com/tomko-team/typeonly.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly)
 [![npm](https://img.shields.io/npm/dm/@typeonly/checker)](https://www.npmjs.com/package/@typeonly/checker)
 ![Type definitions](https://img.shields.io/npm/types/@typeonly/checker)
-![GitHub](https://img.shields.io/github/license/tomko-team/typeonly-checker)
+![GitHub](https://img.shields.io/github/license/tomko-team/typeonly)
 
-[TypeOnly](https://github.com/tomko-team/typeonly) aims to be the pure typing part of TypeScript. This package provides an API to validate JSON and JavaScript objects with TypeScript definitions, using the TypeOnly parser.
+[TypeOnly](https://github.com/tomko-team/typeonly/tree/master/typeonly) aims to be the pure typing part of TypeScript. This package provides an API to validate JSON and JavaScript objects with TypeScript definitions, using the TypeOnly parser.
 
 ## Tutorial: How to programmatically validate JSON data
 
-At first, it is necessary to follow [the tutorial](https://github.com/tomko-team/typeonly/blob/master/README.md#tutorial-parse-typescript-definitions-with-the-cli) of TypeOnly in order to generate RTO files (with the `.rto.json` extension) from TypeScript definitions. After this step, the RTO files are in a `dist-types/` directory.
+At first, it is necessary to follow [the tutorial](https://github.com/tomko-team/typeonly/blob/master/typeonly/README.md#tutorial-parse-typescript-definitions-with-the-cli) of TypeOnly in order to generate RTO files (with the `.rto.json` extension) from TypeScript definitions. After this step, the RTO files are in a `dist-types/` directory.
 
 Now, add `@typeonly/checker` to the project:
 

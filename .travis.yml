@@ -6,6 +6,12 @@ cache:
   directories:
     - "node_modules"
 before_install:
-  - wget https://www.antlr.org/download/antlr-4.7.2-complete.jar
-before_script:
-  - npm run build
+  - wget https://www.antlr.org/download/antlr-4.7.2-complete.jar --directory-prefix typeonly
+# before_script:
+#   - npm run build
+env:
+  - SUB_PROJECT=typeonly
+  - SUB_PROJECT=reader
+  - SUB_PROJECT=checker
+  - SUB_PROJECT=checker-cli
+script: cd $SUB_PROJECT && npm i && npm run prepublishOnly

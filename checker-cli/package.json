@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/checker-cli",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "A CLI to validate JSON files, using TypeScript typing definitions.",
   "author": "tomko.team",
   "scripts": {
@@ -20,7 +20,7 @@
   "devDependencies": {
     "@types/command-line-args": "^5.0.0",
     "@types/command-line-usage": "^5.0.1",
-    "@types/node": "^12.12.22",
+    "@types/node": "^12.12.24",
     "rimraf": "^3.0.0",
     "tslint": "^5.20.1",
     "typescript": "^3.7.4"
@@ -28,8 +28,9 @@
   "bin": "dist/cli.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tomko-team/typeonly-checker-cli.git"
+    "url": "git+https://github.com/tomko-team/typeonly.git"
   },
+  "homepage": "https://github.com/tomko-team/typeonly/tree/master/checker-cli",
   "license": "CC0-1.0",
   "keywords": [
     "typescript",

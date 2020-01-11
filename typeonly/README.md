@@ -7,7 +7,7 @@
 ![Type definitions](https://img.shields.io/npm/types/typeonly)
 [![GitHub](https://img.shields.io/github/license/tomko-team/typeonly)](https://github.com/tomko-team/typeonly)
 
-TypeOnly aims to be the pure typing part of TypeScript. See also: a [detailed description](https://github.com/tomko-team/typeonly/blob/master/typeonly-language.md) of the TypeOnly language. This package is a parser for the TypeOnly language.
+TypeOnly aims to be the pure typing part of TypeScript. See also: a [detailed description](https://github.com/tomko-team/typeonly/blob/master/typeonly/typeonly-language.md) of the TypeOnly language. This package is a parser for the TypeOnly language.
 
 ## Why TypeOnly?
 
@@ -33,11 +33,11 @@ The TypeOnly parser is implemented from scratch and does not require TypeScript 
 
 There are three packages built on top of TypeOnly.
 
-How to **check JSON data from the command line**: use the package [@typeonly/checker-cli](https://github.com/tomko-team/typeonly-checker-cli).
+How to **check JSON data from the command line**: use the package [@typeonly/checker-cli](https://github.com/tomko-team/typeonly/tree/master/checker-cli).
 
-How to **check JSON data or a JavaScript object using an API**: use the package [@typeonly/checker](https://github.com/tomko-team/typeonly-checker).
+How to **check JSON data or a JavaScript object using an API**: use the package [@typeonly/checker](https://github.com/tomko-team/typeonly/tree/master/checker).
 
-How to **use typing metadata at runtime**: use the package [@typeonly/reader](https://github.com/tomko-team/typeonly-reader).
+How to **use typing metadata at runtime**: use the package [@typeonly/reader](https://github.com/tomko-team/typeonly/tree/master/reader).
 
 ## Tutorial: Parse TypeScript definitions with the CLI
 
