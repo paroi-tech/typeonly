@@ -164,7 +164,7 @@ interface I1 {
 
 We need a JVM (Java Virtual Machine) to build the parser because we use [ANTLR](https://www.antlr.org/), which is a Java program. So, at first, install a JVM on your system.
 
-In a terminal, open the cloned `typeonly/` repository. Then:
+In a terminal, open the cloned `typeonly/typeonly/` repository. Then:
 
 ```sh
 # Download once the ANTLR JAR file in the project's root directory
