@@ -52,14 +52,14 @@ Edit the file `package.json` and add the following entry in the section `"script
 
 ```json
   "scripts": {
-    "typeonly": "typeonly -o dist-types/ -s src/"
+    "typeonly": "typeonly --bundle dist/types.to.json --source-dir types"
   },
 ```
 
-Create a subdirectory `src/`, then create a file _"src/drawing.d.ts"_ with the following code:
+Create a subdirectory `types/`, then create a file _"types/drawing.d.ts"_ with the following code:
 
 ```ts
-// src/drawing.d.ts
+// types/drawing.d.ts
 
 export interface Drawing {
   color: ColorName;
@@ -91,7 +91,7 @@ Now we can execute the TypeOnly parser via our script:
 npm run typeonly
 ```
 
-This command creates a file `dist-types/drawing.rto.json`. A RTO file (with the `.rto.json` extension) contains metadata extracted from a `.d.ts` typing file.
+This command creates a file `dist/types.to.json`. A file with the `.to.json` extension is a bundle that contains metadata extracted from several `.d.ts` typing file.
 
 ## TypeOnly Documentation
 
@@ -100,10 +100,10 @@ This command creates a file `dist-types/drawing.rto.json`. A RTO file (with the 
 Compile a typing source file:
 
 ```sh
-npx typeonly --source-dir src/ --bundle dist/bundle.to.json
+npx typeonly --bundle dist/types.to.json --source-dir types
 ```
 
-This command generates a compiled file `dist/bundle.to.json`.
+This command generates a compiled file `dist/types.to.json`.
 
 Available options:
 
@@ -131,15 +131,12 @@ Then, use it:
 ```js
 const { generateRtoModules } = require("typeonly");
 
-generateRtoModules({
+const bundle = await generateRtoModules({
   modulePaths: ["./file-name"],
   readFiles: {
-    sourceDir: `${__dirname}/src`
+    sourceDir: `${__dirname}/types`
   },
-  writeFiles: {
-    outputDir: `${__dirname}/dist-types`,
-    prettify: 2
-  }
+  returnRtoModules: true
 }).catch(console.log);
 ```
 

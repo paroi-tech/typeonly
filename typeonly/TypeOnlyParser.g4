@@ -4,7 +4,7 @@ options {
   tokenVocab = TypeOnlyLexer;
 }
 
-declarations: typeSep? declaration*;
+declarations: typeSep? declaration* EOF;
 
 typeSep: (NL | SEMI_COLON)+;
 
@@ -41,10 +41,10 @@ interfaceExtends:
   EXTENDS NL* typeName (NL* COMMA NL* typeName)*;
 
 anonymousInterface:
-  OPEN_BRACE (NL* interfaceEntries)? NL* CLOSE_BRACE;
+  OPEN_BRACE (NL* interfaceEntries)? CLOSE_BRACE;
 
 interfaceEntries:
-  interfaceEntry (propertySeparator interfaceEntry)*;
+  interfaceEntry (propertySeparator interfaceEntry)* propertySeparator?;
 
 interfaceEntry:
   indexSignature

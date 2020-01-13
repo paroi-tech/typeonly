@@ -97,4 +97,28 @@ interface I1 {
     const prop = namedInterface.entries![0] as AstProperty
     expect(prop.optional).toBe(true)
   })
+
+  test("semicolons", () => {
+    const source = `
+interface I1 {
+  a: number;
+  b: number;
+}
+      `
+    const ast = parseTypeOnly({ source })
+    const namedInterface = ast.declarations![0] as AstNamedInterface
+    expect(namedInterface.entries?.length).toBe(2)
+  })
+
+  test("comas", () => {
+    const source = `
+interface I1 {
+  a: number,
+  b: number,
+}
+      `
+    const ast = parseTypeOnly({ source })
+    const namedInterface = ast.declarations![0] as AstNamedInterface
+    expect(namedInterface.entries?.length).toBe(2)
+  })
 })
