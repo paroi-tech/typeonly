@@ -8,11 +8,11 @@
 ![Type definitions](https://img.shields.io/npm/types/@typeonly/reader)
 ![GitHub](https://img.shields.io/github/license/tomko-team/typeonly)
 
-[TypeOnly](https://github.com/tomko-team/typeonly/tree/master/typeonly) aims to be the pure typing part of TypeScript. The TypeOnly parser generates RTO files (with the `.rto.json` extension) that contain metadata extracted from `.d.ts` typing files. Then, this package provides an API to read these RTO files. It brings typing metadata at runtime.
+[TypeOnly](https://github.com/tomko-team/typeonly/tree/master/typeonly) aims to be the pure typing part of TypeScript. The TypeOnly parser generates a `.to.json` file, which is a bundle that contains metadata extracted from `.d.ts` typing files. Then, this package provides an API to read these RTO files. It brings typing metadata at runtime.
 
 ## Tutorial: Load typing definitions at runtime
 
-At first, it is necessary to follow [the tutorial](https://github.com/tomko-team/typeonly/blob/master/typeonly/README.md#tutorial-parse-typescript-definitions-with-the-cli) of TypeOnly in order to generate RTO files (with the `.rto.json` extension) from TypeScript definitions. After this step, the RTO files are in a `dist-types/` directory.
+At first, it is necessary to follow [the tutorial](https://github.com/tomko-team/typeonly/blob/master/typeonly/README.md#tutorial-parse-typescript-definitions-with-the-cli) of TypeOnly in order to generate a `.to.json` file based on your TypeScript definitions. After this step, you have the following file: `dist/types.to.json`.
 
 Now, add `@typeonly/reader` to the project:
 
@@ -45,7 +45,7 @@ Color names: [ 'red', 'green', 'blue' ]
 
 Yes, it’s as easy as it seems: the list of color names is now available at runtime.
 
-Notice: The TypeOnly parser is used at build time. At runtime, our code only use `@typeonly/reader` which is a lightweight wrapper for `.rto.json` files.
+Notice: The TypeOnly parser is used at build time. At runtime, our code only use `@typeonly/reader` which is a lightweight wrapper for `.to.json` files.
 
 ## Contribute
 
