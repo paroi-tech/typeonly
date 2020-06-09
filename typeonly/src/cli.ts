@@ -149,7 +149,7 @@ async function processFiles(options: object) {
 
 function createAstJsonFile(file: string, options: object) {
   file = options["source-dir"] ? join(options["source-dir"], file) : file
-  const encoding: string = options["encoding"] || "utf8"
+  const encoding: BufferEncoding = options["encoding"] || "utf8"
   let source: string
   try {
     source = readFileSync(file, { encoding })
@@ -163,7 +163,7 @@ function createAstJsonFile(file: string, options: object) {
 
   const ast: TypeOnlyAst = parseTypeOnly({ source })
   const outFile = join(options["output-dir"] || dirname(file), `${fileName}.ast.json`)
-  writeFileSync(outFile, JSON.stringify(ast, undefined, "\t"), { encoding })
+  writeFileSync(outFile, JSON.stringify(ast, undefined, "\t"), encoding)
 }
 
 async function createRtoJsonFiles(options: object) {
@@ -182,7 +182,7 @@ async function createRtoJsonFiles(options: object) {
     srcList = getTypingFilesInDir(sourceDir)
 
   const modulePaths = normalizeModulePaths(srcList, sourceDir)
-  const encoding: string = options["encoding"] ?? "utf8"
+  const encoding: BufferEncoding = options["encoding"] ?? "utf8"
   const prettify = options["prettify"] ? "\t" : undefined
   let bundleName: string | undefined = options["bundle"]
 

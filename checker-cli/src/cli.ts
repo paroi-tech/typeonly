@@ -234,7 +234,7 @@ async function checkFromTypingFile(options: object) {
 function readJsonFileSync(options: object): unknown {
   const fileToCheck = options["json"]
   try {
-    const data = readFileSync(fileToCheck, { encoding: options["json-encoding"] || "utf8" }) as any
+    const data = readFileSync(fileToCheck, options["json-encoding"] || "utf8") as any
     return JSON.parse(data)
   } catch (err) {
     throw new InvalidArgumentError(`Cannot read file: ${fileToCheck}`)

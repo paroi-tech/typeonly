@@ -101,7 +101,7 @@ function makeReadSourceFileRtoModuleProvider(options: { baseDir: string, encodin
 async function readRtoFile(baseDir: string, modulePath: string, encoding: string) {
   const path = join(baseDir, modulePath)
   try {
-    return await readFile(`${path}.rto.json`, { encoding })
+    return await readFile(`${path}.rto.json`, encoding)
   } catch {
     throw new Error(`Cannot open module file: ${path}.rto.json`)
   }

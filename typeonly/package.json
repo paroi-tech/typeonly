@@ -1,6 +1,6 @@
 {
   "name": "typeonly",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Parses types and interfaces from TypeScript and brings them at runtime.",
   "author": "tomko.team",
   "scripts": {
@@ -16,20 +16,20 @@
     "test": "jest"
   },
   "dependencies": {
-    "antlr4": "^4.7.2",
+    "antlr4": "^4.8.0",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^6.1.0"
   },
   "devDependencies": {
     "@types/command-line-args": "^5.0.0",
     "@types/command-line-usage": "^5.0.1",
-    "@types/jest": "^24.0.25",
-    "@types/node": "^12.12.22",
-    "jest": "^24.9.0",
-    "rimraf": "^3.0.0",
-    "ts-jest": "^24.2.0",
-    "tslint": "^5.20.1",
-    "typescript": "^3.7.4"
+    "@types/jest": "^25.2.3",
+    "@types/node": "^14.0.12",
+    "jest": "^26.0.1",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^26.1.0",
+    "tslint": "^6.1.2",
+    "typescript": "^3.9.5"
   },
   "main": "dist/api.js",
   "types": "dist/typeonly.d.ts",

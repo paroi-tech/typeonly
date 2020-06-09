@@ -50,7 +50,7 @@ export class RtoProjectOutput {
     const outputFile = `${join(options.outputDir, modulePath)}.rto.json`
     await ensureDirectory(options.outputDir)
     await ensureDirectory(dirname(outputFile), { createIntermediate: true })
-    await writeFile(outputFile, data, { encoding: options.encoding })
+    await writeFile(outputFile, data, options.encoding)
   }
 }
 
@@ -64,11 +64,11 @@ export function makeReadSourceFileAstProvider(sourceDir: string, encoding: strin
 async function readModuleFile(sourceDir: string, modulePath: string, encoding: string) {
   const path = join(sourceDir, modulePath)
   try {
-    return await readFile(`${path}.d.ts`, { encoding })
+    return await readFile(`${path}.d.ts`, encoding)
   } catch {
   }
   try {
-    return await readFile(`${path}.ts`, { encoding })
+    return await readFile(`${path}.ts`, encoding)
   } catch {
   }
   throw new Error(`Cannot open module file: ${path}.d.ts`)

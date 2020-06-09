@@ -11,6 +11,7 @@
     ]
   },
   "rules": {
+    "array-type": [true, "array-simple"],
     "arrow-parens": false,
     "curly": false,
     "eofline": false,
