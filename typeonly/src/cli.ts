@@ -122,7 +122,7 @@ function printHelp() {
       optionList: optionDefinitions
     },
     {
-      content: "Project home: {underline https://github.com/tomko-team/typeonly}"
+      content: "Project home: {underline https://github.com/paroi-tech/typeonly}"
     }
   ]
   const usage = commandLineUsage(sections)

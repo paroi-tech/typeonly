@@ -1,13 +1,13 @@
 # TypeOnly
 
-<!-- [![Dependencies Status](https://david-dm.org/tomko-team/typeonly/status.svg)](https://david-dm.org/tomko-team/typeonly)
-[![Codacy Status](https://api.codacy.com/project/badge/Grade/22f07556743948e98d1814087c801906)](https://www.codacy.com/manual/paleo/typeonly?utm_source=github.com&utm_medium=referral&utm_content=tomko-team/typeonly&utm_campaign=Badge_Grade) -->
-[![Build Status](https://travis-ci.com/tomko-team/typeonly.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly)
+<!-- [![Dependencies Status](https://david-dm.org/paroi-tech/typeonly/status.svg)](https://david-dm.org/paroi-tech/typeonly)
+[![Codacy Status](https://api.codacy.com/project/badge/Grade/22f07556743948e98d1814087c801906)](https://www.codacy.com/manual/paleo/typeonly?utm_source=github.com&utm_medium=referral&utm_content=paroi-tech/typeonly&utm_campaign=Badge_Grade) -->
+[![Build Status](https://travis-ci.com/paroi-tech/typeonly.svg?branch=master)](https://travis-ci.com/paroi-tech/typeonly)
 [![npm](https://img.shields.io/npm/dm/typeonly)](https://www.npmjs.com/package/typeonly)
 ![Type definitions](https://img.shields.io/npm/types/typeonly)
-[![GitHub](https://img.shields.io/github/license/tomko-team/typeonly)](https://github.com/tomko-team/typeonly)
+[![GitHub](https://img.shields.io/github/license/paroi-tech/typeonly)](https://github.com/paroi-tech/typeonly)
 
-TypeOnly aims to be the pure typing part of TypeScript. See also: a [detailed description](https://github.com/tomko-team/typeonly/blob/master/typeonly/typeonly-language.md) of the TypeOnly language. This package is a parser for the TypeOnly language.
+TypeOnly aims to be the pure typing part of TypeScript. See also: a [detailed description](https://github.com/paroi-tech/typeonly/blob/master/typeonly/typeonly-language.md) of the TypeOnly language. This package is a parser for the TypeOnly language.
 
 ## Why TypeOnly?
 
@@ -33,11 +33,11 @@ The TypeOnly parser is implemented from scratch and does not require TypeScript 
 
 There are three packages built on top of TypeOnly.
 
-How to **check JSON data from the command line**: use the package [@typeonly/checker-cli](https://github.com/tomko-team/typeonly/tree/master/checker-cli).
+How to **check JSON data from the command line**: use the package [@typeonly/checker-cli](https://github.com/paroi-tech/typeonly/tree/master/checker-cli).
 
-How to **check JSON data or a JavaScript object using an API**: use the package [@typeonly/checker](https://github.com/tomko-team/typeonly/tree/master/checker).
+How to **check JSON data or a JavaScript object using an API**: use the package [@typeonly/checker](https://github.com/paroi-tech/typeonly/tree/master/checker).
 
-How to **use typing metadata at runtime**: use the package [@typeonly/reader](https://github.com/tomko-team/typeonly/tree/master/reader).
+How to **use typing metadata at runtime**: use the package [@typeonly/reader](https://github.com/paroi-tech/typeonly/tree/master/reader).
 
 ## Tutorial: Parse TypeScript definitions with the CLI
 

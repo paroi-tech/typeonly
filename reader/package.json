@@ -2,7 +2,7 @@
   "name": "@typeonly/reader",
   "version": "0.3.5",
   "description": "Brings types and interfaces from TypeScript at runtime.",
-  "author": "tomko.team",
+  "author": "Paroi",
   "scripts": {
     "prepublishOnly": "npm run build && npm run test",
     "clear": "rimraf 'dist/*' 'bundle-tsd/declarations/*'",
@@ -28,9 +28,9 @@
   "types": "dist/reader.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tomko-team/typeonly.git"
+    "url": "git+https://github.com/paroi-tech/typeonly.git"
   },
-  "homepage": "https://github.com/tomko-team/typeonly/tree/master/reader",
+  "homepage": "https://github.com/paroi-tech/typeonly/tree/master/reader",
   "license": "CC0-1.0",
   "keywords": [
     "typescript",

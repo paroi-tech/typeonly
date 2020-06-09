@@ -1,14 +1,14 @@
 # @typeonly/checker-cli
 
-<!-- [![Build Status](https://travis-ci.com/tomko-team/typeonly-checker-cli.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly-checker-cli)
-[![Dependencies Status](https://david-dm.org/tomko-team/typeonly-checker-cli/status.svg)](https://david-dm.org/tomko-team/typeonly-checker-cli)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8a2c29e43ddf401fa7e5f80e96efdcc2)](https://www.codacy.com/manual/paleo/typeonly-checker-cli?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=tomko-team/typeonly-checker-cli&amp;utm_campaign=Badge_Grade) -->
-[![Build Status](https://travis-ci.com/tomko-team/typeonly.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly)
+<!-- [![Build Status](https://travis-ci.com/paroi-tech/typeonly-checker-cli.svg?branch=master)](https://travis-ci.com/paroi-tech/typeonly-checker-cli)
+[![Dependencies Status](https://david-dm.org/paroi-tech/typeonly-checker-cli/status.svg)](https://david-dm.org/paroi-tech/typeonly-checker-cli)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8a2c29e43ddf401fa7e5f80e96efdcc2)](https://www.codacy.com/manual/paleo/typeonly-checker-cli?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=paroi-tech/typeonly-checker-cli&amp;utm_campaign=Badge_Grade) -->
+[![Build Status](https://travis-ci.com/paroi-tech/typeonly.svg?branch=master)](https://travis-ci.com/paroi-tech/typeonly)
 [![npm](https://img.shields.io/npm/dm/@typeonly/checker-cli)](https://www.npmjs.com/package/@typeonly/checker-cli)
 ![Type definitions](https://img.shields.io/npm/types/@typeonly/checker-cli)
-![GitHub](https://img.shields.io/github/license/tomko-team/typeonly)
+![GitHub](https://img.shields.io/github/license/paroi-tech/typeonly)
 
-[TypeOnly](https://github.com/tomko-team/typeonly/tree/master/typeonly) aims to be the pure typing part of TypeScript. This package provides a Command Line Interface to validate JSON with TypeScript definitions, using the TypeOnly parser.
+[TypeOnly](https://github.com/paroi-tech/typeonly/tree/master/typeonly) aims to be the pure typing part of TypeScript. This package provides a Command Line Interface to validate JSON with TypeScript definitions, using the TypeOnly parser.
 
 ## Tutorial: How to check the conformity of a JSON file using the CLI
 

@@ -2,7 +2,7 @@
   "name": "typeonly",
   "version": "0.3.3",
   "description": "Parses types and interfaces from TypeScript and brings them at runtime.",
-  "author": "tomko.team",
+  "author": "Paroi",
   "scripts": {
     "prepublishOnly": "npm run lint && npm run build && npm run test",
     "antlr": "java -cp \"antlr-4.7.2-complete.jar\" org.antlr.v4.Tool -Dlanguage=JavaScript -o antlr-parser TypeOnlyParser.g4 TypeOnlyLexer.g4",
@@ -36,9 +36,9 @@
   "bin": "./dist/cli.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tomko-team/typeonly.git"
+    "url": "git+https://github.com/paroi-tech/typeonly.git"
   },
-  "homepage": "https://github.com/tomko-team/typeonly/tree/master/typeonly",
+  "homepage": "https://github.com/paroi-tech/typeonly/tree/master/typeonly",
   "license": "CC0-1.0",
   "keywords": [
     "typescript",

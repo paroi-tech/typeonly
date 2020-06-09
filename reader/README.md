@@ -1,18 +1,18 @@
 # @typeonly/reader
 
-<!-- [![Build Status](https://travis-ci.com/tomko-team/typeonly-reader.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly-reader)
-[![Dependencies Status](https://david-dm.org/tomko-team/typeonly-reader/status.svg)](https://david-dm.org/tomko-team/typeonly-reader)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/795a3bf921524597bac9af7df8b79026)](https://www.codacy.com/manual/paleo/typeonly-reader?utm_source=github.com&utm_medium=referral&utm_content=tomko-team/typeonly-reader&utm_campaign=Badge_Grade) -->
-[![Build Status](https://travis-ci.com/tomko-team/typeonly.svg?branch=master)](https://travis-ci.com/tomko-team/typeonly)
+<!-- [![Build Status](https://travis-ci.com/paroi-tech/typeonly-reader.svg?branch=master)](https://travis-ci.com/paroi-tech/typeonly-reader)
+[![Dependencies Status](https://david-dm.org/paroi-tech/typeonly-reader/status.svg)](https://david-dm.org/paroi-tech/typeonly-reader)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/795a3bf921524597bac9af7df8b79026)](https://www.codacy.com/manual/paleo/typeonly-reader?utm_source=github.com&utm_medium=referral&utm_content=paroi-tech/typeonly-reader&utm_campaign=Badge_Grade) -->
+[![Build Status](https://travis-ci.com/paroi-tech/typeonly.svg?branch=master)](https://travis-ci.com/paroi-tech/typeonly)
 [![npm](https://img.shields.io/npm/dm/@typeonly/reader)](https://www.npmjs.com/package/@typeonly/reader)
 ![Type definitions](https://img.shields.io/npm/types/@typeonly/reader)
-![GitHub](https://img.shields.io/github/license/tomko-team/typeonly)
+![GitHub](https://img.shields.io/github/license/paroi-tech/typeonly)
 
-[TypeOnly](https://github.com/tomko-team/typeonly/tree/master/typeonly) aims to be the pure typing part of TypeScript. The TypeOnly parser generates a `.to.json` file, which is a bundle that contains metadata extracted from `.d.ts` typing files. Then, this package provides an API to read these RTO files. It brings typing metadata at runtime.
+[TypeOnly](https://github.com/paroi-tech/typeonly/tree/master/typeonly) aims to be the pure typing part of TypeScript. The TypeOnly parser generates a `.to.json` file, which is a bundle that contains metadata extracted from `.d.ts` typing files. Then, this package provides an API to read these RTO files. It brings typing metadata at runtime.
 
 ## Tutorial: Load typing definitions at runtime
 
-At first, it is necessary to follow [the tutorial](https://github.com/tomko-team/typeonly/blob/master/typeonly/README.md#tutorial-parse-typescript-definitions-with-the-cli) of TypeOnly in order to generate a `.to.json` file based on your TypeScript definitions. After this step, you have the following file: `dist/types.to.json`.
+At first, it is necessary to follow [the tutorial](https://github.com/paroi-tech/typeonly/blob/master/typeonly/README.md#tutorial-parse-typescript-definitions-with-the-cli) of TypeOnly in order to generate a `.to.json` file based on your TypeScript definitions. After this step, you have the following file: `dist/types.to.json`.
 
 Now, add `@typeonly/reader` to the project:
 
