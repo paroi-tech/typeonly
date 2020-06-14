@@ -29,7 +29,7 @@ interface I1 {
 
   const deep = Math.round(Math.random() * 20) + 1
   test(`a random number of nested interfaces (${deep})`, () => {
-    const makeInterface = (deep: number) => {
+    const makeInterface = (deep: number): string => {
       if (deep <= 0)
         return "number"
       return `{ a: ${makeInterface(deep - 1)} }`

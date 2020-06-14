@@ -1,7 +1,7 @@
 import { createStandaloneRtoModule, parseTypeOnly } from "typeonly"
-import { createChecker } from "../src/api"
+import { createValidator } from "../src/api"
 
-describe("Check Interface", () => {
+describe("Validate Interface", () => {
 
   test("interface with primitive types", async () => {
     const source = `
@@ -11,24 +11,25 @@ describe("Check Interface", () => {
       }
     `
 
-    const checker = await createChecker({
+    const validator = await createValidator({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
 
-    const result = checker.check("./mod1", "A",
+    const result = validator.validate(
+      "A",
       {
         a: 12,
         b: 22
-      }
+      },
+      "./mod1"
     )
 
     expect(result.valid).toBe(false)
     expect(result.error).toBeDefined()
   })
-
 
 
   test("interface with array type", async () => {
@@ -38,18 +39,20 @@ describe("Check Interface", () => {
         b: string
       }
   `
-    const checker = await createChecker({
+    const validator = await createValidator({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
 
-    const result = checker.check("./mod1", "A",
+    const result = validator.validate(
+      "A",
       {
         a: [12, "23"],
         b: "ab"
-      }
+      },
+      "./mod1"
     )
 
     expect(result.valid).toBe(false)
@@ -64,18 +67,20 @@ describe("Check Interface", () => {
       }
   `
 
-    const checker = await createChecker({
+    const validator = await createValidator({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
 
-    const result = checker.check("./mod1", "A",
+    const result = validator.validate(
+      "A",
       {
         a: "test1",
         b: "ab"
-      }
+      },
+      "./mod1"
     )
 
     expect(result.valid).toBe(false)
@@ -89,25 +94,27 @@ describe("Check Interface", () => {
         b: string
       }
   `
-    const checker = await createChecker({
+    const validator = await createValidator({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
 
-    const result = checker.check("./mod1", "A",
+    const result = validator.validate(
+      "A",
       {
         a: ["sd", "23"],
         b: "ab"
-      }
+      },
+      "./mod1"
     )
 
     expect(result.valid).toBe(false)
     expect(result.error).toBeDefined()
   })
 
-  test("check interface with depth", async () => {
+  test("validate interface with depth", async () => {
     const source = `
       export type A = {
         a: {
@@ -116,14 +123,15 @@ describe("Check Interface", () => {
         b: string
       }
   `
-    const checker = await createChecker({
+    const validator = await createValidator({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
 
-    const result = checker.check("./mod1", "A",
+    const result = validator.validate(
+      "A",
       {
         a: {
           c: [
@@ -133,7 +141,8 @@ describe("Check Interface", () => {
           ]
         },
         b: "ab"
-      }
+      },
+      "./mod1"
     )
 
     expect(result.valid).toBe(true)

@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-import { createChecker } from "@typeonly/checker"
+import { createValidator } from "@typeonly/validator"
 import { readFileSync } from "fs"
 import { basename, dirname } from "path"
 import { generateRtoModules, RtoModules } from "typeonly"
+// tslint:disable-next-line: ordered-imports
 import commandLineArgs = require("command-line-args")
 import commandLineUsage = require("command-line-usage")
 
@@ -79,11 +80,11 @@ const optionDefinitions: OptionDefinition[] = [
     name: "json-encoding",
     alias: "e",
     type: String,
-    description: "Encoding for JSON file to check (default is {underline utf8})."
+    description: "Encoding for JSON file to validate (default is {underline utf8})."
   },
   {
     name: "json",
-    description: "The JSON file to check (by default at last position, one file allowed).",
+    description: "The JSON file to validate (by default at last position, one file allowed).",
     type: String,
     multiple: false,
     defaultOption: true,
@@ -121,14 +122,14 @@ async function cli() {
 function printHelp() {
   const sections = [
     {
-      header: "TypeOnly Checker CLI",
-      content: "A CLI to check JSON files conformity with typing."
+      header: "TypeOnly Validator CLI",
+      content: "A CLI to validate JSON files conformity with typing."
     },
     {
       header: "Synopsis",
       content: [
-        "$ npx @typeonly/checker-cli {bold -s} {underline src/file-name.d.ts} {bold -t} {underline RootTypeName} {underline dir/data.json}",
-        "$ npx @typeonly/checker-cli {bold --help}"
+        "$ npx @typeonly/validator-cli {bold -s} {underline src/file-name.d.ts} {bold -t} {underline RootTypeName} {underline dir/data.json}",
+        "$ npx @typeonly/validator-cli {bold --help}"
       ]
     },
     {
@@ -143,7 +144,11 @@ function printHelp() {
   console.log(usage)
 }
 
-function parseOptions(): object | undefined {
+interface OptionsObject {
+  [name: string]: unknown
+}
+
+function parseOptions(): OptionsObject | undefined {
   try {
     return commandLineArgs(optionDefinitions)
   } catch (error) {
@@ -152,39 +157,39 @@ function parseOptions(): object | undefined {
   }
 }
 
-async function processFile(options: object) {
+async function processFile(options: OptionsObject) {
   if (!options["source"] && !options["rto-module"])
     throw new InvalidArgumentError("Missing typing file or rto.json file.")
   if (options["source"] && options["rto-module"])
     throw new InvalidArgumentError("You must provide a typing file or a rto.json file not both.")
   if (!options["json"])
-    throw new InvalidArgumentError("Missing input JSON file to check.")
+    throw new InvalidArgumentError("Missing input JSON file to validate.")
 
   if (options["source"])
-    await checkFromTypingFile(options)
+    await validateFromTypingFile(options)
   else
-    await checkFromRtoFile(options)
+    await validateFromRtoFile(options)
 }
 
 
-async function checkFromRtoFile(options: object) {
-  const moduleFile = options["rto-module"]
+async function validateFromRtoFile(options: OptionsObject) {
+  const moduleFile = options["rto-module"] as string
   const bnad = baseNameAndDir(moduleFile)
-  const baseDir = normalizeDir(options["rto-dir"] || bnad.directory)
-  const typeName = options["type"]
+  const baseDir = normalizeDir(options["rto-dir"] as string | undefined ?? bnad.directory)
+  const typeName = options["type"] as string
   const data = readJsonFileSync(options)
 
   let modulePath = normalizeModulePath(moduleFile, baseDir)
   if (modulePath.endsWith(".rto.json"))
     modulePath = modulePath.slice(0, -9)
 
-  const checker = await createChecker({
+  const validator = await createValidator({
     modulePaths: [modulePath],
     baseDir,
     acceptAdditionalProperties: !!options["non-strict"]
   })
 
-  const result = checker.check(modulePath, typeName, data)
+  const result = validator.validate(typeName, data, modulePath)
 
   if (!result.valid) {
     console.error(result.error)
@@ -192,15 +197,15 @@ async function checkFromRtoFile(options: object) {
   }
 }
 
-async function checkFromTypingFile(options: object) {
+async function validateFromTypingFile(options: OptionsObject) {
   let typingFile = options["source"] as string
   const bnad = baseNameAndDir(typingFile)
-  const sourceDir = normalizeDir(options["source-dir"] || bnad.directory)
+  const sourceDir = normalizeDir(options["source-dir"] as string | undefined ?? bnad.directory)
 
   if (typingFile.startsWith(sourceDir))
     typingFile = typingFile.substr(sourceDir.length + 1)
 
-  const typeName = options["type"]
+  const typeName = options["type"] as string
 
   const jsonData = readJsonFileSync(options)
 
@@ -213,17 +218,17 @@ async function checkFromTypingFile(options: object) {
     modulePaths: [sourceModulePath],
     readFiles: {
       sourceDir,
-      encoding: options["source-encoding"] || undefined,
+      encoding: options["source-encoding"] as string | undefined ?? undefined,
     },
     returnRtoModules: true
   }) as RtoModules
 
-  const checker = createChecker({
+  const validator = createValidator({
     bundle,
     acceptAdditionalProperties: !!options["non-strict"]
   })
 
-  const result = checker.check(sourceModulePath, typeName, jsonData)
+  const result = validator.validate(typeName, jsonData, sourceModulePath)
 
   if (!result.valid) {
     console.error(result.error)
@@ -231,13 +236,14 @@ async function checkFromTypingFile(options: object) {
   }
 }
 
-function readJsonFileSync(options: object): unknown {
-  const fileToCheck = options["json"]
+function readJsonFileSync(options: OptionsObject): unknown {
+  const fileToValidate = options["json"] as string
+  const encoding = (options["json-encoding"] as string | undefined) ?? "utf8"
   try {
-    const data = readFileSync(fileToCheck, options["json-encoding"] || "utf8") as any
+    const data = readFileSync(fileToValidate, encoding)
     return JSON.parse(data)
   } catch (err) {
-    throw new InvalidArgumentError(`Cannot read file: ${fileToCheck}`)
+    throw new InvalidArgumentError(`Cannot read file: ${fileToValidate}`)
   }
 }
 

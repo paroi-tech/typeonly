@@ -129,7 +129,11 @@ function printHelp() {
   console.log(usage)
 }
 
-function parseOptions(): object | undefined {
+interface OptionsObject {
+  [name: string]: unknown
+}
+
+function parseOptions(): OptionsObject | undefined {
   try {
     return commandLineArgs(optionDefinitions)
   } catch (error) {
@@ -138,18 +142,18 @@ function parseOptions(): object | undefined {
   }
 }
 
-async function processFiles(options: object) {
+async function processFiles(options: OptionsObject) {
   if (options["ast"]) {
-    if (!options["src"])
+    if (!options["src"] || !Array.isArray(options["src"]))
       throw new InvalidArgumentError("Missing source file(s).")
     options["src"].map((file: string) => createAstJsonFile(file, options))
   } else
     await createRtoJsonFiles(options)
 }
 
-function createAstJsonFile(file: string, options: object) {
-  file = options["source-dir"] ? join(options["source-dir"], file) : file
-  const encoding: BufferEncoding = options["encoding"] || "utf8"
+function createAstJsonFile(file: string, options: OptionsObject) {
+  file = options["source-dir"] ? join(options["source-dir"] as string, file) : file
+  const encoding: BufferEncoding = (options["encoding"] as BufferEncoding) ?? "utf8"
   let source: string
   try {
     source = readFileSync(file, { encoding })
@@ -162,12 +166,12 @@ function createAstJsonFile(file: string, options: object) {
     fileName = fileName.substring(0, fileName.length - (fileName.endsWith(".d.ts") ? 5 : 3))
 
   const ast: TypeOnlyAst = parseTypeOnly({ source })
-  const outFile = join(options["output-dir"] || dirname(file), `${fileName}.ast.json`)
+  const outFile = join(options["output-dir"] as string | undefined ?? dirname(file), `${fileName}.ast.json`)
   writeFileSync(outFile, JSON.stringify(ast, undefined, "\t"), encoding)
 }
 
-async function createRtoJsonFiles(options: object) {
-  let srcList = options["src"] ?? []
+async function createRtoJsonFiles(options: OptionsObject) {
+  let srcList = options["src"] as string[] | undefined ?? []
   let sourceDir: string
   if (!options["source-dir"]) {
     if (srcList.length === 1)
@@ -175,21 +179,21 @@ async function createRtoJsonFiles(options: object) {
     else
       throw new Error("Missing 'source-dir' option.")
   } else
-    sourceDir = options["source-dir"]
+    sourceDir = options["source-dir"] as string
   sourceDir = normalizeDir(sourceDir)
 
   if (srcList.length === 0)
     srcList = getTypingFilesInDir(sourceDir)
 
   const modulePaths = normalizeModulePaths(srcList, sourceDir)
-  const encoding: BufferEncoding = options["encoding"] ?? "utf8"
+  const encoding: BufferEncoding = options["encoding"] as BufferEncoding | undefined ?? "utf8"
   const prettify = options["prettify"] ? "\t" : undefined
-  let bundleName: string | undefined = options["bundle"]
+  let bundleName = options["bundle"] as string | undefined
 
   if (bundleName) {
     if (!bundleName.endsWith(".to.json"))
       bundleName += ".to.json"
-    let outputDir = options["output-dir"] ? normalizeDir(options["output-dir"]) : undefined
+    let outputDir = options["output-dir"] ? normalizeDir(options["output-dir"] as string) : undefined
     const parsed = parse(bundleName)
     if (parsed.dir) {
       outputDir = outputDir ? join(outputDir, parsed.dir) : parsed.dir
@@ -209,7 +213,7 @@ async function createRtoJsonFiles(options: object) {
     }) as RtoModules
     writeFileSync(bundleName, JSON.stringify(rtoModules, undefined, prettify), { encoding })
   } else {
-    const outputDir = normalizeDir(options["output-dir"] ?? sourceDir)
+    const outputDir = normalizeDir(options["output-dir"] as string | undefined ?? sourceDir)
     await generateRtoModules({
       modulePaths,
       readFiles: {

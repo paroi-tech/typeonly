@@ -1,7 +1,7 @@
 const { readFileSync, writeFileSync } = require("fs")
 const { join } = require("path")
 
-const bundleName = "checker"
+const bundleName = "validator"
 const compiledDir = join(__dirname, "declarations")
 const packageDir = join(__dirname, "..")
 

@@ -1,6 +1,6 @@
 import { AstArrayType, AstClassicImport, AstCommentable, AstCompositeType, AstFunctionProperty, AstFunctionType, AstGenericInstance, AstGenericParameter, AstImportNamedMember, AstIndexSignature, AstInlineImportType, AstInterface, AstKeyofType, AstLiteralType, AstMappedIndexSignature, AstMemberNameLiteral, AstMemberType, AstNamedInterface, AstNamedType, AstNamespacedImport, AstProperty, AstStandaloneComment, AstStandaloneInterfaceComment, AstTupleType, AstType, TypeOnlyAst } from "../ast"
 import { AntlrRuleContext } from "./antlr4-defs"
-import CommentGrabber, { GrabbedComment, GrabbedCommentsResult } from "./CommentGrabber"
+import CommentGrabber, { CommentParsingContext, GrabbedComment, GrabbedCommentsResult } from "./CommentGrabber"
 const { TypeOnlyParserListener } = require("../../antlr-parser/TypeOnlyParserListener")
 
 type SetType = (astType: AstType) => void
@@ -14,7 +14,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
   private currentNamedInterface?: AstNamedInterface
   private currentNamedType?: Partial<AstNamedType>
 
-  constructor(parsingContext) {
+  constructor(parsingContext: CommentParsingContext) {
     super()
     this.comments = new CommentGrabber(parsingContext)
   }
@@ -40,7 +40,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     if (ctx.namedImportContent().namedMember()) {
       const namedMembers = ctx.namedImportContent().namedMember()
       const members: AstImportNamedMember[] = []
-      namedMembers.forEach((member, index) => {
+      namedMembers.forEach((member: any, index: number) => {
         const mb: AstImportNamedMember = {
           name: member.IDENTIFIER()[0].getText()
         }
@@ -234,7 +234,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     this.setAstChildRegistration(type => indexSignature.type = type, ctx.aType())
   }
 
-  enterMappedIndexSignature(ctx) {
+  enterMappedIndexSignature(ctx: AntlrRuleContext) {
     if (this.interfaceStack.length === 0)
       throw new Error("Missing interfaceStack")
 
@@ -284,7 +284,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     const itemTypes = ctx.aType()
     if (itemTypes.length > 0)
       tupleType.itemTypes = []
-    itemTypes.forEach((itemType, index) => {
+    itemTypes.forEach((itemType: AntlrRuleContext, index: number) => {
       this.setAstChildRegistration(
         astType => tupleType.itemTypes![index] = astType,
         itemType
@@ -315,7 +315,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
 
       const parameters = ctx.aType()
       if (parameters !== null) {
-        parameters.forEach((param, index) => {
+        parameters.forEach((param: AntlrRuleContext, index: number) => {
           this.setAstChildRegistration(
             astType => {
               genericInstance.parameterTypes[index] = astType
@@ -401,7 +401,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
       types: []
     }
     const aTypes = ctx.aType()
-    aTypes.forEach((aType, index) => {
+    aTypes.forEach((aType: AntlrRuleContext, index: number) => {
       this.setAstChildRegistration(
         astType => {
           compositeType.types[index] = astType
@@ -443,7 +443,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     this.registerAstChild(functionType, ctx)
 
     const functionParameters = ctx.functionParameter()
-    functionParameters.forEach((param, index) => {
+    functionParameters.forEach((param: AntlrRuleContext, index: number) => {
       this.setAstChildRegistration(
         astType => {
           if (!functionType.parameters)
@@ -486,7 +486,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     }
 
     const functionParameters = ctx.functionParameter()
-    functionParameters.forEach((param, index) => {
+    functionParameters.forEach((param: AntlrRuleContext, index: number) => {
       this.setAstChildRegistration(
         astType => {
           if (!functionProperty.parameters)
@@ -533,7 +533,7 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
     if (ctx.genericParameters()) {
       const generic: AstGenericParameter[] = []
       const genericParameters = ctx.genericParameters().genericParameter()
-      genericParameters.forEach((param, index) => {
+      genericParameters.forEach((param: AntlrRuleContext, index: number) => {
         generic[index] = {
           name: param.IDENTIFIER().getText()
         }

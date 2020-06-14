@@ -2,6 +2,7 @@ language: node_js
 node_js:
   - 10
   - 12
+  - 14
 cache:
   directories:
     - "node_modules"
@@ -12,6 +13,6 @@ before_install:
 env:
   - SUB_PROJECT=typeonly
   - SUB_PROJECT=reader
-  - SUB_PROJECT=checker
-  - SUB_PROJECT=checker-cli
+  - SUB_PROJECT=validator
+  - SUB_PROJECT=validator-cli
 script: cd $SUB_PROJECT && npm i && npm run prepublishOnly

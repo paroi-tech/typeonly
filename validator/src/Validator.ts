@@ -1,9 +1,9 @@
 import { ArrayType, CompositeType, FunctionType, GenericInstance, GenericParameterName, ImportedTypeRef, IndexSignature, Interface, KeyofType, LiteralType, LocalTypeRef, MemberNameLiteral, MemberType, Modules, Properties, Property, TupleType, Type, TypeName } from "@typeonly/reader"
-import { CheckerOptions, TypeOnlyChecker } from "./api"
+import { ValidatorOptions } from "./api"
 import { makeErrorMessage, typeAsString } from "./error-message"
 import { hasAncestor } from "./helpers"
 
-export interface CheckResult {
+export interface ValidateResult {
   valid: boolean
   error?: string
 }
@@ -36,14 +36,18 @@ interface InterfaceScope {
 
 interface InterfaceContext {
   type: Type
-  val: object
+  val: InterfaceObject
   scopeOwner: boolean
   scope: Scope
   interfaceScope: InterfaceScope
 }
 
-export default class Checker implements TypeOnlyChecker {
-  private typeCheckers: {
+interface InterfaceObject {
+  [propName: string]: unknown
+}
+
+export default class Validator {
+  private typeValidators: {
     [K in Type["kind"]]: (type: any, val: unknown, scope?: Scope) => InternalResult
   } = {
       name: (type, val) => this.checkTypeName(type, val),
@@ -61,10 +65,10 @@ export default class Checker implements TypeOnlyChecker {
       tuple: (type, val) => this.checkTupleType(type, val),
     }
 
-  constructor(private modules: Modules, private options: CheckerOptions = {}) {
+  constructor(private modules: Modules, private options: ValidatorOptions = {}) {
   }
 
-  check(moduleName: string, typeName: string, val: unknown): CheckResult {
+  validate(moduleName: string, typeName: string, val: unknown): ValidateResult {
     const module = this.modules[moduleName]
     if (!module)
       throw new Error(`Unknown module: ${moduleName}`)
@@ -83,10 +87,10 @@ export default class Checker implements TypeOnlyChecker {
   }
 
   private checkType(type: Type, val: unknown, parentContextMessage?: () => string, scope?: Scope): InternalResult {
-    const checker = this.typeCheckers[type.kind]
-    if (!checker)
+    const validator = this.typeValidators[type.kind]
+    if (!validator)
       throw new Error(`Unexpected kind: ${type.kind}`)
-    const result = checker(type, val, scope)
+    const result = validator(type, val, scope)
     if (!result.valid && parentContextMessage) {
       const last = result.unmatchs[result.unmatchs.length - 1]
       if (last)
@@ -133,7 +137,7 @@ export default class Checker implements TypeOnlyChecker {
     if (!val || typeof val !== "object")
       return { valid: false, unmatchs: [{ type, val }] }
 
-    const context = this.makeInterfaceContext(type, val as object, scope)
+    const context = this.makeInterfaceContext(type, val as InterfaceObject, scope)
 
     if (type.mappedIndexSignature)
       throw new Error(`MappedIndexSignature not yet implemented.`)
@@ -150,7 +154,7 @@ export default class Checker implements TypeOnlyChecker {
     return (context.scopeOwner && context.interfaceScope.firstInvalid) || { valid: true }
   }
 
-  private makeInterfaceContext(type: Type, val: object, scope: Scope | undefined): InterfaceContext {
+  private makeInterfaceContext(type: Type, val: InterfaceObject, scope: Scope | undefined): InterfaceContext {
     let interfaceScope: InterfaceScope
     let scopeOwner: boolean
     if (scope && scope.interfaceScope) {
@@ -224,7 +228,7 @@ export default class Checker implements TypeOnlyChecker {
     }
   }
 
-  private checkProperty(property: Property, val: object): InternalResult {
+  private checkProperty(property: Property, val: InterfaceObject): InternalResult {
     const prop = val[property.name]
     if (prop === undefined) {
       if (!property.optional) {
@@ -318,7 +322,7 @@ export default class Checker implements TypeOnlyChecker {
 
   private checkCompositeIntersection(type: CompositeType, val: unknown, scope: Scope | undefined): InternalResult {
     const context = (val && typeof val === "object")
-      ? this.makeInterfaceContext(type, val as object, scope)
+      ? this.makeInterfaceContext(type, val as InterfaceObject, scope)
       : undefined
 
     for (const itemType of type.types) {
@@ -454,11 +458,11 @@ export default class Checker implements TypeOnlyChecker {
 
   private checkGenericInstance(type: GenericInstance, val: unknown): InternalResult {
     // TODO checkGenericInstance
-    throw new Error("Checking of generic instance is not implemented.")
+    throw new Error("Validateing of generic instance is not implemented.")
   }
 
   private checkGenericParameterName(type: GenericParameterName, val: unknown): InternalResult {
     // TODO checkGenericParameterName
-    throw new Error("Checking of generic parameter name is not implemented.")
+    throw new Error("Validateing of generic parameter name is not implemented.")
   }
 }

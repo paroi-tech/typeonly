@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "strict": true,
-    "noImplicitAny": false,
     "target": "es2017",
     "module": "commonjs",
     "sourceMap": false,
@@ -9,15 +8,9 @@
       "esnext"
     ],
     "moduleResolution": "node",
-    "outDir": "dist",
-    "noEmitOnError": true,
-    "declaration": false
+    "noEmit": true
   },
   "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
+    ".",
   ]
 }

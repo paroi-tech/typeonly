@@ -10,10 +10,13 @@
     "moduleResolution": "node",
     "outDir": "dist",
     "noEmitOnError": true,
-    "declaration": true,
-    "declarationDir": "bundle-tsd/declarations"
+    "declaration": false
   },
   "include": [
-    "src",
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
   ]
 }

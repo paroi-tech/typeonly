@@ -19,7 +19,7 @@ declaration:
 importDecl: classicImport | namespacedImport;
 
 classicImport:
-  IMPORT NL* (namedImportContent NL* FROM NL*)? STRING_LITERAL;
+  IMPORT TYPE? NL* (namedImportContent NL* FROM NL*)? STRING_LITERAL;
 
 namedImportContent:
   OPEN_BRACE NL* namedMember (NL* COMMA NL* namedMember)* NL* CLOSE_BRACE;

@@ -8,12 +8,9 @@
       "esnext"
     ],
     "moduleResolution": "node",
-    "outDir": "dist",
-    "noEmitOnError": true,
-    "declaration": true,
-    "declarationDir": "bundle-tsd/declarations"
+    "noEmit": true
   },
   "include": [
-    "src",
+    ".",
   ]
 }

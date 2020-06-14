@@ -1,16 +1,16 @@
-# @typeonly/checker-cli
+# @typeonly/validator-cli
 
-<!-- [![Build Status](https://travis-ci.com/paroi-tech/typeonly-checker-cli.svg?branch=master)](https://travis-ci.com/paroi-tech/typeonly-checker-cli)
-[![Dependencies Status](https://david-dm.org/paroi-tech/typeonly-checker-cli/status.svg)](https://david-dm.org/paroi-tech/typeonly-checker-cli)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8a2c29e43ddf401fa7e5f80e96efdcc2)](https://www.codacy.com/manual/paleo/typeonly-checker-cli?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=paroi-tech/typeonly-checker-cli&amp;utm_campaign=Badge_Grade) -->
+<!-- [![Build Status](https://travis-ci.com/paroi-tech/typeonly-validator-cli.svg?branch=master)](https://travis-ci.com/paroi-tech/typeonly-validator-cli)
+[![Dependencies Status](https://david-dm.org/paroi-tech/typeonly-validator-cli/status.svg)](https://david-dm.org/paroi-tech/typeonly-validator-cli)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8a2c29e43ddf401fa7e5f80e96efdcc2)](https://www.codacy.com/manual/paleo/typeonly-validator-cli?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=paroi-tech/typeonly-validator-cli&amp;utm_campaign=Badge_Grade) -->
 [![Build Status](https://travis-ci.com/paroi-tech/typeonly.svg?branch=master)](https://travis-ci.com/paroi-tech/typeonly)
-[![npm](https://img.shields.io/npm/dm/@typeonly/checker-cli)](https://www.npmjs.com/package/@typeonly/checker-cli)
-![Type definitions](https://img.shields.io/npm/types/@typeonly/checker-cli)
+[![npm](https://img.shields.io/npm/dm/@typeonly/validator-cli)](https://www.npmjs.com/package/@typeonly/validator-cli)
+![Type definitions](https://img.shields.io/npm/types/@typeonly/validator-cli)
 ![GitHub](https://img.shields.io/github/license/paroi-tech/typeonly)
 
 [TypeOnly](https://github.com/paroi-tech/typeonly/tree/master/typeonly) aims to be the pure typing part of TypeScript. This package provides a Command Line Interface to validate JSON with TypeScript definitions, using the TypeOnly parser.
 
-## Tutorial: How to check the conformity of a JSON file using the CLI
+## Tutorial: How to validate the conformity of a JSON file using the CLI
 
 Create a file _"drawing.d.ts"_ with the following code:
 
@@ -55,27 +55,27 @@ Then, create a JSON file _"drawing.json"_ that must be of type `Drawing`:
 }
 ```
 
-We are ready to check the JSON file:
+We are ready to validate the JSON file:
 
 ```sh
-$ npx @typeonly/checker-cli -s drawing.d.ts -t "Drawing" drawing.json
+$ npx @typeonly/validator-cli -s drawing.d.ts -t "Drawing" drawing.json
 In property 'radius', value '"wrong value"' is not conform to number.
 ```
 
 A mistake is detected in the JSON file. Fix it by replacing the value of the property `"radius"` with a valid number. For example: `"radius": 50`. And run the command again:
 
 ```sh
-$ npx @typeonly/checker-cli -s drawing.d.ts -t "Drawing" drawing.json
+$ npx @typeonly/validator-cli -s drawing.d.ts -t "Drawing" drawing.json
 ```
 
-Good. The checker no longer complain.
+Good. The validator no longer complain.
 
 ## Options of Command Line Interface
 
 Example of command:
 
 ```sh
-npx @typeonly/checker-cli -s src/file-name.d.ts -t RootTypeName data.json
+npx @typeonly/validator-cli -s src/file-name.d.ts -t RootTypeName data.json
 ```
 
 Available options:
@@ -89,8 +89,8 @@ Available options:
   --rto-dir directory              The source directory for rto.json file (optional).
   -t, --type string                The type name of the root element in JSON.
   --non-strict                     Enable non-strict mode (accept extra properties).
-  -e, --json-encoding string       Encoding for JSON file to check (default is utf8).
-  --json file.json                 The JSON file to check (by default at last position, one file allowed).
+  -e, --json-encoding string       Encoding for JSON file to validate (default is utf8).
+  --json file.json                 The JSON file to validate (by default at last position, one file allowed).
 ```
 
 ## Contribute

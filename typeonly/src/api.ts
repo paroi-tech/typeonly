@@ -110,7 +110,7 @@ function deepFreezePojo<T extends object>(object: T): T {
     return object
   Object.freeze(object)
   for (const key of Object.keys(object)) {
-    const value = object[key]
+    const value = (object as any)[key]
     if (value && typeof value === "object")
       deepFreezePojo(value)
   }

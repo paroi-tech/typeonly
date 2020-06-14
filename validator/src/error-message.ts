@@ -1,5 +1,5 @@
 import { Type } from "@typeonly/reader"
-import { Unmatch } from "./Checker"
+import { Unmatch } from "./Validator"
 
 export function makeErrorMessage(unmatchs: Unmatch[]): string {
   const messages: string[] = []
@@ -62,8 +62,8 @@ function objectAsString(obj: object) {
 }
 
 export function typeAsString(type: Type): string {
-  if (type["name"])
-    return type["name"]
+  if ((type as any)["name"])
+    return (type as any)["name"]
   switch (type.kind) {
     case "name":
       return type.refName

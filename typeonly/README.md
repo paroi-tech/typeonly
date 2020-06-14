@@ -33,9 +33,9 @@ The TypeOnly parser is implemented from scratch and does not require TypeScript 
 
 There are three packages built on top of TypeOnly.
 
-How to **check JSON data from the command line**: use the package [@typeonly/checker-cli](https://github.com/paroi-tech/typeonly/tree/master/checker-cli).
+How to **check JSON data from the command line**: use the package [@typeonly/validator-cli](https://github.com/paroi-tech/typeonly/tree/master/validator-cli).
 
-How to **check JSON data or a JavaScript object using an API**: use the package [@typeonly/checker](https://github.com/paroi-tech/typeonly/tree/master/checker).
+How to **check JSON data or a JavaScript object using an API**: use the package [@typeonly/validator](https://github.com/paroi-tech/typeonly/tree/master/validator).
 
 How to **use typing metadata at runtime**: use the package [@typeonly/reader](https://github.com/paroi-tech/typeonly/tree/master/reader).
 

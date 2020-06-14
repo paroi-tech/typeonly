@@ -1,8 +1,5 @@
 # @typeonly/reader
 
-<!-- [![Build Status](https://travis-ci.com/paroi-tech/typeonly-reader.svg?branch=master)](https://travis-ci.com/paroi-tech/typeonly-reader)
-[![Dependencies Status](https://david-dm.org/paroi-tech/typeonly-reader/status.svg)](https://david-dm.org/paroi-tech/typeonly-reader)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/795a3bf921524597bac9af7df8b79026)](https://www.codacy.com/manual/paleo/typeonly-reader?utm_source=github.com&utm_medium=referral&utm_content=paroi-tech/typeonly-reader&utm_campaign=Badge_Grade) -->
 [![Build Status](https://travis-ci.com/paroi-tech/typeonly.svg?branch=master)](https://travis-ci.com/paroi-tech/typeonly)
 [![npm](https://img.shields.io/npm/dm/@typeonly/reader)](https://www.npmjs.com/package/@typeonly/reader)
 ![Type definitions](https://img.shields.io/npm/types/@typeonly/reader)

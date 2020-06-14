@@ -1,8 +1,8 @@
 import { readModules } from "@typeonly/reader"
 import { createStandaloneRtoModule, parseTypeOnly } from "typeonly"
-import { createChecker, createCheckerFromModules } from "../src/api"
+import { createValidator, createValidatorFromModules } from "../src/api"
 
-describe("Check Types", () => {
+describe("Validate Types", () => {
 
   test("TypeName", async () => {
     const source = `
@@ -15,9 +15,9 @@ describe("Check Types", () => {
         ast: parseTypeOnly({ source })
       })
     })
-    const checker = createCheckerFromModules(modules)
+    const validator = createValidatorFromModules(modules)
 
-    const response = checker.check("./mod1", "A", "12")
+    const response = validator.validate("A", "12", "./mod1")
 
     expect(response.valid).toBe(false)
     expect(response.error).not.toBeUndefined()
@@ -28,14 +28,14 @@ describe("Check Types", () => {
     const source = `
       export type A = number[]
     `
-    const checker = await createChecker({
+    const validator = await createValidator({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
 
-    const result = checker.check("./mod1", "A", [12, "90"])
+    const result = validator.validate("A", [12, "90"], "./mod1")
 
     expect(result.valid).toBe(false)
     expect(result.error).toBeDefined()
@@ -46,14 +46,14 @@ describe("Check Types", () => {
     const source = `
       export type A = [number, string]
     `
-    const checker = await createChecker({
+    const validator = await createValidator({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
 
-    const result = checker.check("./mod1", "A", [12, "90", 23])
+    const result = validator.validate("A", [12, "90", 23], "./mod1")
 
     expect(result.valid).toBe(false)
     expect(result.error).toBeDefined()
@@ -68,14 +68,14 @@ describe("Check Types", () => {
     }
     `
 
-    const checker = await createChecker({
+    const validator = await createValidator({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
 
-    const result = checker.check("./mod1", "A", 12)
+    const result = validator.validate("A", 12, "./mod1")
 
     expect(result.valid).toBe(true)
     expect(result.error).toBeUndefined()
@@ -89,14 +89,14 @@ describe("Check Types", () => {
     }
     `
 
-    const checker = await createChecker({
+    const validator = await createValidator({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
 
-    const result = checker.check("./mod1", "A", "sdds")
+    const result = validator.validate("A", "sdds", "./mod1")
 
     expect(result.valid).toBe(true)
     expect(result.error).toBeUndefined()
@@ -108,14 +108,14 @@ describe("Check Types", () => {
       export type A = () => number
     `
 
-    const checker = await createChecker({
+    const validator = await createValidator({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
 
-    const result = checker.check("./mod1", "A", () => "12")
+    const result = validator.validate("A", () => "12", "./mod1")
 
     expect(result.valid).toBe(true)
     expect(result.error).toBeUndefined()
@@ -126,14 +126,14 @@ describe("Check Types", () => {
       export type A = "12" | 12
     `
 
-    const checker = await createChecker({
+    const validator = await createValidator({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
 
-    const result = checker.check("./mod1", "A", 12)
+    const result = validator.validate("A", 12, "./mod1")
 
     expect(result.valid).toBe(true)
     expect(result.error).toBeUndefined()
@@ -144,14 +144,14 @@ describe("Check Types", () => {
       export type A = string | null
     `
 
-    const checker = await createChecker({
+    const validator = await createValidator({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
 
-    const result = checker.check("./mod1", "A", null)
+    const result = validator.validate("A", null, "./mod1")
     expect(result.valid).toBe(true)
     expect(result.error).toBeUndefined()
   })
@@ -162,14 +162,14 @@ describe("Check Types", () => {
       export type A = "ff"
     `
 
-    const checker = await createChecker({
+    const validator = await createValidator({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
 
-    const result = checker.check("./mod1", "A", "ff")
+    const result = validator.validate("A", "ff", "./mod1")
 
     expect(result.valid).toBe(true)
     expect(result.error).toBeUndefined()
@@ -182,17 +182,37 @@ describe("Check Types", () => {
       type B = number
     `
 
-    const checker = await createChecker({
+    const validator = await createValidator({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
       })
     })
 
-    const result = checker.check("./mod1", "A", 12)
+    const result = validator.validate("A", 12, "./mod1")
 
     expect(result.valid).toBe(true)
     expect(result.error).toBeUndefined()
+  })
+
+
+  test("Use default module name", async () => {
+    const source = `
+    export type A = B
+    type B = number
+`
+    const modules = await readModules({
+      modulePaths: ["./mod1"],
+      rtoModuleProvider: async () => createStandaloneRtoModule({
+        ast: parseTypeOnly({ source })
+      })
+    })
+    const validator = createValidatorFromModules(modules)
+
+    const response = validator.validate("A", "12")
+
+    expect(response.valid).toBe(false)
+    expect(response.error).not.toBeUndefined()
   })
 
 
@@ -206,14 +226,14 @@ describe("Check Types", () => {
   //   // type B = G<number, string>
   //   // type G = Array<number>
 
-  //   const checker = await createChecker({
+  //   const validator = await createValidator({
   //     modulePaths: ["./mod1"],
   //     rtoModuleProvider: async () => createStandaloneRtoModule({
   //       ast: parseTypeOnly({ source })
   //     })
   //   })
 
-  //   const result = checker.check("./mod1", "A", 12)
+  //   const result = validator.validate("A", 12, "./mod1")
 
   //   expect(result.valid).toBe(true)
   //   expect(result.error).toBeUndefined()

@@ -1,6 +1,6 @@
 {
-  "name": "@typeonly/checker-cli",
-  "version": "0.3.4",
+  "name": "@typeonly/validator-cli",
+  "version": "0.4.0",
   "description": "A CLI to validate JSON files, using TypeScript typing definitions.",
   "author": "Paroi",
   "scripts": {
@@ -12,15 +12,15 @@
     "lint": "tslint -p tsconfig.json -t verbose"
   },
   "dependencies": {
-    "@typeonly/checker": "^0.3.4",
+    "@typeonly/validator": "^0.4.0",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^6.1.0",
-    "typeonly": "^0.3.3"
+    "typeonly": "^0.4.0"
   },
   "devDependencies": {
     "@types/command-line-args": "^5.0.0",
     "@types/command-line-usage": "^5.0.1",
-    "@types/node": "^14.0.12",
+    "@types/node": "^12.12.47",
     "rimraf": "^3.0.2",
     "tslint": "^6.1.2",
     "typescript": "^3.9.5"
@@ -30,7 +30,7 @@
     "type": "git",
     "url": "git+https://github.com/paroi-tech/typeonly.git"
   },
-  "homepage": "https://github.com/paroi-tech/typeonly/tree/master/checker-cli",
+  "homepage": "https://github.com/paroi-tech/typeonly/tree/master/validator-cli",
   "license": "CC0-1.0",
   "keywords": [
     "typescript",

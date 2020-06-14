@@ -45,7 +45,7 @@ export function readModules(options: ReadModulesOptions): any {
 }
 
 export function isSyncReadModulesOptions(options: ReadModulesOptions): options is SyncReadModulesOptions {
-  return !!options["bundle"]
+  return !!(options as any)["bundle"]
 }
 
 function readModulesSync(options: SyncReadModulesOptions): Modules {

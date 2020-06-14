@@ -1,6 +1,6 @@
 {
-  "name": "@typeonly/checker",
-  "version": "0.3.4",
+  "name": "@typeonly/validator",
+  "version": "0.4.0",
   "description": "An API to validate JSON data or JavaScript objects, using TypeScript typing definitions.",
   "author": "Paroi",
   "scripts": {
@@ -15,11 +15,11 @@
     "test": "jest"
   },
   "dependencies": {
-    "@typeonly/reader": "^0.3.5"
+    "@typeonly/reader": "^0.4.0"
   },
   "devDependencies": {
     "@types/jest": "^25.2.3",
-    "@types/node": "^14.0.12",
+    "@types/node": "^12.12.47",
     "jest": "^26.0.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.1.0",
@@ -28,12 +28,12 @@
     "typescript": "^3.9.5"
   },
   "main": "dist/api.js",
-  "types": "dist/checker.d.ts",
+  "types": "dist/validator.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/paroi-tech/typeonly.git"
   },
-  "homepage": "https://github.com/paroi-tech/typeonly/tree/master/checker",
+  "homepage": "https://github.com/paroi-tech/typeonly/tree/master/validator",
   "license": "CC0-1.0",
   "keywords": [
     "typescript",

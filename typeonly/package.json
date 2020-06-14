@@ -1,6 +1,6 @@
 {
   "name": "typeonly",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "Parses types and interfaces from TypeScript and brings them at runtime.",
   "author": "Paroi",
   "scripts": {

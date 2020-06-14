@@ -1,7 +1,8 @@
+// @ts-ignore
 import { CommonTokenStream, InputStream, tree } from "antlr4"
+import AstExtractor from "./AstExtractor"
 const { TypeOnlyLexer } = require("../../antlr-parser/TypeOnlyLexer")
 const { TypeOnlyParser } = require("../../antlr-parser/TypeOnlyParser")
-import AstExtractor from "./AstExtractor"
 
 export function parseTypeOnlyToAst(source: string) {
   const chars = new InputStream(source)
@@ -13,7 +14,7 @@ export function parseTypeOnlyToAst(source: string) {
 
   const errors: string[] = []
   const errorListener = {
-    syntaxError(recognizer, offendingSymbol, line, column, msg, e) {
+    syntaxError(recognizer: any, offendingSymbol: any, line: number, column: number, msg: string, e: any) {
       errors.push(`Syntax error at line ${line}:${column}, ${msg}`)
     }
   }
