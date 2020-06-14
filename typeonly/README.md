@@ -1,15 +1,15 @@
 # TypeOnly
 
-<!-- [![Dependencies Status](https://david-dm.org/paroi-tech/typeonly/status.svg)](https://david-dm.org/paroi-tech/typeonly)
-[![Codacy Status](https://api.codacy.com/project/badge/Grade/22f07556743948e98d1814087c801906)](https://www.codacy.com/manual/paleo/typeonly?utm_source=github.com&utm_medium=referral&utm_content=paroi-tech/typeonly&utm_campaign=Badge_Grade) -->
 [![Build Status](https://travis-ci.com/paroi-tech/typeonly.svg?branch=master)](https://travis-ci.com/paroi-tech/typeonly)
 [![npm](https://img.shields.io/npm/dm/typeonly)](https://www.npmjs.com/package/typeonly)
 ![Type definitions](https://img.shields.io/npm/types/typeonly)
 [![GitHub](https://img.shields.io/github/license/paroi-tech/typeonly)](https://github.com/paroi-tech/typeonly)
 
-TypeOnly aims to be the pure typing part of TypeScript. See also: a [detailed description](https://github.com/paroi-tech/typeonly/blob/master/typeonly/typeonly-language.md) of the TypeOnly language. This package is a parser for the TypeOnly language.
+Parses types and interfaces from TypeScript and stores them as JSON files.
 
 ## Why TypeOnly?
+
+The TypeOnly language aims to be the pure typing part of TypeScript. See also: a [detailed description of the language](https://github.com/paroi-tech/typeonly/blob/master/typeonly/typeonly-language.md). This package is a parser for the TypeOnly language.
 
 TypeScript typing definitions are not available at runtime. Sometime this forces us to repeat ourselves, as in the following example:
 
@@ -33,11 +33,11 @@ The TypeOnly parser is implemented from scratch and does not require TypeScript 
 
 There are three packages built on top of TypeOnly.
 
+How to **load typing metadata at runtime**: use the package [@typeonly/loader](https://github.com/paroi-tech/typeonly/tree/master/loader).
+
 How to **validate JSON data from the command line**: use the package [@typeonly/validator-cli](https://github.com/paroi-tech/typeonly/tree/master/validator-cli).
 
 How to **validate JSON data or a JavaScript object using an API**: use the package [@typeonly/validator](https://github.com/paroi-tech/typeonly/tree/master/validator).
-
-How to **load typing metadata at runtime**: use the package [@typeonly/loader](https://github.com/paroi-tech/typeonly/tree/master/loader).
 
 ## Tutorial: Parse TypeScript definitions with the CLI
 
