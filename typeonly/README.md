@@ -27,15 +27,15 @@ This kind of code is not ideal. There is an [issue](https://github.com/microsoft
 
 TypeOnly is a new language but not a new syntax. TypeOnly aims to be and remain a strict subset of TypeScript: any code that compiles with TypeOnly will also compile with TypeScript. It is the "pure typing" part of TypeScript: only `interface` and `type` definitions.
 
-The TypeOnly parser is implemented from scratch and does not require TypeScript as a dependency. It can be used outside a TypeScript project, such as in a JavaScript project, or to check JSON data with a command line tool.
+The TypeOnly parser is implemented from scratch and does not require TypeScript as a dependency. It can be used outside a TypeScript project, such as in a JavaScript project, or to validate JSON data with a command line tool.
 
 ## How to use TypeOnly
 
 There are three packages built on top of TypeOnly.
 
-How to **check JSON data from the command line**: use the package [@typeonly/validator-cli](https://github.com/paroi-tech/typeonly/tree/master/validator-cli).
+How to **validate JSON data from the command line**: use the package [@typeonly/validator-cli](https://github.com/paroi-tech/typeonly/tree/master/validator-cli).
 
-How to **check JSON data or a JavaScript object using an API**: use the package [@typeonly/validator](https://github.com/paroi-tech/typeonly/tree/master/validator).
+How to **validate JSON data or a JavaScript object using an API**: use the package [@typeonly/validator](https://github.com/paroi-tech/typeonly/tree/master/validator).
 
 How to **use typing metadata at runtime**: use the package [@typeonly/reader](https://github.com/paroi-tech/typeonly/tree/master/reader).
 
