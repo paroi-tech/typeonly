@@ -1,4 +1,4 @@
-import { readModules } from "@typeonly/loader"
+import { loadModules } from "@typeonly/loader"
 import { createStandaloneRtoModule, parseTypeOnly } from "typeonly"
 import { createValidator, createValidatorFromModules } from "../src/api"
 
@@ -9,7 +9,7 @@ describe("Validate Types", () => {
     export type A = B
     type B = number
 `
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
@@ -201,7 +201,7 @@ describe("Validate Types", () => {
     export type A = B
     type B = number
 `
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })

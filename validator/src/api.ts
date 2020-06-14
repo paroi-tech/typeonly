@@ -1,4 +1,4 @@
-import { AsyncReadModulesOptions, isSyncReadModulesOptions, Modules, readModules, SyncReadModulesOptions } from "@typeonly/loader"
+import { AsyncReadModulesOptions, isSyncReadModulesOptions, loadModules, Modules, SyncReadModulesOptions } from "@typeonly/loader"
 import Validator from "./Validator"
 
 export interface ValidatorOptions {
@@ -23,11 +23,11 @@ export function createValidator(options: CreateValidatorOptions): any {
 }
 
 function createValidatorSync(options: SyncReadModulesValidatorOptions): TypeOnlyValidator {
-  return createValidatorFromModules(readModules(options), options)
+  return createValidatorFromModules(loadModules(options), options)
 }
 
 async function createValidatorAsync(options: AsyncReadModulesValidatorOptions): Promise<TypeOnlyValidator> {
-  return createValidatorFromModules(await readModules(options), options)
+  return createValidatorFromModules(await loadModules(options), options)
 }
 
 export function createValidatorFromModules(modules: Modules, options?: ValidatorOptions): TypeOnlyValidator {

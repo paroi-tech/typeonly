@@ -21,9 +21,9 @@ Create a file `src/main.js` with the following content:
 
 ```ts
 // src/main.js
-const { readModules, literals } = require("@typeonly/loader");
+const { loadModules, literals } = require("@typeonly/loader");
 
-const modules = readModules({
+const modules = loadModules({
   bundle: require(`./types.to.json`)
 });
 

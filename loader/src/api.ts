@@ -35,20 +35,20 @@ export interface AsyncReadModulesOptions {
  */
 export type RtoModuleProvider = (modulePath: string) => Promise<any> | any
 
-export function readModules(options: SyncReadModulesOptions): Modules
-export function readModules(options: AsyncReadModulesOptions): Promise<Modules>
-export function readModules(options: ReadModulesOptions): any {
+export function loadModules(options: SyncReadModulesOptions): Modules
+export function loadModules(options: AsyncReadModulesOptions): Promise<Modules>
+export function loadModules(options: ReadModulesOptions): any {
   if (isSyncReadModulesOptions(options))
-    return readModulesSync(options)
+    return loadModulesSync(options)
   else
-    return readModulesAsync(options)
+    return loadModulesAsync(options)
 }
 
 export function isSyncReadModulesOptions(options: ReadModulesOptions): options is SyncReadModulesOptions {
   return !!(options as any)["bundle"]
 }
 
-function readModulesSync(options: SyncReadModulesOptions): Modules {
+function loadModulesSync(options: SyncReadModulesOptions): Modules {
   let { modulePaths, bundle } = options
   const rtoModuleProvider = (modulePath: string) => {
     const rtoModule = bundle[modulePath]
@@ -62,7 +62,7 @@ function readModulesSync(options: SyncReadModulesOptions): Modules {
   return project.parseModulesSync(modulePaths)
 }
 
-async function readModulesAsync(options: AsyncReadModulesOptions): Promise<Modules> {
+async function loadModulesAsync(options: AsyncReadModulesOptions): Promise<Modules> {
   let { modulePaths, rtoModuleProvider } = options
   if (rtoModuleProvider) {
     if (options.baseDir)

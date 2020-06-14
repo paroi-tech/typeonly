@@ -1,5 +1,5 @@
 import { createStandaloneRtoModule, parseTypeOnly } from "typeonly"
-import { readModules } from "../src/api"
+import { loadModules } from "../src/api"
 import { ArrayType, BaseNamedType, CompositeType, FunctionType, GenericInstance, Interface, KeyofType, LiteralType, LocalTypeRef, MemberType, TupleType, TypeName } from "../src/typeonly-loader"
 
 describe("Loader Specification for Types", () => {
@@ -37,7 +37,7 @@ describe("Loader Specification for Types", () => {
       )
     }
     for (const source of sources) {
-      const modules = await readModules({
+      const modules = await loadModules({
         modulePaths: ["./mod1"],
         rtoModuleProvider: async () => createStandaloneRtoModule({
           ast: parseTypeOnly({ source: source["input"] })
@@ -59,7 +59,7 @@ describe("Loader Specification for Types", () => {
       export type T1 = number[]
     `
 
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
@@ -87,7 +87,7 @@ describe("Loader Specification for Types", () => {
         type B = number
       `
 
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
@@ -121,7 +121,7 @@ describe("Loader Specification for Types", () => {
         export type T1 = "number[]"
       `
 
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
@@ -147,7 +147,7 @@ describe("Loader Specification for Types", () => {
     const source = `
         export type T1 = "number[]" | 12
       `
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
@@ -182,7 +182,7 @@ describe("Loader Specification for Types", () => {
     const source = `
         export type T1 = [number, string]
       `
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
@@ -218,7 +218,7 @@ describe("Loader Specification for Types", () => {
     const source = `
         export type T1 = keyof {a: number, b: string}
       `
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
@@ -261,7 +261,7 @@ describe("Loader Specification for Types", () => {
         export type T1 = B["b"]
         type B = { a: string, b: boolean }
       `
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
@@ -314,7 +314,7 @@ describe("Loader Specification for Types", () => {
           b: boolean
         }
       `
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
@@ -367,7 +367,7 @@ describe("Loader Specification for Types", () => {
           b: string
         }
       `
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
@@ -410,7 +410,7 @@ describe("Loader Specification for Types", () => {
             b: string
           }
         `
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
@@ -455,7 +455,7 @@ describe("Loader Specification for Types", () => {
           }
           type B = ["a", "b"]
         `
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
@@ -509,7 +509,7 @@ describe("Loader Specification for Types", () => {
     const source = `
          export type T1 = <A> (a: string) => number
         `
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
@@ -554,7 +554,7 @@ describe("Loader Specification for Types", () => {
     const source = `
          export type T1 = A <number>
         `
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
@@ -586,7 +586,7 @@ describe("Loader Specification for Types", () => {
     const source = `
         export type T1 = number[]
       `
-    const modules = await readModules({
+    const modules = await loadModules({
       modulePaths: ["./mod1"],
       rtoModuleProvider: async () => createStandaloneRtoModule({
         ast: parseTypeOnly({ source })
