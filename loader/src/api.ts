@@ -1,8 +1,8 @@
 import * as fs from "fs"
 import { join } from "path"
 import { promisify } from "util"
-import Project from "./reader/Project"
-import { Modules, Type } from "./typeonly-reader"
+import Project from "./loader/Project"
+import { Modules, Type } from "./typeonly-loader"
 
 const readdir = promisify(fs.readdir)
 const readFile = promisify(fs.readFile)

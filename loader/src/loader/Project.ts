@@ -1,6 +1,6 @@
 import { RtoModuleProvider } from "../api"
 import { RelativeModulePath, toModulePath } from "../helpers/module-path-helpers"
-import { Modules } from "../typeonly-reader"
+import { Modules } from "../typeonly-loader"
 import ModuleFactory from "./ModuleFactory"
 
 export type GetModuleFactory = (modulePath: RelativeModulePath) => ModuleFactory

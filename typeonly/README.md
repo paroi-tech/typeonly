@@ -37,7 +37,7 @@ How to **validate JSON data from the command line**: use the package [@typeonly/
 
 How to **validate JSON data or a JavaScript object using an API**: use the package [@typeonly/validator](https://github.com/paroi-tech/typeonly/tree/master/validator).
 
-How to **use typing metadata at runtime**: use the package [@typeonly/reader](https://github.com/paroi-tech/typeonly/tree/master/reader).
+How to **load typing metadata at runtime**: use the package [@typeonly/loader](https://github.com/paroi-tech/typeonly/tree/master/loader).
 
 ## Tutorial: Parse TypeScript definitions with the CLI
 

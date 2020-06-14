@@ -1,4 +1,4 @@
-import { readModules } from "@typeonly/reader"
+import { readModules } from "@typeonly/loader"
 import { createStandaloneRtoModule, parseTypeOnly } from "typeonly"
 import { createValidator, createValidatorFromModules } from "../src/api"
 

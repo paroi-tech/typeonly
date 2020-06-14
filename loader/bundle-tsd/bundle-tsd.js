@@ -1,7 +1,7 @@
 const { readFileSync, writeFileSync } = require("fs")
 const { join } = require("path")
 
-const bundleName = "reader"
+const bundleName = "loader"
 const srcDir = join(__dirname, "..", "src")
 const compiledDir = join(__dirname, "declarations")
 const packageDir = join(__dirname, "..")
@@ -18,8 +18,8 @@ function makeDefinitionsCode() {
     cleanGeneratedCode(
       removeLocalImportsExports((readFileSync(join(compiledDir, "api.d.ts"), "utf-8")).trim()),
     ),
-    "// -- TypeOnly Reader Definitions --",
-    removeLocalImportsExports((readFileSync(join(srcDir, "typeonly-reader.d.ts"), "utf-8")).trim()),
+    "// -- TypeOnly Loader Definitions --",
+    removeLocalImportsExports((readFileSync(join(srcDir, "typeonly-loader.d.ts"), "utf-8")).trim()),
   ]
   return defs.join("\n\n")
 }

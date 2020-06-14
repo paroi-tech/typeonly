@@ -1,4 +1,4 @@
-import { Type } from "@typeonly/reader"
+import { Type } from "@typeonly/loader"
 import { Unmatch } from "./Validator"
 
 export function makeErrorMessage(unmatchs: Unmatch[]): string {

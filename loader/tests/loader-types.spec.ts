@@ -1,8 +1,8 @@
 import { createStandaloneRtoModule, parseTypeOnly } from "typeonly"
 import { readModules } from "../src/api"
-import { ArrayType, BaseNamedType, CompositeType, FunctionType, GenericInstance, Interface, KeyofType, LiteralType, LocalTypeRef, MemberType, TupleType, TypeName } from "../src/typeonly-reader"
+import { ArrayType, BaseNamedType, CompositeType, FunctionType, GenericInstance, Interface, KeyofType, LiteralType, LocalTypeRef, MemberType, TupleType, TypeName } from "../src/typeonly-loader"
 
-describe("Reader Specification for Types", () => {
+describe("Loader Specification for Types", () => {
 
   test("TypeName", async () => {
     const rtoSpecialTypeName = ["any", "unknown", "object", "void", "never"]
@@ -235,18 +235,18 @@ describe("Reader Specification for Types", () => {
     expect(namedType.generic).toBeUndefined()
     expect(namedType.kind).toBe("keyof")
     expect(namedType.name).toBe("T1")
-    const readerInterface = namedType.type as Interface
-    expect(readerInterface.kind).toBe("interface")
-    // expect(readerInterface.properties).toEqual({
+    const loaderInterface = namedType.type as Interface
+    expect(loaderInterface.kind).toBe("interface")
+    // expect(loaderInterface.properties).toEqual({
     //   a: {
-    //     of: readerInterface,
+    //     of: loaderInterface,
     //     name: "a",
     //     type: { kind: "name", group: "primitive", refName: "number" },
     //     optional: false,
     //     readonly: false
     //   },
     //   b: {
-    //     of: readerInterface,
+    //     of: loaderInterface,
     //     name: "b",
     //     type: { kind: "name", group: "primitive", refName: "string" },
     //     optional: false,
@@ -281,22 +281,22 @@ describe("Reader Specification for Types", () => {
     const localTypeRef = namedType.parentType as LocalTypeRef
     expect(localTypeRef.kind).toBe("localRef")
     expect(localTypeRef.refName).toBe("B")
-    const readerInterface = localTypeRef.ref as Interface & BaseNamedType
-    expect(readerInterface.docComment).toBeUndefined()
-    expect(readerInterface.exported).toBe(false)
-    expect(readerInterface.generic).toBeUndefined()
-    expect(readerInterface.kind).toBe("interface")
-    expect(readerInterface.name).toBe("B")
-    // expect(readerInterface.properties).toEqual({
+    const loaderInterface = localTypeRef.ref as Interface & BaseNamedType
+    expect(loaderInterface.docComment).toBeUndefined()
+    expect(loaderInterface.exported).toBe(false)
+    expect(loaderInterface.generic).toBeUndefined()
+    expect(loaderInterface.kind).toBe("interface")
+    expect(loaderInterface.name).toBe("B")
+    // expect(loaderInterface.properties).toEqual({
     //   a: {
-    //     of: readerInterface,
+    //     of: loaderInterface,
     //     name: "a",
     //     type: { kind: "name", group: "primitive", refName: "string" },
     //     optional: false,
     //     readonly: false
     //   },
     //   b: {
-    //     of: readerInterface,
+    //     of: loaderInterface,
     //     name: "b",
     //     type: { kind: "name", group: "primitive", refName: "boolean" },
     //     optional: false,
@@ -335,22 +335,22 @@ describe("Reader Specification for Types", () => {
     const localTypeRef = namedType.parentType as LocalTypeRef
     expect(localTypeRef.kind).toBe("localRef")
     expect(localTypeRef.refName).toBe("B")
-    const readerInterface = localTypeRef.ref as Interface & BaseNamedType
-    expect(readerInterface.docComment).toBeUndefined()
-    expect(readerInterface.exported).toBe(false)
-    expect(readerInterface.generic).toBeUndefined()
-    expect(readerInterface.kind).toBe("interface")
-    expect(readerInterface.name).toBe("B")
-    // expect(readerInterface.properties).toEqual({
+    const loaderInterface = localTypeRef.ref as Interface & BaseNamedType
+    expect(loaderInterface.docComment).toBeUndefined()
+    expect(loaderInterface.exported).toBe(false)
+    expect(loaderInterface.generic).toBeUndefined()
+    expect(loaderInterface.kind).toBe("interface")
+    expect(loaderInterface.name).toBe("B")
+    // expect(loaderInterface.properties).toEqual({
     //   a: {
-    //     of: readerInterface,
+    //     of: loaderInterface,
     //     name: "a",
     //     type: { kind: "name", group: "primitive", refName: "string" },
     //     optional: false,
     //     readonly: false
     //   },
     //   b: {
-    //     of: readerInterface,
+    //     of: loaderInterface,
     //     name: "b",
     //     type: { kind: "name", group: "primitive", refName: "boolean" },
     //     optional: false,

@@ -1,4 +1,4 @@
-import { ArrayType, CompositeType, FunctionType, GenericInstance, GenericParameterName, ImportedTypeRef, IndexSignature, Interface, KeyofType, LiteralType, LocalTypeRef, MemberNameLiteral, MemberType, Modules, Properties, Property, TupleType, Type, TypeName } from "@typeonly/reader"
+import { ArrayType, CompositeType, FunctionType, GenericInstance, GenericParameterName, ImportedTypeRef, IndexSignature, Interface, KeyofType, LiteralType, LocalTypeRef, MemberNameLiteral, MemberType, Modules, Properties, Property, TupleType, Type, TypeName } from "@typeonly/loader"
 import { ValidatorOptions } from "./api"
 import { makeErrorMessage, typeAsString } from "./error-message"
 import { hasAncestor } from "./helpers"

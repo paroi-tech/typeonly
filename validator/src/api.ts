@@ -1,4 +1,4 @@
-import { AsyncReadModulesOptions, isSyncReadModulesOptions, Modules, readModules, SyncReadModulesOptions } from "@typeonly/reader"
+import { AsyncReadModulesOptions, isSyncReadModulesOptions, Modules, readModules, SyncReadModulesOptions } from "@typeonly/loader"
 import Validator from "./Validator"
 
 export interface ValidatorOptions {

@@ -1,6 +1,6 @@
 {
-  "name": "@typeonly/reader",
-  "version": "0.4.0",
+  "name": "@typeonly/loader",
+  "version": "0.5.0",
   "description": "Brings types and interfaces from TypeScript at runtime.",
   "author": "Paroi",
   "scripts": {
@@ -25,12 +25,12 @@
     "typescript": "^3.9.5"
   },
   "main": "dist/api.js",
-  "types": "dist/reader.d.ts",
+  "types": "dist/loader.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/paroi-tech/typeonly.git"
   },
-  "homepage": "https://github.com/paroi-tech/typeonly/tree/master/reader",
+  "homepage": "https://github.com/paroi-tech/typeonly/tree/master/loader",
   "license": "CC0-1.0",
   "keywords": [
     "typescript",

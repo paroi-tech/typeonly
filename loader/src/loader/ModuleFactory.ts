@@ -1,5 +1,5 @@
 import { RtoArrayType, RtoCompositeType, RtoFunctionParameter, RtoFunctionType, RtoGenericInstance, RtoGenericParameter, RtoGenericParameterName, RtoImportedTypeRef, RtoIndexSignature, RtoInterface, RtoKeyofType, RtoLiteralType, RtoLocalTypeRef, RtoMappedIndexSignature, RtoMemberType, RtoModule, RtoNamedType, RtoProperty, RtoTupleType, RtoType, RtoTypeName } from "typeonly"
-import { ArrayType, BaseNamedType, CompositeType, FunctionParameter, FunctionType, GenericInstance, GenericParameter, GenericParameterName, Import, ImportedTypeRef, ImportNamedMembers, IndexSignature, Interface, KeyofType, LiteralType, LocalTypeRef, MappedIndexSignature, MemberType, Module, NamedType, NamespacedImport, Property, TupleType, Type, TypeName } from "../typeonly-reader"
+import { ArrayType, BaseNamedType, CompositeType, FunctionParameter, FunctionType, GenericInstance, GenericParameter, GenericParameterName, Import, ImportedTypeRef, ImportNamedMembers, IndexSignature, Interface, KeyofType, LiteralType, LocalTypeRef, MappedIndexSignature, MemberType, Module, NamedType, NamespacedImport, Property, TupleType, Type, TypeName } from "../typeonly-loader"
 import { GetModuleFactory } from "./Project"
 
 export default class ModuleFactory {

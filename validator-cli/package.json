@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/validator-cli",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A CLI to validate JSON files, using TypeScript typing definitions.",
   "author": "Paroi",
   "scripts": {
@@ -12,7 +12,7 @@
     "lint": "tslint -p tsconfig.json -t verbose"
   },
   "dependencies": {
-    "@typeonly/validator": "^0.4.0",
+    "@typeonly/validator": "^0.5.0",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^6.1.0",
     "typeonly": "^0.4.0"
