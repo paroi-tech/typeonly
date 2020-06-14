@@ -7,9 +7,13 @@
 
 Parses types and interfaces from TypeScript and stores them as JSON files.
 
-## Why TypeOnly?
+## What is TypeOnly?
 
-The TypeOnly language aims to be the pure typing part of TypeScript. See also: a [detailed description of the language](https://github.com/paroi-tech/typeonly/blob/master/typeonly/typeonly-language.md). This package is a parser for the TypeOnly language.
+The TypeOnly language aims to be the pure typing part of TypeScript. See also: a [detailed description of the language](https://github.com/paroi-tech/typeonly/blob/master/typeonly/typeonly-language.md).
+
+## Why a new language?
+
+TypeOnly is a new language but not a new syntax. TypeOnly aims to be and remain a strict subset of TypeScript: any code that compiles with TypeOnly will also compile with TypeScript. It is the "pure typing" part of TypeScript: only `interface` and `type` definitions.
 
 TypeScript typing definitions are not available at runtime. Sometime this forces us to repeat ourselves, as in the following example:
 
@@ -22,10 +26,6 @@ function isColorName(name: string): name is ColorName {
 ```
 
 This kind of code is not ideal. There is an [issue](https://github.com/microsoft/TypeScript/issues/3628) on Github related to this subject, and the TypeScript team is not ready to provide a solution.
-
-## Why a new language?
-
-TypeOnly is a new language but not a new syntax. TypeOnly aims to be and remain a strict subset of TypeScript: any code that compiles with TypeOnly will also compile with TypeScript. It is the "pure typing" part of TypeScript: only `interface` and `type` definitions.
 
 The TypeOnly parser is implemented from scratch and does not require TypeScript as a dependency. It can be used outside a TypeScript project, such as in a JavaScript project, or to validate JSON data with a command line tool.
 
