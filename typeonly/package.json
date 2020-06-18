@@ -1,6 +1,6 @@
 {
   "name": "typeonly",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Parses types and interfaces from TypeScript and stores them as JSON files.",
   "author": "Paroi",
   "scripts": {
@@ -23,8 +23,8 @@
   "devDependencies": {
     "@types/command-line-args": "^5.0.0",
     "@types/command-line-usage": "^5.0.1",
-    "@types/jest": "^25.2.3",
-    "@types/node": "^14.0.12",
+    "@types/jest": "^26.0.0",
+    "@types/node": "^12.12.47",
     "jest": "^26.0.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.1.0",
