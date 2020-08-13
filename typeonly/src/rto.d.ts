@@ -130,6 +130,7 @@ export interface RtoFunctionType {
 export interface RtoFunctionParameter {
   name: string
   type?: RtoType
+  optional?: boolean
 }
 
 export interface RtoKeyofType {

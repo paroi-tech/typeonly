@@ -450,7 +450,8 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
             functionType.parameters = []
           functionType.parameters[index] = {
             name: param.IDENTIFIER().getText(),
-            type: astType
+            type: astType,
+            optional: !!param.QUESTION_MARK()
           }
         },
         param.aType()
@@ -493,7 +494,8 @@ export default class AstExtractor extends (TypeOnlyParserListener as any) {
             functionProperty.parameters = []
           functionProperty.parameters[index] = {
             name: param.IDENTIFIER().getText(),
-            type: astType
+            type: astType,
+            optional: !!param.QUESTION_MARK()
           }
         },
         param.aType()

@@ -223,10 +223,12 @@ export default class RtoModuleFactory {
   }
 
   private createRtoFunctionParameters(astNodes: AstFunctionParameter[]): RtoFunctionParameter[] {
-    return astNodes.map(({ name, type }) => {
+    return astNodes.map(({ name, type, optional }) => {
       const param: RtoFunctionParameter = { name }
       if (type)
         param.type = this.createRtoType(type)
+      if (optional)
+        param.optional = optional
       return param
     })
   }

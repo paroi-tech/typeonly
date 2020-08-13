@@ -137,6 +137,7 @@ export interface FunctionType {
 export interface FunctionParameter {
   name: string
   type: Type
+  optional: boolean
 }
 
 export interface KeyofType {

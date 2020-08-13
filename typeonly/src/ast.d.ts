@@ -141,6 +141,7 @@ export interface AstFunctionType {
 
 export interface AstFunctionParameter {
   name: string
+  optional?: boolean
   type?: AstType
 }
 

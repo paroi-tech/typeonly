@@ -507,7 +507,7 @@ describe("Loader Specification for Types", () => {
 
   test("FunctionType, GenericParameter and FunctionParameter", async () => {
     const source = `
-         export type T1 = <A> (a: string) => number
+         export type T1 = <A> (a?: string) => number
         `
     const modules = await loadModules({
       modulePaths: ["./mod1"],
@@ -535,6 +535,7 @@ describe("Loader Specification for Types", () => {
     expect(namedType.parameters).toEqual([
       {
         name: "a",
+        optional: true,
         type: {
           kind: "name",
           group: "primitive",

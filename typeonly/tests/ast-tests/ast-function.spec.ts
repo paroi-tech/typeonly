@@ -13,7 +13,7 @@ describe("AST Specification for Function Types", () => {
   })
 
   test(`function with parameters`, () => {
-    const source = `type T1 = (p1: string, p2: number) => void`
+    const source = `type T1 = (p1: string, p2?: number) => void`
     const ast = parseTypeOnly({ source })
     const namedType = ast.declarations![0] as AstNamedType
     expect(namedType.type).toEqual({
@@ -22,10 +22,12 @@ describe("AST Specification for Function Types", () => {
         {
           name: "p1",
           type: "string",
+          optional: false
         },
         {
           name: "p2",
           type: "number",
+          optional: true
         },
       ],
       returnType: "void"

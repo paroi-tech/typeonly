@@ -212,10 +212,11 @@ export default class ModuleFactory {
   }
 
   private createFunctionParameters(rtoNodes: RtoFunctionParameter[]): FunctionParameter[] {
-    return rtoNodes.map(({ name, type }) => {
+    return rtoNodes.map(({ name, type, optional }) => {
       return {
         name,
-        type: type ? this.createType(type) : makeAny()
+        type: type ? this.createType(type) : makeAny(),
+        optional: !!optional
       }
     })
   }

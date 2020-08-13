@@ -41,11 +41,13 @@ interface I1 {
   const parameters = [
     {
       name: "p1",
-      type: "T1"
+      type: "T1",
+      optional: false
     },
     {
       name: "p2",
-      type: "T2"
+      type: "T2",
+      optional: false
     }
   ]
 

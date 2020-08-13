@@ -141,7 +141,7 @@ tupleType:
   OPEN_BRACKET (NL* aType (NL* COMMA NL* aType)*)? NL* CLOSE_BRACKET;
 typeWithParenthesis:
   OPEN_PARENTHESE NL* aType NL* CLOSE_PARENTHESE;
-functionParameter: IDENTIFIER (NL* COLON NL* aType)?;
+functionParameter: IDENTIFIER (NL* QUESTION_MARK)? (NL* COLON NL* aType)?;
 
 /*
  * Literal

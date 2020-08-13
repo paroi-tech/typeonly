@@ -350,7 +350,7 @@ describe("RTO Specification for RtoTypes", () => {
 
   test("RtoFunctionType, RtoGenericParameter and RtoFunctionParameter", () => {
     const source = `
-       export type T1 = <A> (a: string) => number
+       export type T1 = <A> (a?: string) => number
       `
     const rtoModule = createStandaloneRtoModule({
       ast: parseTypeOnly({ source })
@@ -372,6 +372,7 @@ describe("RTO Specification for RtoTypes", () => {
     expect(rtoNamedType.parameters).toEqual([
       {
         name: "a",
+        optional: true,
         type: {
           kind: "name",
           group: "primitive",
