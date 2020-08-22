@@ -8,21 +8,21 @@ export default class ModuleFactory {
   }
 
   private typeCreators: {
-    [K in RtoType["kind"]]: (rtoNode: any) => Type
+    [K in RtoType["kind"]]: (rtoNode: any, obj: object) => Type
   } = {
-      name: rtoNode => this.createTypeName(rtoNode),
-      localRef: rtoNode => this.createLocalRefType(rtoNode),
-      importedRef: rtoNode => this.createImportedRefType(rtoNode),
-      genericParameterName: rtoNode => this.createGenericParameterName(rtoNode),
-      array: rtoNode => this.createArrayType(rtoNode),
-      literal: rtoNode => this.createLiteralType(rtoNode),
-      composite: rtoNode => this.createCompositeType(rtoNode),
-      genericInstance: rtoNode => this.createGenericInstance(rtoNode),
-      keyof: rtoNode => this.createKeyofType(rtoNode),
-      member: rtoNode => this.createMemberType(rtoNode),
-      tuple: rtoNode => this.createTupleType(rtoNode),
-      function: rtoNode => this.createFunctionType(rtoNode),
-      interface: rtoNode => this.createInterface(rtoNode),
+      name: (rtoNode, obj) => this.createTypeName(rtoNode, obj),
+      localRef: (rtoNode, obj) => this.createLocalRefType(rtoNode, obj),
+      importedRef: (rtoNode, obj) => this.createImportedRefType(rtoNode, obj),
+      genericParameterName: (rtoNode, obj) => this.createGenericParameterName(rtoNode, obj),
+      array: (rtoNode, obj) => this.createArrayType(rtoNode, obj),
+      literal: (rtoNode, obj) => this.createLiteralType(rtoNode, obj),
+      composite: (rtoNode, obj) => this.createCompositeType(rtoNode, obj),
+      genericInstance: (rtoNode, obj) => this.createGenericInstance(rtoNode, obj),
+      keyof: (rtoNode, obj) => this.createKeyofType(rtoNode, obj),
+      member: (rtoNode, obj) => this.createMemberType(rtoNode, obj),
+      tuple: (rtoNode, obj) => this.createTupleType(rtoNode, obj),
+      function: (rtoNode, obj) => this.createFunctionType(rtoNode, obj),
+      interface: (rtoNode, obj) => this.createInterface(rtoNode, obj),
     }
   private namedTypes = new Map<string, BaseNamedType>()
   private importedNamedMembers = new Map<string, NamedType>()
@@ -105,30 +105,28 @@ export default class ModuleFactory {
 
   private fillNamedType(rtoNode: RtoNamedType): NamedType {
     const base = this.getBaseNamedType(rtoNode.name)
-    const type = this.createType(rtoNode)
-    Object.assign(base, type)
+    this.createType(rtoNode, base)
     return base as NamedType
   }
 
-  private createType(rtoNode: RtoType): Type {
+  private createType(rtoNode: RtoType, obj: object = {}): Type {
     const creator = this.typeCreators[rtoNode.kind]
     if (!creator)
       throw new Error(`Unexpected kind: ${rtoNode.kind}`)
-    return creator(rtoNode)
+    return creator(rtoNode, obj)
   }
 
-  private createTypeName(rtoNode: RtoTypeName): TypeName {
-    return { ...rtoNode }
+  private createTypeName(rtoNode: RtoTypeName, obj: object): TypeName {
+    return Object.assign(obj, rtoNode)
   }
 
-  private createLocalRefType(rtoNode: RtoLocalTypeRef): LocalTypeRef {
-    return {
-      ...rtoNode,
+  private createLocalRefType(rtoNode: RtoLocalTypeRef, obj: object): LocalTypeRef {
+    return Object.assign(obj, rtoNode, {
       ref: this.getBaseNamedType(rtoNode.refName) as NamedType
-    }
+    })
   }
 
-  private createImportedRefType(rtoNode: RtoImportedTypeRef): ImportedTypeRef {
+  private createImportedRefType(rtoNode: RtoImportedTypeRef, obj: object): ImportedTypeRef {
     let ref: NamedType
     if (rtoNode.namespace) {
       const factory = this.importedNamespaces.get(rtoNode.namespace)
@@ -141,71 +139,68 @@ export default class ModuleFactory {
         throw new Error(`Unknown imported member: ${rtoNode.refName}`)
       ref = namedType
     }
-    return {
-      ...rtoNode,
-      ref
-    }
+    return Object.assign(obj, rtoNode, { ref })
   }
 
-  private createGenericParameterName(rtoNode: RtoGenericParameterName): GenericParameterName {
-    return { ...rtoNode }
+  private createGenericParameterName(rtoNode: RtoGenericParameterName, obj: object): GenericParameterName {
+    return Object.assign(obj, rtoNode)
   }
 
-  private createArrayType(rtoNode: RtoArrayType): ArrayType {
-    return {
+  private createArrayType(rtoNode: RtoArrayType, obj: object): ArrayType {
+    return Object.assign(obj, {
       kind: "array",
       itemType: this.createType(rtoNode.itemType)
-    }
+    } as const)
   }
 
-  private createLiteralType(rtoNode: RtoLiteralType): LiteralType {
-    return { ...rtoNode }
+  private createLiteralType(rtoNode: RtoLiteralType, obj: object): LiteralType {
+    return Object.assign(obj, rtoNode)
   }
 
-  private createCompositeType(rtoNode: RtoCompositeType): CompositeType {
-    return {
+  private createCompositeType(rtoNode: RtoCompositeType, obj: object): CompositeType {
+    return Object.assign(obj, {
       kind: "composite",
       op: rtoNode.op,
       types: rtoNode.types.map(child => this.createType(child))
-    }
+    } as const)
   }
 
-  private createGenericInstance(rtoNode: RtoGenericInstance): GenericInstance {
-    return {
+  private createGenericInstance(rtoNode: RtoGenericInstance, obj: object): GenericInstance {
+    return Object.assign(obj, {
       kind: "genericInstance",
       genericName: rtoNode.genericName,
       parameterTypes: rtoNode.parameterTypes.map(child => this.createType(child))
-    }
+    } as const)
   }
 
-  private createKeyofType(rtoNode: RtoKeyofType): KeyofType {
-    return {
+  private createKeyofType(rtoNode: RtoKeyofType, obj: object): KeyofType {
+    return Object.assign(obj, {
       kind: "keyof",
       type: this.createType(rtoNode.type)
-    }
+    } as const)
   }
 
-  private createMemberType(rtoNode: RtoMemberType): MemberType {
-    return {
+  private createMemberType(rtoNode: RtoMemberType, obj: object): MemberType {
+    return Object.assign(obj, {
       kind: "member",
       parentType: this.createType(rtoNode.parentType),
       memberName: rtoNode.memberName
-    }
+    } as const)
   }
 
-  private createTupleType(rtoNode: RtoTupleType): TupleType {
-    return {
+  private createTupleType(rtoNode: RtoTupleType, obj: object): TupleType {
+    return Object.assign(obj, {
       kind: "tuple",
       itemTypes: rtoNode.itemTypes ? rtoNode.itemTypes.map(child => this.createType(child)) : []
-    }
+    } as const)
   }
 
-  private createFunctionType(rtoNode: RtoFunctionType): FunctionType {
-    const type: FunctionType = {
+  private createFunctionType(rtoNode: RtoFunctionType, obj: object): FunctionType {
+    const type: FunctionType = Object.assign(obj, {
       kind: "function",
       parameters: rtoNode.parameters ? this.createFunctionParameters(rtoNode.parameters) : [],
       returnType: this.createType(rtoNode.returnType),
-    }
+    } as const)
     if (rtoNode.generic)
       type.generic = this.createGenericParameters(rtoNode.generic)
     return type
@@ -232,10 +227,10 @@ export default class ModuleFactory {
     })
   }
 
-  private createInterface(rtoNode: RtoInterface): Interface {
-    const result: Interface = {
+  private createInterface(rtoNode: RtoInterface, obj: object): Interface {
+    const result: Interface = Object.assign(obj, {
       kind: "interface",
-    }
+    } as const)
     if (rtoNode.properties) {
       result.properties = {}
       for (const rtoProp of rtoNode.properties) {

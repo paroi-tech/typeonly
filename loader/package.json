@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/loader",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Brings types and interfaces from TypeScript at runtime.",
   "author": "Paroi",
   "scripts": {
