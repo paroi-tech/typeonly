@@ -9,13 +9,11 @@ Parses types and interfaces from TypeScript and stores them as JSON files.
 
 ## What is TypeOnly?
 
-The TypeOnly language aims to be the pure typing part of TypeScript. See also: a [detailed description of the language](https://github.com/paroi-tech/typeonly/blob/master/typeonly/typeonly-language.md).
-
-## Why a new language?
+TypeOnly aims to be the pure typing part of TypeScript. See also: a [detailed description of the language](https://github.com/paroi-tech/typeonly/blob/master/typeonly/typeonly-language.md).
 
 TypeOnly is a new language but not a new syntax. TypeOnly aims to be and remain a strict subset of TypeScript: any code that compiles with TypeOnly will also compile with TypeScript. It is the "pure typing" part of TypeScript: only `interface` and `type` definitions.
 
-TypeScript typing definitions are not available at runtime. Sometime this forces us to repeat ourselves, as in the following example:
+With TypeScript, types definitions are not available at runtime. Sometime this forces us to repeat ourselves, as in the following example:
 
 ```ts
 type ColorName = "red" | "green" | "blue";
