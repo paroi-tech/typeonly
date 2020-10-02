@@ -10,3 +10,5 @@ node_modules
 /.antlr
 /antlr-*.jar
 /antlr-parser
+
+!/tests/import-tests/**/node_modules

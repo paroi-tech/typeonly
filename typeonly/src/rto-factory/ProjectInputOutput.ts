@@ -2,6 +2,7 @@ import * as fs from "fs"
 import { dirname, join } from "path"
 import { promisify } from "util"
 import { TypeOnlyAstProvider } from "../api"
+import { getExternalModulePath, parseExternalModuleName } from "../helpers/module-path-helpers"
 import { parseTypeOnlyToAst } from "../parser/parse-typeonly"
 import { RtoModule, RtoModules } from "../rto"
 import { RtoModuleListener } from "./RtoProject"
@@ -62,7 +63,10 @@ export function makeReadSourceFileAstProvider(sourceDir: string, encoding: strin
 }
 
 async function readModuleFile(sourceDir: string, modulePath: string, encoding: string) {
-  const path = join(sourceDir, modulePath)
+  const parsedExternalModule = parseExternalModuleName(modulePath)
+  const path = parsedExternalModule
+    ? await getExternalModulePath(parsedExternalModule, sourceDir)
+    : join(sourceDir, modulePath)
   try {
     return await readFile(`${path}.d.ts`, encoding)
   } catch {
