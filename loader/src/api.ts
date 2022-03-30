@@ -90,7 +90,7 @@ async function getModulePathsInDir(dir: string): Promise<string[]> {
     .map(fileName => `./${fileName}`)
 }
 
-function makeReadSourceFileRtoModuleProvider(options: { baseDir: string, encoding: string }): RtoModuleProvider {
+function makeReadSourceFileRtoModuleProvider(options: { baseDir: string, encoding: BufferEncoding }): RtoModuleProvider {
   return async (modulePath: string) => {
     const { baseDir, encoding } = options
     const data = await readRtoFile(baseDir, modulePath, encoding)
@@ -98,7 +98,7 @@ function makeReadSourceFileRtoModuleProvider(options: { baseDir: string, encodin
   }
 }
 
-async function readRtoFile(baseDir: string, modulePath: string, encoding: string) {
+async function readRtoFile(baseDir: string, modulePath: string, encoding: BufferEncoding) {
   const path = join(baseDir, modulePath)
   try {
     return await readFile(`${path}.rto.json`, encoding)

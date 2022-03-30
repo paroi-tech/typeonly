@@ -48,7 +48,7 @@ describe("Loader Specification for Types", () => {
       expect(modules["./mod1"]["namedTypes"]).toBeDefined()
       expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined()
       const namedType = modules["./mod1"]["namedTypes"]["T1"] as TypeName & BaseNamedType
-      delete namedType["module"]
+      delete (namedType as any)["module"]
       expect(namedType).toEqual(source["output"])
     }
   })
@@ -105,7 +105,7 @@ describe("Loader Specification for Types", () => {
     expect(namedType.kind).toBe("localRef")
     expect(namedType.refName).toBe("B")
     expect(namedType.ref.module).toBeDefined()
-    delete namedType.ref.module
+    delete (namedType.ref as any).module
     expect(namedType.ref).toEqual({
       name: "B",
       exported: false,
@@ -133,7 +133,7 @@ describe("Loader Specification for Types", () => {
     expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined()
     const namedType = modules["./mod1"]["namedTypes"]["T1"] as LiteralType & BaseNamedType
 
-    delete namedType.module
+    delete (namedType as any).module
     expect(namedType).toEqual({
       name: "T1",
       exported: true,

@@ -91,6 +91,6 @@ export function typeAsString(type: Type): string {
       const propName = typeof type.memberName !== "string" ? JSON.stringify(type.memberName.literal) : type.memberName
       return `${typeAsString(type.parentType)}[${propName}]`
     default:
-      throw new Error(`Unexpected type: ${type!.kind}`)
+      throw new Error(`Unexpected type: ${(type as Type).kind}`)
   }
 }

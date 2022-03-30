@@ -110,7 +110,7 @@ async function cli() {
 
   try {
     await processFile(options)
-  } catch (error) {
+  } catch (error: any) {
     if (error.causeCode === "invalidArgument") {
       console.error(`Error: ${error.message}`)
       printHelp()
@@ -151,7 +151,7 @@ interface OptionsObject {
 function parseOptions(): OptionsObject | undefined {
   try {
     return commandLineArgs(optionDefinitions)
-  } catch (error) {
+  } catch (error: any) {
     console.log(`Error: ${error.message}`)
     printHelp()
   }
@@ -203,7 +203,7 @@ async function validateFromTypingFile(options: OptionsObject) {
   const sourceDir = normalizeDir(options["source-dir"] as string | undefined ?? bnad.directory)
 
   if (typingFile.startsWith(sourceDir))
-    typingFile = typingFile.substr(sourceDir.length + 1)
+    typingFile = typingFile.substring(sourceDir.length + 1)
 
   const typeName = options["type"] as string
 
@@ -212,13 +212,16 @@ async function validateFromTypingFile(options: OptionsObject) {
   let sourceModulePath = normalizeModulePath(typingFile, sourceDir)
   if (!sourceModulePath.endsWith(".ts"))
     throw new InvalidArgumentError("Parameter 'source' must end with '.d.ts' or '.ts'")
-  sourceModulePath = sourceModulePath.substr(0, sourceModulePath.length - (sourceModulePath.endsWith(".d.ts") ? 5 : 3))
+  sourceModulePath = sourceModulePath.substring(0, sourceModulePath.length - (sourceModulePath.endsWith(".d.ts") ? 5 : 3))
+
+  const encoding = (options["source-encoding"] ?? undefined) as string | undefined
+  validateBufferEncoding(encoding)
 
   const bundle = await generateRtoModules({
     modulePaths: [sourceModulePath],
     readFiles: {
       sourceDir,
-      encoding: options["source-encoding"] as string | undefined ?? undefined,
+      encoding,
     },
     returnRtoModules: true
   }) as RtoModules
@@ -239,6 +242,7 @@ async function validateFromTypingFile(options: OptionsObject) {
 function readJsonFileSync(options: OptionsObject): unknown {
   const fileToValidate = options["json"] as string
   const encoding = (options["json-encoding"] as string | undefined) ?? "utf8"
+  validateBufferEncoding(encoding)
   try {
     const data = readFileSync(fileToValidate, encoding)
     return JSON.parse(data)
@@ -273,4 +277,10 @@ function baseNameAndDir(file: string): BaseNameAndDir {
   }
 }
 
-
+const bufferEncodingValues = new Set(['ascii', 'utf8', 'utf-8', 'utf16le', 'ucs2', 'ucs-2', 'base64', 'base64url', 'latin1', 'binary', 'hex'])
+function validateBufferEncoding(s: string | undefined): asserts s is BufferEncoding | undefined {
+  if (!s)
+    return
+  if (!bufferEncodingValues.has(s))
+    throw new Error(`Invalid encoding value '${s}'`)
+}
