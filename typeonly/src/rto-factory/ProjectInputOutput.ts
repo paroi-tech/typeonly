@@ -17,7 +17,7 @@ export interface RtoProjectOutputOptions {
 }
 
 export interface WriteRtoFilesOptions {
-  encoding: string
+  encoding: BufferEncoding
   outputDir: string
   /**
    * The indentation parameter of `JSON.stringify`.
@@ -51,18 +51,18 @@ export class RtoProjectOutput {
     const outputFile = `${join(options.outputDir, modulePath)}.rto.json`
     await ensureDirectory(options.outputDir)
     await ensureDirectory(dirname(outputFile), { createIntermediate: true })
-    await writeFile(outputFile, data, options.encoding)
+    await writeFile(outputFile, data, { encoding: options.encoding })
   }
 }
 
-export function makeReadSourceFileAstProvider(sourceDir: string, encoding: string): TypeOnlyAstProvider {
+export function makeReadSourceFileAstProvider(sourceDir: string, encoding: BufferEncoding): TypeOnlyAstProvider {
   return async (modulePath: string) => {
     const source = await readModuleFile(sourceDir, modulePath, encoding)
     return parseTypeOnlyToAst(source)
   }
 }
 
-async function readModuleFile(sourceDir: string, modulePath: string, encoding: string) {
+async function readModuleFile(sourceDir: string, modulePath: string, encoding: BufferEncoding) {
   const parsedExternalModule = parseExternalModuleName(modulePath)
   const path = parsedExternalModule
     ? await getExternalModulePath(parsedExternalModule, sourceDir)

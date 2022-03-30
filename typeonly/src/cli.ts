@@ -95,7 +95,7 @@ async function cli() {
 
   try {
     await processFiles(options)
-  } catch (error) {
+  } catch (error: any) {
     if (error.causeCode === "invalidArgument") {
       console.error(`Error: ${error.message}`)
       printHelp()
@@ -136,7 +136,7 @@ interface OptionsObject {
 function parseOptions(): OptionsObject | undefined {
   try {
     return commandLineArgs(optionDefinitions)
-  } catch (error) {
+  } catch (error: any) {
     console.log(`Error: ${error.message}`)
     printHelp()
   }

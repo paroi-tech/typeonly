@@ -163,7 +163,7 @@ In a terminal, open the cloned `typeonly/typeonly/` repository. Then:
 
 ```sh
 # Download once the ANTLR JAR file in the project's root directory
-wget https://www.antlr.org/download/antlr-4.7.2-complete.jar
+wget https://www.antlr.org/download/antlr-4.9.3-complete.jar
 
 # Install once all Node.js dependencies
 npm install

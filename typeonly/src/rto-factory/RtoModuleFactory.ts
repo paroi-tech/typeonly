@@ -61,7 +61,7 @@ export default class RtoModuleFactory {
         else if (astDecl.whichDeclaration === "type")
           inlineScanner.scan(astDecl.type)
         else if (astDecl.whichDeclaration !== "comment")
-          throw new Error(`Invalid whichDeclaration: ${astDecl!.whichDeclaration}`)
+          throw new Error(`Invalid whichDeclaration: ${(astDecl as AstDeclaration).whichDeclaration}`)
       }
     }
     await this.importTool.load()
@@ -97,7 +97,7 @@ export default class RtoModuleFactory {
       case "comment":
         break
       default:
-        throw new Error(`Invalid whichDeclaration: ${astNode!.whichDeclaration}`)
+        throw new Error(`Invalid whichDeclaration: ${(astNode as AstDeclaration).whichDeclaration}`)
     }
   }
 

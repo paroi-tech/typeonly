@@ -26,12 +26,12 @@ export interface GenerateRtoModulesOptions {
   modulePaths: string[]
   readFiles?: {
     sourceDir: string
-    encoding?: string
+    encoding?: BufferEncoding
   }
   astProvider?: TypeOnlyAstProvider
   defineGlobals?: (globals: Set<string>) => Set<string>
   writeFiles?: boolean | {
-    encoding?: string
+    encoding?: BufferEncoding
     outputDir?: string
     /**
      * The indentation parameter of `JSON.stringify`.
@@ -53,7 +53,7 @@ export async function generateRtoModules(options: GenerateRtoModulesOptions): Pr
   if (!astProvider) {
     if (!options.readFiles)
       throw new Error(`A parameter 'readFiles' or 'astProvider' is required.`)
-    astProvider = makeReadSourceFileAstProvider(options.readFiles.sourceDir, options.readFiles.encoding || "utf8")
+    astProvider = makeReadSourceFileAstProvider(options.readFiles.sourceDir, options.readFiles.encoding ?? "utf8")
   }
   let wfOpt2: WriteRtoFilesOptions | undefined
   if (options.writeFiles) {

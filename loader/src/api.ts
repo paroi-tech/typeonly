@@ -26,7 +26,7 @@ export interface AsyncReadModulesOptions {
    */
   modulePaths: string[]
   baseDir?: string
-  encoding?: string
+  encoding?: BufferEncoding
   rtoModuleProvider?: RtoModuleProvider
 }
 
