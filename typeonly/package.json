@@ -1,6 +1,6 @@
 {
   "name": "typeonly",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "Parses types and interfaces from TypeScript and stores them as JSON files.",
   "author": "Paroi",
   "scripts": {
@@ -22,7 +22,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "antlr4": "^4.9.3",
+    "antlr4": "4.9.3",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^6.1.0"
   },
