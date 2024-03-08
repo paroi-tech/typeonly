@@ -117,7 +117,9 @@ aType:
   | anonymousInterface
   | typeWithParenthesis
   | aType NL* INTERSECTION NL* aType
+  | INTERSECTION NL* aType NL* INTERSECTION NL* aType
   | aType NL* UNION NL* aType
+  | UNION NL* aType NL* UNION NL* aType
   | genericInstance
   | (NL* genericParameters)? OPEN_PARENTHESE (
     NL* functionParameter (NL* COMMA NL* functionParameter)*
