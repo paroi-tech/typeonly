@@ -10,7 +10,7 @@
     "antlr0": "java -cp \"antlr-4.13.1-complete.jar\" org.antlr.v4.Tool -Dlanguage=JavaScript -o antlr-parser TypeOnlyParser.g4 TypeOnlyLexer.g4",
     "antlr1": "tsc antlr-parser/*.js --allowjs --outdir antlr-parser/valid-js --module commonjs --target es2020",
     "antlr2": "sed -i 's/antlr4_1\\.default/antlr4_1/g' antlr-parser/valid-js/*.js",
-    "antlr2:macos": "sed -i '' 's/antlr4_1\\.default/antlr4_1/g' antlr-parser/valid-js/*.js",
+    "antlr2:macos": "sed -i '' -e 's/antlr4_1\\.default/antlr4_1/g' -e 's/antlr4_1\\.atn/antlr4_1/g' -e 's/antlr4_1\\.tree/antlr4_1/g' -e 's/antlr4_1\\.dfa/antlr4_1/g' -e 's/antlr4_1\\.error/antlr4_1/g' antlr-parser/valid-js/*.js",
     "antlr3": "rm antlr-parser/*.js",
     "antlr4": "mv antlr-parser/valid-js/*.js antlr-parser/",
     "antlr5": "rmdir antlr-parser/valid-js",
