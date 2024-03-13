@@ -5,7 +5,7 @@
 ![Type definitions](https://img.shields.io/npm/types/@typeonly/validator)
 ![GitHub](https://img.shields.io/github/license/paroi-tech/typeonly)
 
-[TypeOnly](https://github.com/paroi-tech/typeonly/tree/master/typeonly) aims to be the pure typing part of TypeScript. This package provides an API to validate JSON and JavaScript objects with TypeScript definitions, using the TypeOnly parser.
+[TypeOnly](https://github.com/paroi-tech/typeonly/tree/master/packages/typeonly) aims to be the pure typing part of TypeScript. This package provides an API to validate JSON and JavaScript objects with TypeScript definitions, using the TypeOnly parser.
 
 ## Tutorial: How to programmatically validate JSON data
 

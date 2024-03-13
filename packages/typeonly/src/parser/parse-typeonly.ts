@@ -1,5 +1,5 @@
 // @ts-ignore
-import { ATNConfigSet, BitSet, CommonTokenStream, DFA, InputStream, ParseTreeWalker, Parser } from "antlr4"
+import { CommonTokenStream, InputStream, ParseTreeWalker } from "antlr4"
 import AstExtractor from "./AstExtractor"
 const TypeOnlyLexer = require("../../antlr-parser/TypeOnlyLexer").default
 const TypeOnlyParser = require("../../antlr-parser/TypeOnlyParser").default
@@ -18,14 +18,6 @@ export function parseTypeOnlyToAst(source: string) {
     syntaxError(recognizer: any, offendingSymbol: any, line: number, column: number, msg: string, e: any) {
       errors.push(`Syntax error at line ${line}:${column}, ${msg}`)
     },
-    // TODO: Remove this
-    reportAttemptingFullContext(recognizer: Parser, dfa: DFA, startIndex: number, stopIndex: number, conflictingAlts: BitSet, configs: ATNConfigSet) {
-      console.log("Error occurred: reportAttemptingFullContext", { startIndex, conflictingAlts, input: recognizer.getCurrentToken().text })
-    },
-    // TODO: Remove this
-    reportContextSensitivity(recognizer: Parser, dfa: DFA, startIndex: number, stopIndex: number, prediction: number, configs: ATNConfigSet) {
-      console.log("Error occurred: reportContextSensitivity", { startIndex, configs, input: recognizer.getCurrentToken().text, prediction })
-    }
   }
   lexer.removeErrorListeners()
   lexer.addErrorListener(errorListener)

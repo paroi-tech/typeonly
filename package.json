@@ -1,0 +1,22 @@
+{
+  "name": "typeonly-monorepo",
+  "author": "Paroi",
+  "private": true,
+  "scripts": {
+    "clear": "npm run clear --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "build:macos": "npm run build:macos --workspace=packages/typeonly --if-present && npm run build --workspace=packages/loader --workspace=packages/validator --workspace=packages/validator-cli --if-present",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "release": "changeset publish"
+  },
+  "workspaces": [
+    "packages/typeonly",
+    "packages/loader",
+    "packages/validator",
+    "packages/validator-cli"
+  ],
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1"
+  }
+}

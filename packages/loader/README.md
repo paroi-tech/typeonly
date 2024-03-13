@@ -5,7 +5,7 @@
 ![Type definitions](https://img.shields.io/npm/types/@typeonly/loader)
 ![GitHub](https://img.shields.io/github/license/paroi-tech/typeonly)
 
-[TypeOnly](https://github.com/paroi-tech/typeonly/tree/master/typeonly) aims to be the pure typing part of TypeScript. The TypeOnly parser generates a `.to.json` file, which is a bundle that contains metadata extracted from `.d.ts` typing files. Then, this package provides an API to read these RTO files. It brings typing metadata at runtime.
+[TypeOnly](https://github.com/paroi-tech/typeonly/tree/master/packages/typeonly) aims to be the pure typing part of TypeScript. The TypeOnly parser generates a `.to.json` file, which is a bundle that contains metadata extracted from `.d.ts` typing files. Then, this package provides an API to read these RTO files. It brings typing metadata at runtime.
 
 ## Tutorial: Load typing definitions at runtime
 

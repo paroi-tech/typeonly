@@ -1,4 +1,3 @@
-import { inspect } from "util"
 import { AstArrayType, AstClassicImport, AstCommentable, AstCompositeType, AstFunctionProperty, AstFunctionType, AstGenericInstance, AstGenericParameter, AstImportNamedMember, AstIndexSignature, AstInlineImportType, AstInterface, AstKeyofType, AstLiteralType, AstMappedIndexSignature, AstMemberNameLiteral, AstMemberType, AstNamedInterface, AstNamedType, AstNamespacedImport, AstProperty, AstStandaloneComment, AstStandaloneInterfaceComment, AstTupleType, AstType, TypeOnlyAst } from "../ast"
 import CommentGrabber, { CommentParsingContext, GrabbedComment, GrabbedCommentsResult } from "./CommentGrabber"
 import { AntlrRuleContext } from "./antlr4-defs"
@@ -396,9 +395,6 @@ export default class AstExtractor extends TypeOnlyParserListener {
   }
 
   processCompositeType(ctx: AntlrRuleContext) {
-    // TODO: Remove this
-    console.log('processCompositeType =>', inspect(ctx.getText(), true, 6, true))
-
     const compositeType: AstCompositeType = {
       whichType: "composite",
       op: ctx.INTERSECTION() ? "intersection" : "union",
@@ -423,9 +419,6 @@ export default class AstExtractor extends TypeOnlyParserListener {
       throw new Error("Missing composite type")
     this.compositeMap.delete(ctx)
     const [left, right] = compositeType.types
-
-    // TODO: Remove this
-    console.log('processEndOfCompositeType =>', inspect(ctx.getText(), true, 6, true), left, right)
     if (!right) {
       return
     }

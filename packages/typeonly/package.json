@@ -47,7 +47,7 @@
     "type": "git",
     "url": "git+https://github.com/paroi-tech/typeonly.git"
   },
-  "homepage": "https://github.com/paroi-tech/typeonly/tree/master/typeonly",
+  "homepage": "https://github.com/paroi-tech/typeonly/tree/master/packages/typeonly",
   "license": "CC0-1.0",
   "keywords": [
     "typescript",
