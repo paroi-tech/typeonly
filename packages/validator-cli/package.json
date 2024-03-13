@@ -4,7 +4,6 @@
   "description": "A CLI to validate JSON files, using TypeScript typing definitions.",
   "author": "Paroi",
   "scripts": {
-    "prepublishOnly": "npm run build",
     "clear": "rimraf dist/*",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",

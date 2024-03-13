@@ -4,7 +4,7 @@
   "description": "Parses types and interfaces from TypeScript and stores them as JSON files.",
   "author": "Paroi",
   "scripts": {
-    "prepublishOnly": "npm run lint && npm run build && npm run test",
+    "prepublishOnly": "npm run lint && npm run test",
     "antlr": "npm run antlr0 && npm run antlr1 && npm run antlr2 && npm run antlr3 && npm run antlr4 && npm run antlr5",
     "antlr:macos": "npm run antlr0 && npm run antlr1 && npm run antlr2:macos && npm run antlr3 && npm run antlr4 && npm run antlr5",
     "antlr0": "java -cp \"antlr-4.13.1-complete.jar\" org.antlr.v4.Tool -Dlanguage=JavaScript -o antlr-parser TypeOnlyParser.g4 TypeOnlyLexer.g4",

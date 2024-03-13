@@ -4,7 +4,7 @@
   "description": "An API to validate JSON data or JavaScript objects, using TypeScript typing definitions.",
   "author": "Paroi",
   "scripts": {
-    "prepublishOnly": "npm run build && npm run test",
+    "prepublishOnly": "npm run test",
     "clear": "rimraf dist/* bundle-tsd/declarations/*",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",

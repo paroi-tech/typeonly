@@ -4,7 +4,7 @@
   "description": "Brings types and interfaces from TypeScript at runtime.",
   "author": "Paroi",
   "scripts": {
-    "prepublishOnly": "npm run build && npm run test",
+    "prepublishOnly": "npm run test",
     "clear": "rimraf dist/* bundle-tsd/declarations/*",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",

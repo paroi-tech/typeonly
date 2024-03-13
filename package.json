@@ -8,7 +8,8 @@
     "build:macos": "npm run build:macos --workspace=packages/typeonly --if-present && npm run build --workspace=packages/loader --workspace=packages/validator --workspace=packages/validator-cli --if-present",
     "changeset": "changeset",
     "changeset:version": "changeset version",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "publish:packages": "npm publish --workspaces"
   },
   "workspaces": [
     "packages/typeonly",
