@@ -1,8 +1,8 @@
 {
   "[typescript]": {
     "editor.codeActionsOnSave": {
-      "source.fixAll": true,
-      "source.organizeImports": true
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
     },
     "editor.defaultFormatter": "vscode.typescript-language-features",
     "editor.formatOnSave": true

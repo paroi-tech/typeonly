@@ -8,7 +8,7 @@
 ![Type definitions](https://img.shields.io/npm/types/@typeonly/validator-cli)
 ![GitHub](https://img.shields.io/github/license/paroi-tech/typeonly)
 
-[TypeOnly](https://github.com/paroi-tech/typeonly/tree/master/typeonly) aims to be the pure typing part of TypeScript. This package provides a Command Line Interface to validate JSON with TypeScript definitions, using the TypeOnly parser.
+[TypeOnly](https://github.com/paroi-tech/typeonly/tree/master/packages/typeonly) aims to be the pure typing part of TypeScript. This package provides a Command Line Interface to validate JSON with TypeScript definitions, using the TypeOnly parser.
 
 ## Tutorial: How to validate the conformity of a JSON file using the CLI
 

@@ -1,5 +1,5 @@
 // @ts-ignore
-import { CommonTokenStream, InputStream, tree } from "antlr4"
+import { CommonTokenStream, InputStream, ParseTreeWalker } from "antlr4"
 import AstExtractor from "./AstExtractor"
 const TypeOnlyLexer = require("../../antlr-parser/TypeOnlyLexer").default
 const TypeOnlyParser = require("../../antlr-parser/TypeOnlyParser").default
@@ -10,13 +10,14 @@ export function parseTypeOnlyToAst(source: string) {
   const tokenStream = new CommonTokenStream(lexer)
   const parser = new TypeOnlyParser(tokenStream)
 
+
   parser.buildParseTrees = true
 
   const errors: string[] = []
   const errorListener = {
     syntaxError(recognizer: any, offendingSymbol: any, line: number, column: number, msg: string, e: any) {
       errors.push(`Syntax error at line ${line}:${column}, ${msg}`)
-    }
+    },
   }
   lexer.removeErrorListeners()
   lexer.addErrorListener(errorListener)
@@ -48,7 +49,8 @@ export function parseTypeOnlyToAst(source: string) {
       NEWLINE: TypeOnlyParser.NL,
     }
   })
-  tree.ParseTreeWalker.DEFAULT.walk(extractor, declarations)
+
+  ParseTreeWalker.DEFAULT.walk(extractor as any, declarations)
 
   return extractor.ast!
 }
