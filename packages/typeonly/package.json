@@ -1,6 +1,6 @@
 {
   "name": "typeonly",
-  "version": "0.4.6",
+  "version": "0.5.0",
   "description": "Parses types and interfaces from TypeScript and stores them as JSON files.",
   "author": "Paroi",
   "scripts": {

@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/validator",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "An API to validate JSON data or JavaScript objects, using TypeScript typing definitions.",
   "author": "Paroi",
   "scripts": {
@@ -15,7 +15,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@typeonly/loader": "^0.5.4"
+    "@typeonly/loader": "^0.6.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
@@ -24,7 +24,7 @@
     "rimraf": "^5.0.5",
     "ts-jest": "^29.1.2",
     "tslint": "^6.1.3",
-    "typeonly": "^0.4.5",
+    "typeonly": "^0.5.0",
     "typescript": "^5.4.2"
   },
   "main": "dist/api.js",

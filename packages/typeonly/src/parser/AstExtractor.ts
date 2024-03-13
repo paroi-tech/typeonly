@@ -1,6 +1,6 @@
 import { AstArrayType, AstClassicImport, AstCommentable, AstCompositeType, AstFunctionProperty, AstFunctionType, AstGenericInstance, AstGenericParameter, AstImportNamedMember, AstIndexSignature, AstInlineImportType, AstInterface, AstKeyofType, AstLiteralType, AstMappedIndexSignature, AstMemberNameLiteral, AstMemberType, AstNamedInterface, AstNamedType, AstNamespacedImport, AstProperty, AstStandaloneComment, AstStandaloneInterfaceComment, AstTupleType, AstType, TypeOnlyAst } from "../ast"
-import CommentGrabber, { CommentParsingContext, GrabbedComment, GrabbedCommentsResult } from "./CommentGrabber"
 import { AntlrRuleContext } from "./antlr4-defs"
+import CommentGrabber, { CommentParsingContext, GrabbedComment, GrabbedCommentsResult } from "./CommentGrabber"
 const TypeOnlyParserListener = require("../../antlr-parser/TypeOnlyParserListener").default
 
 type SetType = (astType: AstType) => void
