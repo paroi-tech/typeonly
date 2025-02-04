@@ -1,0 +1,5 @@
+node_modules
+dist
+.npmrc
+.vscode/*
+!.vscode/settings.example.json

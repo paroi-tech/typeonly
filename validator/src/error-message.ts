@@ -19,6 +19,7 @@ export function makeErrorMessage(unmatchs: Unmatch[]): string {
 }
 
 function valueAsString(val: unknown): string {
+  if (Array.isArray(val)) return `[array of ${val.length}]`
   switch (typeof val) {
     case "string":
     case "number":

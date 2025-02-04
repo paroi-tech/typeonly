@@ -32,10 +32,12 @@ interface InterfaceScope {
   remainingPropNames: Set<string>
   validPropCount: number
   invalidPropCount: number
+  validLiteralCount: number
+  invalidLiteralCount: number
 }
 
 interface InterfaceContext {
-  type: Type
+  type: Interface | CompositeType
   val: InterfaceObject
   scopeOwner: boolean
   scope: Scope
@@ -154,7 +156,7 @@ export default class Validator {
     return (context.scopeOwner && context.interfaceScope.firstInvalid) || { valid: true }
   }
 
-  private makeInterfaceContext(type: Type, val: InterfaceObject, scope: Scope | undefined): InterfaceContext {
+  private makeInterfaceContext(type: Interface | CompositeType, val: InterfaceObject, scope: Scope | undefined): InterfaceContext {
     let interfaceScope: InterfaceScope
     let scopeOwner: boolean
     if (scope && scope.interfaceScope) {
@@ -164,7 +166,9 @@ export default class Validator {
       interfaceScope = {
         remainingPropNames: new Set(Object.keys(val)),
         validPropCount: 0,
-        invalidPropCount: 0
+        invalidPropCount: 0,
+        validLiteralCount: 0,
+        invalidLiteralCount: 0,
       }
       scope = { interfaceScope }
       scopeOwner = true
@@ -181,9 +185,15 @@ export default class Validator {
     }
 
     if (scope.firstInvalid) {
-      const last = scope.firstInvalid.unmatchs[scope.firstInvalid.unmatchs.length - 1]
-      const total = scope.validPropCount + scope.invalidPropCount + scope.remainingPropNames.size
-      last.score = total === 0 ? 0 : scope.validPropCount / total
+      const { validPropCount, invalidPropCount, validLiteralCount, firstInvalid, remainingPropNames } = scope
+      const positiveWeight = validPropCount + validLiteralCount * 1.5
+      const negativeWeight = remainingPropNames.size
+      const neutralWeight = invalidPropCount
+      const total = positiveWeight + negativeWeight + neutralWeight
+      const score = total === 0 ? 0 : positiveWeight / total - negativeWeight / total
+
+      const last = firstInvalid.unmatchs[firstInvalid.unmatchs.length - 1]
+      last.score = score
     }
   }
 
@@ -206,10 +216,17 @@ export default class Validator {
         }
         valid = false
       }
-      if (valid)
+      if (valid) {
         ++interfaceScope.validPropCount
-      else
+        if (indexSignature.type.kind === "literal") {
+          ++interfaceScope.validLiteralCount
+        }
+      } else {
         ++interfaceScope.invalidPropCount
+        if (indexSignature.type.kind === "literal") {
+          ++interfaceScope.invalidLiteralCount
+        }
+      }
       interfaceScope.remainingPropNames.delete(propName)
     }
   }
@@ -218,12 +235,19 @@ export default class Validator {
     const { val, interfaceScope } = context
     for (const property of Object.values(properties)) {
       const result = this.checkProperty(property, val)
-      if (!result.valid) {
+      if (result.valid) {
+        ++interfaceScope.validPropCount
+        if (property.type.kind === "literal") {
+          ++interfaceScope.validLiteralCount
+        }
+      } else {
         if (!interfaceScope.firstInvalid)
           interfaceScope.firstInvalid = result
         ++interfaceScope.invalidPropCount
-      } else
-        ++interfaceScope.validPropCount
+        if (property.type.kind === "literal") {
+          ++interfaceScope.invalidLiteralCount
+        }
+      }
       interfaceScope.remainingPropNames.delete(property.name)
     }
   }
@@ -300,13 +324,14 @@ export default class Validator {
 
   private checkCompositeUnion(type: CompositeType, val: unknown): InternalResult {
     let bestInvalid: InternalInvalidResult | undefined
-    let bestInvalidScore = 0
+    let bestInvalidScore = 0 //: number | undefined
+
     for (const itemType of type.types) {
       const result = this.checkType(itemType, val)
       if (result.valid)
         return { valid: true }
       const last = result.unmatchs[result.unmatchs.length - 1]
-      if (last.score && last.score > bestInvalidScore) {
+      if (last.score !== undefined && last.score > bestInvalidScore) {
         bestInvalid = result
         bestInvalidScore = last.score
       }
@@ -314,7 +339,7 @@ export default class Validator {
 
     const cause = `no matching type in: ${type.types.map(typeAsString).join(" | ")}`
     if (bestInvalid) {
-      bestInvalid.unmatchs.push({ type, val, cause })
+      bestInvalid.unmatchs.push({ type, val, cause, score: bestInvalidScore })
       return bestInvalid
     } else
       return { valid: false, unmatchs: [{ type, val, cause }] }

@@ -1,0 +1,24 @@
+{
+  "name": "typeonly-monorepo",
+  "version": "0.0.0",
+  "author": "Paroi Team",
+  "private": true,
+  "scripts": {
+    "clear": "npm run clear --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "~2.27.12"
+  },
+  "workspaces": [
+    "typeonly",
+    "loader",
+    "validator",
+    "validator-cli"
+  ]
+}

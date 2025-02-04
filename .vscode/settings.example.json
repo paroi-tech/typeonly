@@ -47,6 +47,5 @@
   "typescript.locale": "en",
   "typescript.format.semicolons": "remove",
   "typescript.preferences.importModuleSpecifier": "relative",
-  "typescript.preferences.quoteStyle": "double",
-  "typescript.tsdk": "loader/node_modules/typescript/lib"
+  "typescript.preferences.quoteStyle": "double"
 }
