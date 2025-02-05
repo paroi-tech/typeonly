@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import commandLineArgs from "command-line-args";
-import commandLineUsage from "command-line-usage";
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, parse } from "node:path";
+import commandLineArgs from "command-line-args";
+import commandLineUsage from "command-line-usage";
 import { generateRtoModules, parseTypeOnly } from "./api.js";
 import type { TypeOnlyAst } from "./ast.d.ts";
 import { ensureDirectory } from "./rto-factory/ProjectInputOutput.js";

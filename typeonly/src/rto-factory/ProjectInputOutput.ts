@@ -69,10 +69,10 @@ async function readModuleFile(sourceDir: string, modulePath: string, encoding: B
     : join(sourceDir, modulePath);
   try {
     return await readFile(`${path}.d.ts`, encoding);
-  } catch { }
+  } catch {}
   try {
     return await readFile(`${path}.ts`, encoding);
-  } catch { }
+  } catch {}
   throw new Error(`Cannot open module file: ${path}.d.ts`);
 }
 

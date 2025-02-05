@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import { createValidator } from "@typeonly/validator";
 import { readFileSync } from "node:fs";
 import { basename, dirname } from "node:path";
+import { createValidator } from "@typeonly/validator";
 import { type RtoModules, generateRtoModules } from "typeonly";
 
 import commandLineArgs from "command-line-args";

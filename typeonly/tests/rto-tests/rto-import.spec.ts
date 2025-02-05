@@ -11,7 +11,7 @@ describe("RTO Specification for Import", () => {
     const source2 = `
       export type T2 = boolean
       `;
-    const rtoModules = (await generateRtoModules({
+    const rtoModules = await generateRtoModules({
       modulePaths: ["./source1"],
       astProvider: (modulePath) => {
         if (modulePath === "./source1") return parseTypeOnly({ source: source1 });
@@ -19,7 +19,7 @@ describe("RTO Specification for Import", () => {
         throw new Error(`Unknown module: ${modulePath}`);
       },
       returnRtoModules: true,
-    }));
+    });
     const rtoModule = rtoModules?.["./source1"];
 
     expect(rtoModule?.namedTypes?.length).toBe(1);

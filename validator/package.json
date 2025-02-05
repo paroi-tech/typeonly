@@ -33,9 +33,5 @@
   },
   "homepage": "https://github.com/paroi-tech/typeonly/tree/master/validator",
   "license": "CC0-1.0",
-  "keywords": [
-    "typescript",
-    "json",
-    "validation"
-  ]
+  "keywords": ["typescript", "json", "validation"]
 }

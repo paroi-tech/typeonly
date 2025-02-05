@@ -1,6 +1,11 @@
 import { describe, expect, test } from "vitest";
 import { parseTypeOnly } from "../../src/api.js";
-import type { AstArrayType, AstCompositeType, AstFunctionType, AstNamedType } from "../../src/ast.d.ts";
+import type {
+  AstArrayType,
+  AstCompositeType,
+  AstFunctionType,
+  AstNamedType,
+} from "../../src/ast.d.ts";
 
 describe("AST Specification for Precedence", () => {
   test("function with an array as return value", () => {

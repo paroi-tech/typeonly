@@ -9,7 +9,7 @@ export interface ImportRef {
 }
 
 interface ImportedFromModule {
-  namedMembers: Array<{ name: string; as?: string; }>;
+  namedMembers: Array<{ name: string; as?: string }>;
   namespaces: string[];
   inlineMembers: Set<string>;
 }
@@ -22,7 +22,7 @@ export default class AstImportTool {
   constructor(
     readonly path: string,
     private moduleLoader: RtoModuleLoader,
-  ) { }
+  ) {}
 
   addImport(astNode: AstImport) {
     const ifm = this.getImportedFromModule(astNode.from);
@@ -46,7 +46,7 @@ export default class AstImportTool {
     }
   }
 
-  createRtoImports(): { imports?: RtoImport[]; namespacedImports?: RtoNamespacedImport[]; } {
+  createRtoImports(): { imports?: RtoImport[]; namespacedImports?: RtoNamespacedImport[] } {
     const imports: RtoImport[] = [];
     const namespacedImports: RtoNamespacedImport[] = [];
     for (const [from, ifm] of this.fromModules.entries()) {
@@ -59,7 +59,7 @@ export default class AstImportTool {
       }
       namespaces.forEach((asNamespace) => namespacedImports.push({ from, asNamespace }));
     }
-    const result: { imports?: RtoImport[]; namespacedImports?: RtoNamespacedImport[]; } = {};
+    const result: { imports?: RtoImport[]; namespacedImports?: RtoNamespacedImport[] } = {};
     if (imports.length > 0) result.imports = imports;
     if (namespacedImports.length > 0) result.namespacedImports = namespacedImports;
     return result;
@@ -88,7 +88,7 @@ export default class AstImportTool {
     ifm.namespaces.push(asNamespace);
   }
 
-  private addNamedImport(member: { name: string; as?: string; }, ifm: ImportedFromModule) {
+  private addNamedImport(member: { name: string; as?: string }, ifm: ImportedFromModule) {
     const name = member.as || member.name;
     if (this.importedNamespaces.has(name) || this.importedIdentifiers.has(name))
       throw new Error(`Duplicate identifier '${name}'`);

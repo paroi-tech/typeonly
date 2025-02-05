@@ -13,7 +13,7 @@
   "typescript.format.semicolons": "insert",
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.preferences.quoteStyle": "double",
-    "search.exclude": {
+  "search.exclude": {
     "**/node_modules": true,
     "**/package-lock.json": true,
     "**/dist": true,

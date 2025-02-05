@@ -12,7 +12,7 @@ export interface ProjectOptions {
 export default class Project {
   private factories = new Map<string, ModuleFactory>();
 
-  constructor(private options: ProjectOptions) { }
+  constructor(private options: ProjectOptions) {}
 
   parseModulesSync(paths: string[]): Modules {
     this.checkPaths(paths);

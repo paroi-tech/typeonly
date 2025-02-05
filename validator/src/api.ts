@@ -11,11 +11,11 @@ export interface ValidatorOptions {
   acceptAdditionalProperties?: boolean;
 }
 
-export interface SyncReadModulesValidatorOptions extends ValidatorOptions, SyncReadModulesOptions { }
+export interface SyncReadModulesValidatorOptions extends ValidatorOptions, SyncReadModulesOptions {}
 
 export interface AsyncReadModulesValidatorOptions
   extends ValidatorOptions,
-  AsyncReadModulesOptions { }
+    AsyncReadModulesOptions {}
 
 export type CreateValidatorOptions =
   | SyncReadModulesValidatorOptions
@@ -48,7 +48,9 @@ export function createValidatorFromModules(
   return {
     validate: (typeName: string, val: unknown, moduleName?: string) => {
       return validator.validate(
-        moduleName ?? getDefaultModuleName(modules, typeName), typeName, val
+        moduleName ?? getDefaultModuleName(modules, typeName),
+        typeName,
+        val,
       );
     },
   };

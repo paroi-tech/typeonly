@@ -41,10 +41,7 @@
   },
   "files": {
     "include": ["*.ts", "*.json"],
-    "ignore": [
-      "dist",
-      "node_modules"
-    ]
+    "ignore": ["dist", "node_modules"]
   },
   "organizeImports": {
     "enabled": true

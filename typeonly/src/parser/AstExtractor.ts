@@ -34,7 +34,9 @@ import CommentGrabber, {
 } from "./CommentGrabber.js";
 import type { AntlrRuleContext } from "./antlr4-defs.d.ts";
 
-const TypeOnlyParserListener = (await import("../../antlr-parser/TypeOnlyParserListener.js" as string)).default;
+const TypeOnlyParserListener = (
+  await import("../../antlr-parser/TypeOnlyParserListener.js" as string)
+).default;
 
 type SetType = (astType: AstType) => void;
 
@@ -529,7 +531,7 @@ export default class AstExtractor extends TypeOnlyParserListener {
     this.registerAstChild(inlineImportType, ctx.parentCtx);
   }
 
-  proccessGenericParameter(ctx: AntlrRuleContext, astNode: { generic?: AstGenericParameter[]; }) {
+  proccessGenericParameter(ctx: AntlrRuleContext, astNode: { generic?: AstGenericParameter[] }) {
     if (ctx.genericParameters()) {
       const generic: AstGenericParameter[] = [];
       const genericParameters = ctx.genericParameters().genericParameter();
@@ -653,7 +655,6 @@ function parseNumberLiteral(str: string): number {
   if (str.includes(".")) return Number.parseFloat(str);
   return Number.parseInt(str, 10);
 }
-
 
 function parseStringOrNumberLiteral(str: string): string | number {
   if (isStringDelim(str.charAt(0))) return parseStringLiteral(str);

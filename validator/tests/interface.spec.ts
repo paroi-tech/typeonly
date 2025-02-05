@@ -3,7 +3,6 @@ import { describe, expect, test } from "vitest";
 import { createValidator } from "../src/api.js";
 
 describe("Validate Interface", () => {
-
   test("interface with primitive types", async () => {
     const source = `
       export interface A {
@@ -14,24 +13,24 @@ describe("Validate Interface", () => {
 
     const validator = await createValidator({
       modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      rtoModuleProvider: async () =>
+        createStandaloneRtoModule({
+          ast: parseTypeOnly({ source }),
+        }),
     });
 
     const result = validator.validate(
       "A",
       {
         a: 12,
-        b: 22
+        b: 22,
       },
-      "./mod1"
+      "./mod1",
     );
 
     expect(result.valid).toBe(false);
     expect(result.error).toBeDefined();
   });
-
 
   // test("interface with array type", async () => {
   //   const source = `
@@ -149,5 +148,4 @@ describe("Validate Interface", () => {
   //   expect(result.valid).toBe(true)
   //   expect(result.error).toBeUndefined()
   // })
-
 });

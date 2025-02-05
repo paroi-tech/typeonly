@@ -1,6 +1,6 @@
 export interface AntlrParser {
-  ruleNames: { [type: number]: string; };
-  symbolicNames: { [type: number]: string; };
+  ruleNames: { [type: number]: string };
+  symbolicNames: { [type: number]: string };
 }
 
 export interface AntlrTokenStream {

@@ -44,7 +44,7 @@ export default class CommentGrabber {
   private consumed = new Set<AntlrToken>();
   private lastTokenIndex = -1;
 
-  constructor(private parsingContext: CommentParsingContext) { }
+  constructor(private parsingContext: CommentParsingContext) {}
 
   grabCommentsOf(ctx: AntlrRuleContext): GrabbedCommentsResult {
     const {
@@ -165,7 +165,7 @@ export default class CommentGrabber {
 
   private multiLineTokenToDocOrStandaloneComment(
     token: AntlrToken,
-  ): { doc: boolean; comment: GrabbedComment; } | undefined {
+  ): { doc: boolean; comment: GrabbedComment } | undefined {
     const { source } = this.parsingContext;
     const { start, stop } = token;
     const { doc, text } = formatMultiLineComment(source, start, stop);
@@ -290,7 +290,7 @@ function formatMultiLineComment(
   start: number,
   stop: number,
   mode?: "asInline",
-): { doc: boolean; text: string; } {
+): { doc: boolean; text: string } {
   const length = stop - start - 3;
   if (length <= 0) return { doc: false, text: "" };
   const doc = mode !== "asInline" && source[start + 2] === "*";

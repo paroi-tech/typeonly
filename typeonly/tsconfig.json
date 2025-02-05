@@ -5,9 +5,7 @@
     "module": "NodeNext",
     "moduleResolution": "nodenext",
     "sourceMap": false,
-    "lib": [
-      "esnext"
-    ],
+    "lib": ["esnext"],
     "esModuleInterop": true,
     "outDir": "dist",
     "noEmitOnError": true,
@@ -17,7 +15,5 @@
     "skipLibCheck": true,
     "rootDir": "src"
   },
-  "include": [
-    "src",
-  ]
+  "include": ["src"]
 }

@@ -46,7 +46,8 @@ export type NamedKeyofType = KeyofType & BaseNamedType;
 export type NamedMemberType = MemberType & BaseNamedType;
 export type NamedInterface = Interface & BaseNamedType;
 
-export type Type = TypeName
+export type Type =
+  | TypeName
   | GenericParameterName
   | LocalTypeRef
   | ImportedTypeRef
@@ -80,7 +81,14 @@ export interface TypeName {
 }
 
 export type SpecialTypeName = "any" | "unknown" | "object" | "void" | "never";
-export type PrimitiveTypeName = "string" | "number" | "bigint" | "boolean" | "undefined" | "null" | "symbol";
+export type PrimitiveTypeName =
+  | "string"
+  | "number"
+  | "bigint"
+  | "boolean"
+  | "undefined"
+  | "null"
+  | "symbol";
 
 export interface GenericParameterName {
   kind: "genericParameterName";

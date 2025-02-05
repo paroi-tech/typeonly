@@ -34,23 +34,23 @@ export interface GenerateRtoModulesOptions {
   astProvider?: TypeOnlyAstProvider;
   defineGlobals?: (globals: Set<string>) => Set<string>;
   writeFiles?:
-  | boolean
-  | {
-    encoding?: BufferEncoding;
-    outputDir?: string;
-    /**
-     * The indentation parameter of `JSON.stringify`.
-     */
-    prettify?: number | string;
-  };
+    | boolean
+    | {
+        encoding?: BufferEncoding;
+        outputDir?: string;
+        /**
+         * The indentation parameter of `JSON.stringify`.
+         */
+        prettify?: number | string;
+      };
   returnRtoModules?:
-  | boolean
-  | {
-    /**
-     * Default value is `false`.
-     */
-    freeze?: boolean;
-  };
+    | boolean
+    | {
+        /**
+         * Default value is `false`.
+         */
+        freeze?: boolean;
+      };
 }
 
 export type TypeOnlyAstProvider = (modulePath: string) => Promise<TypeOnlyAst> | TypeOnlyAst;

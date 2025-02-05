@@ -14,7 +14,7 @@ export type RtoModuleListener = (module: RtoModule, modulePath: string) => Promi
 export default class RtoProject {
   private factories = new Map<string, RtoModuleFactory>();
 
-  constructor(private options: RtoProjectOptions) { }
+  constructor(private options: RtoProjectOptions) {}
 
   async addModules(modulePaths: string[]) {
     for (const from of modulePaths) await this.importModule({ from });

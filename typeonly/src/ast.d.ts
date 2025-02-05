@@ -2,10 +2,7 @@ export interface TypeOnlyAst {
   declarations?: AstDeclaration[];
 }
 
-export type AstDeclaration = AstImport
-  | AstNamedInterface
-  | AstNamedType
-  | AstStandaloneComment;
+export type AstDeclaration = AstImport | AstNamedInterface | AstNamedType | AstStandaloneComment;
 
 export type AstImport = AstClassicImport | AstNamespacedImport;
 
@@ -41,7 +38,8 @@ export interface AstNamedInterface extends AstInterface, AstCommentable {
   generic?: AstGenericParameter[];
 }
 
-export type AstInterfaceEntry = AstProperty
+export type AstInterfaceEntry =
+  | AstProperty
   | AstFunctionProperty
   | AstIndexSignature
   | AstMappedIndexSignature
@@ -91,7 +89,8 @@ export interface AstNamedType extends AstCommentable {
   generic?: AstGenericParameter[];
 }
 
-export type AstType = string
+export type AstType =
+  | string
   | AstLiteralType
   | AstInterface
   | AstCompositeType
@@ -106,7 +105,7 @@ export type AstType = string
 export interface AstLiteralType {
   whichType: "literal";
   literal: string | number | boolean | bigint;
-  stringDelim?: "\"" | "'";
+  stringDelim?: '"' | "'";
 }
 
 export interface AstCompositeType {
@@ -158,7 +157,7 @@ export interface AstMemberType {
 
 export interface AstMemberNameLiteral {
   literal: string | number;
-  stringDelim?: "\"" | "'";
+  stringDelim?: '"' | "'";
 }
 
 export interface AstInlineImportType {

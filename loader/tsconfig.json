@@ -5,19 +5,12 @@
     "module": "NodeNext",
     "moduleResolution": "nodenext",
     "sourceMap": false,
-    "lib": [
-      "esnext"
-    ],
+    "lib": ["esnext"],
     "outDir": "dist",
     "noEmitOnError": true,
     "declaration": true,
     "declarationDir": "scripts/declarations"
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }

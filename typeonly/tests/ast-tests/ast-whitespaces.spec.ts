@@ -19,7 +19,6 @@ describe("AST Specification about White Spaces", () => {
     expect(ast.declarations?.length).toBe(1);
   });
 
-
   test("new lines in a named type", () => {
     parseTypeOnly({
       source: `
@@ -29,7 +28,7 @@ number
 [
 
 ]
-`
+`,
     });
   });
 
@@ -43,7 +42,7 @@ export
   :
   string
 }
-`
+`,
     });
   });
 });

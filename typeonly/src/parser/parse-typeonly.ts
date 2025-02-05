@@ -45,7 +45,7 @@ export function parseTypeOnlyToAst(source: string) {
       exact: boolean,
       ambigAlts: any,
       configs: any,
-    ) { },
+    ) {},
 
     reportAttemptingFullContext(
       recognizer: Recognizer<any>,
@@ -54,7 +54,7 @@ export function parseTypeOnlyToAst(source: string) {
       stopIndex: number,
       conflictingAlts: any,
       configs: any,
-    ) { },
+    ) {},
 
     reportContextSensitivity(
       recognizer: Recognizer<any>,
@@ -63,7 +63,7 @@ export function parseTypeOnlyToAst(source: string) {
       stopIndex: number,
       prediction: number,
       configs: any,
-    ) { },
+    ) {},
   };
   lexer.removeErrorListeners();
   lexer.addErrorListener(errorListener);
