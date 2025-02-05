@@ -69,17 +69,17 @@ export default class RtoModuleFactory {
   private rtoTypeCreators: {
     [K in Exclude<AstType, string>["whichType"]]: (astNode: any) => RtoType;
   } = {
-      array: (astNode) => this.createRtoArrayType(astNode),
-      literal: (astNode) => this.createRtoLiteralType(astNode),
-      composite: (astNode) => this.createRtoCompositeType(astNode),
-      genericInstance: (astNode) => this.createRtoGenericInstance(astNode),
-      keyof: (astNode) => this.createRtoKeyofType(astNode),
-      member: (astNode) => this.createRtoMemberType(astNode),
-      tuple: (astNode) => this.createRtoTupleType(astNode),
-      function: (astNode) => this.createRtoFunctionType(astNode),
-      inlineImport: (astNode) => this.createRtoImportedRefFromInline(astNode),
-      interface: (astNode) => this.createRtoInterface(astNode),
-    };
+    array: (astNode) => this.createRtoArrayType(astNode),
+    literal: (astNode) => this.createRtoLiteralType(astNode),
+    composite: (astNode) => this.createRtoCompositeType(astNode),
+    genericInstance: (astNode) => this.createRtoGenericInstance(astNode),
+    keyof: (astNode) => this.createRtoKeyofType(astNode),
+    member: (astNode) => this.createRtoMemberType(astNode),
+    tuple: (astNode) => this.createRtoTupleType(astNode),
+    function: (astNode) => this.createRtoFunctionType(astNode),
+    inlineImport: (astNode) => this.createRtoImportedRefFromInline(astNode),
+    interface: (astNode) => this.createRtoInterface(astNode),
+  };
   private globals: Set<string>;
   private namedTypeList: RtoBaseNamedType[] = [];
   private namedTypes = new Map<string, RtoBaseNamedType>();
@@ -253,8 +253,8 @@ export default class RtoModuleFactory {
         typeof astNode.memberName === "string"
           ? astNode.memberName
           : {
-            literal: astNode.memberName.literal,
-          },
+              literal: astNode.memberName.literal,
+            },
     };
   }
 

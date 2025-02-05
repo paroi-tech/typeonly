@@ -11,7 +11,7 @@
     "outDir": "dist",
     "noEmitOnError": true,
     "declaration": true,
-    "declarationDir": "bundle-tsd/declarations"
+    "declarationDir": "scripts/declarations"
   },
   "include": [
     "src"

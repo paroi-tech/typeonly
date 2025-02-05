@@ -47,8 +47,8 @@ import type {
   TupleType,
   Type,
   TypeName,
-} from "../typeonly-loader";
-import type { GetModuleFactory } from "./Project";
+} from "../typeonly-loader.d.ts";
+import type { GetModuleFactory } from "./Project.js";
 
 export default class ModuleFactory {
   readonly module: Module = {
@@ -58,20 +58,20 @@ export default class ModuleFactory {
   private typeCreators: {
     [K in RtoType["kind"]]: (rtoNode: any, obj: object) => Type;
   } = {
-      name: (rtoNode, obj) => this.createTypeName(rtoNode, obj),
-      localRef: (rtoNode, obj) => this.createLocalRefType(rtoNode, obj),
-      importedRef: (rtoNode, obj) => this.createImportedRefType(rtoNode, obj),
-      genericParameterName: (rtoNode, obj) => this.createGenericParameterName(rtoNode, obj),
-      array: (rtoNode, obj) => this.createArrayType(rtoNode, obj),
-      literal: (rtoNode, obj) => this.createLiteralType(rtoNode, obj),
-      composite: (rtoNode, obj) => this.createCompositeType(rtoNode, obj),
-      genericInstance: (rtoNode, obj) => this.createGenericInstance(rtoNode, obj),
-      keyof: (rtoNode, obj) => this.createKeyofType(rtoNode, obj),
-      member: (rtoNode, obj) => this.createMemberType(rtoNode, obj),
-      tuple: (rtoNode, obj) => this.createTupleType(rtoNode, obj),
-      function: (rtoNode, obj) => this.createFunctionType(rtoNode, obj),
-      interface: (rtoNode, obj) => this.createInterface(rtoNode, obj),
-    };
+    name: (rtoNode, obj) => this.createTypeName(rtoNode, obj),
+    localRef: (rtoNode, obj) => this.createLocalRefType(rtoNode, obj),
+    importedRef: (rtoNode, obj) => this.createImportedRefType(rtoNode, obj),
+    genericParameterName: (rtoNode, obj) => this.createGenericParameterName(rtoNode, obj),
+    array: (rtoNode, obj) => this.createArrayType(rtoNode, obj),
+    literal: (rtoNode, obj) => this.createLiteralType(rtoNode, obj),
+    composite: (rtoNode, obj) => this.createCompositeType(rtoNode, obj),
+    genericInstance: (rtoNode, obj) => this.createGenericInstance(rtoNode, obj),
+    keyof: (rtoNode, obj) => this.createKeyofType(rtoNode, obj),
+    member: (rtoNode, obj) => this.createMemberType(rtoNode, obj),
+    tuple: (rtoNode, obj) => this.createTupleType(rtoNode, obj),
+    function: (rtoNode, obj) => this.createFunctionType(rtoNode, obj),
+    interface: (rtoNode, obj) => this.createInterface(rtoNode, obj),
+  };
   private namedTypes = new Map<string, BaseNamedType>();
   private importedNamedMembers = new Map<string, NamedType>();
   private importedNamespaces = new Map<string, ModuleFactory>();
@@ -109,8 +109,8 @@ export default class ModuleFactory {
     return this.module;
   }
 
-  private createImports(): { imports?: Import[]; namespacedImports?: NamespacedImport[]; } {
-    const result: { imports?: Import[]; namespacedImports?: NamespacedImport[]; } = {};
+  private createImports(): { imports?: Import[]; namespacedImports?: NamespacedImport[] } {
+    const result: { imports?: Import[]; namespacedImports?: NamespacedImport[] } = {};
     if (this.rtoModule.namespacedImports) {
       result.namespacedImports = [];
       for (const { from, asNamespace } of this.rtoModule.namespacedImports) {

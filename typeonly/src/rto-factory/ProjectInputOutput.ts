@@ -1,15 +1,11 @@
-import * as fs from "node:fs";
+import { stat } from "node:fs";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import { promisify } from "node:util";
 import type { TypeOnlyAstProvider } from "../api.js";
 import { getExternalModulePath, parseExternalModuleName } from "../helpers/module-path-helpers.js";
 import { parseTypeOnlyToAst } from "../parser/parse-typeonly.js";
 import type { RtoModule, RtoModules } from "../rto.js";
 import type { RtoModuleListener } from "./RtoProject.js";
-
-const readFile = promisify(fs.readFile);
-const writeFile = promisify(fs.writeFile);
-const mkdir = promisify(fs.mkdir);
 
 export interface RtoProjectOutputOptions {
   writeFiles?: WriteRtoFilesOptions;
@@ -86,6 +82,6 @@ export async function ensureDirectory(path: string, { createIntermediate = false
 
 function fsExists(path: string): Promise<boolean> {
   return new Promise<boolean>((resolve) => {
-    fs.stat(path, (error) => resolve(!error));
+    stat(path, (error) => resolve(!error));
   });
 }

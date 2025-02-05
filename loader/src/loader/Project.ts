@@ -1,7 +1,7 @@
-import type { RtoModuleProvider } from "../api";
-import { type RelativeModulePath, toModulePath } from "../helpers/module-path-helpers";
-import type { Modules } from "../typeonly-loader";
-import ModuleFactory from "./ModuleFactory";
+import type { RtoModuleProvider } from "../api.js";
+import { type RelativeModulePath, toModulePath } from "../helpers/module-path-helpers.js";
+import type { Modules } from "../typeonly-loader.d.ts";
+import ModuleFactory from "./ModuleFactory.js";
 
 export type GetModuleFactory = (modulePath: RelativeModulePath) => ModuleFactory;
 

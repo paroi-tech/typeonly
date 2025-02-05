@@ -28,7 +28,7 @@ export interface ValidateResult {
   error?: string;
 }
 
-type InternalResult = { valid: true; unmatch?: undefined; } | InternalInvalidResult;
+type InternalResult = { valid: true; unmatch?: undefined } | InternalInvalidResult;
 
 interface InternalInvalidResult {
   valid: false;
@@ -72,25 +72,25 @@ export default class Validator {
   private typeValidators: {
     [K in Type["kind"]]: (type: any, val: unknown, scope?: Scope) => InternalResult;
   } = {
-      name: (type, val) => this.checkTypeName(type, val),
-      localRef: (type, val, scope) => this.checkLocalTypeRef(type, val, scope),
-      importedRef: (type, val, scope) => this.checkImportedTypeRef(type, val, scope),
-      interface: (type, val, scope) => this.checkInterface(type, val, scope),
-      array: (type, val) => this.checkArrayType(type, val),
-      composite: (type, val, scope) => this.checkCompositeType(type, val, scope),
-      function: (type, val) => this.checkFunctionType(type, val),
-      genericInstance: (type, val) => this.checkGenericInstance(type, val),
-      genericParameterName: (type, val) => this.checkGenericParameterName(type, val),
-      keyof: (type, val) => this.checkKeyofType(type, val),
-      literal: (type, val) => this.checkLiteralType(type, val),
-      member: (type, val) => this.checkMemberType(type, val),
-      tuple: (type, val) => this.checkTupleType(type, val),
-    };
+    name: (type, val) => this.checkTypeName(type, val),
+    localRef: (type, val, scope) => this.checkLocalTypeRef(type, val, scope),
+    importedRef: (type, val, scope) => this.checkImportedTypeRef(type, val, scope),
+    interface: (type, val, scope) => this.checkInterface(type, val, scope),
+    array: (type, val) => this.checkArrayType(type, val),
+    composite: (type, val, scope) => this.checkCompositeType(type, val, scope),
+    function: (type, val) => this.checkFunctionType(type, val),
+    genericInstance: (type, val) => this.checkGenericInstance(type, val),
+    genericParameterName: (type, val) => this.checkGenericParameterName(type, val),
+    keyof: (type, val) => this.checkKeyofType(type, val),
+    literal: (type, val) => this.checkLiteralType(type, val),
+    member: (type, val) => this.checkMemberType(type, val),
+    tuple: (type, val) => this.checkTupleType(type, val),
+  };
 
   constructor(
     private modules: Modules,
     private options: ValidatorOptions = {},
-  ) { }
+  ) {}
 
   validate(moduleName: string, typeName: string, val: unknown): ValidateResult {
     const module = this.modules[moduleName];
@@ -396,7 +396,7 @@ export default class Validator {
         itemType,
         val,
         () => "intersection type",
-        (context?.scope) || scope,
+        context?.scope || scope,
       );
       if (!result.valid && (!context || !context.interfaceScope.firstInvalid)) {
         const score = result.unmatchs[result.unmatchs.length - 1].score;

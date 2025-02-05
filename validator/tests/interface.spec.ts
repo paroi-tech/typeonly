@@ -1,4 +1,5 @@
 import { createStandaloneRtoModule, parseTypeOnly } from "typeonly";
+import { describe, expect, test } from "vitest";
 import { createValidator } from "../src/api.js";
 
 describe("Validate Interface", () => {

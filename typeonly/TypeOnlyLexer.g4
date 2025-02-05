@@ -42,7 +42,7 @@ BINARY_INTEGER_LITERAL: '0' [bB] [01]+;
 STRING_LITERAL:
   '"' DOUBLE_STRING_CHARACTER* '"'
   | '\'' SINGLE_STRING_CHARACTER* '\'';
-TEMPLATE_STRING_LITERAL: '`' ('\\`' | ~'`')* '`';
+// TEMPLATE_STRING_LITERAL: '`' ('\\`' | ~'`')* '`';
 
 /*
  * Reserved Keywords

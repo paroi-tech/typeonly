@@ -67,8 +67,7 @@ export default class AstExtractor extends TypeOnlyParserListener {
     const classicImport: AstClassicImport = {
       whichDeclaration: "import",
       whichImport: "classic",
-      // biome-ignore lint/security/noGlobalEval: string literal is safe here
-      from: eval(ctx.STRING_LITERAL().getText()),
+      from: parseStringLiteral(ctx.STRING_LITERAL().getText()),
     };
     if (ctx.namedImportContent().namedMember()) {
       const namedMembers = ctx.namedImportContent().namedMember();
@@ -92,8 +91,7 @@ export default class AstExtractor extends TypeOnlyParserListener {
     const namespacedImport: AstNamespacedImport = {
       whichDeclaration: "import",
       whichImport: "namespaced",
-      // biome-ignore lint/security/noGlobalEval: string literal is safe here
-      from: eval(ctx.STRING_LITERAL().getText()),
+      from: parseStringLiteral(ctx.STRING_LITERAL().getText()),
       asNamespace: ctx.IDENTIFIER().getText(),
     };
 
@@ -295,10 +293,9 @@ export default class AstExtractor extends TypeOnlyParserListener {
   enterLiteral(ctx: AntlrRuleContext) {
     const literal: AstLiteralType = {
       whichType: "literal",
-      // biome-ignore lint/security/noGlobalEval: template literal is NOT safe
-      literal: eval(ctx.getText()),
+      literal: parseLiteral(ctx.getText()),
     };
-    const firstChar = ctx.getText()[0];
+    const firstChar = ctx.getText().charAt(0);
     if (isStringDelim(firstChar)) {
       literal.stringDelim = firstChar;
     }
@@ -390,8 +387,7 @@ export default class AstExtractor extends TypeOnlyParserListener {
       memberType.memberName = ctx.memberName().IDENTIFIER().getText();
     } else {
       const memberNameLiteral: AstMemberNameLiteral = {
-        // biome-ignore lint/security/noGlobalEval: non-identifier means a literal, it is safe here
-        literal: eval(ctx.memberName().getText()),
+        literal: parseStringOrNumberLiteral(ctx.memberName().getText()),
       };
       const firstChar = ctx.memberName().getText()[0];
       if (isStringDelim(firstChar)) memberNameLiteral.stringDelim = firstChar;
@@ -526,8 +522,7 @@ export default class AstExtractor extends TypeOnlyParserListener {
   enterInlineImportType(ctx: AntlrRuleContext) {
     const inlineImportType: AstInlineImportType = {
       whichType: "inlineImport",
-      // biome-ignore lint/security/noGlobalEval: template literal is NOT safe here
-      from: eval(ctx.stringLiteral().getText()),
+      from: parseStringLiteral(ctx.stringLiteral().getText()),
       exportedName: ctx.IDENTIFIER().getText(),
     };
 
@@ -633,12 +628,41 @@ export default class AstExtractor extends TypeOnlyParserListener {
   }
 }
 
-function isStringDelim(char: string): char is "'" | '"' | "`" {
-  return ["'", '"', "`"].includes(char);
+function isStringDelim(char: string): char is "'" | '"' {
+  return ["'", '"'].includes(char);
 }
 
 function isThere(val: any) {
   if (val === null || val === undefined) return false;
   if (Array.isArray(val) && val.length === 0) return false;
   return true;
+}
+
+function parseStringLiteral(str: string) {
+  if (str.length < 2) throw new Error("Invalid string literal");
+  const delim = str.charAt(0);
+  const lastChar = str.charAt(str.length - 1);
+  if (!isStringDelim(delim) || lastChar !== delim) throw new Error("Invalid string literal");
+  return str.substring(1, str.length - 1).replaceAll(`\\${delim}`, delim);
+}
+
+function parseNumberLiteral(str: string): number {
+  if (str.startsWith("0x")) return Number.parseInt(str, 16);
+  if (str.startsWith("0b")) return Number.parseInt(str, 2);
+  if (str.startsWith("0o")) return Number.parseInt(str, 8);
+  if (str.includes(".")) return Number.parseFloat(str);
+  return Number.parseInt(str, 10);
+}
+
+
+function parseStringOrNumberLiteral(str: string): string | number {
+  if (isStringDelim(str.charAt(0))) return parseStringLiteral(str);
+  return parseNumberLiteral(str);
+}
+
+function parseLiteral(str: string): string | number | boolean | bigint {
+  if (str === "true" || str === "false") return str === "true";
+  if (str.endsWith("n")) return BigInt(str.substring(0, str.length - 1));
+  if (isStringDelim(str.charAt(0))) return parseStringLiteral(str);
+  return parseNumberLiteral(str);
 }

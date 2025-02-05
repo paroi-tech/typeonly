@@ -22,19 +22,19 @@ export default class InlineImportScanner {
   private typeScans: {
     [K in Exclude<AstType, string>["whichType"]]: (astNode: any) => void;
   } = {
-      inlineImport: (astNode) => this.registerInlineImport(astNode),
-      literal: () => { },
-      array: (astNode) => this.scanArrayType(astNode),
-      tuple: (astNode) => this.scanTupleType(astNode),
-      keyof: (astNode) => this.scanKeyofType(astNode),
-      member: (astNode) => this.scanMemberType(astNode),
-      composite: (astNode) => this.scanCompositeType(astNode),
-      genericInstance: (astNode) => this.scanGenericInstance(astNode),
-      function: (astNode) => this.scanFunctionType(astNode),
-      interface: (astNode) => this.scanInterface(astNode),
-    };
+    inlineImport: (astNode) => this.registerInlineImport(astNode),
+    literal: () => {},
+    array: (astNode) => this.scanArrayType(astNode),
+    tuple: (astNode) => this.scanTupleType(astNode),
+    keyof: (astNode) => this.scanKeyofType(astNode),
+    member: (astNode) => this.scanMemberType(astNode),
+    composite: (astNode) => this.scanCompositeType(astNode),
+    genericInstance: (astNode) => this.scanGenericInstance(astNode),
+    function: (astNode) => this.scanFunctionType(astNode),
+    interface: (astNode) => this.scanInterface(astNode),
+  };
 
-  constructor(private importTool: AstImportTool) { }
+  constructor(private importTool: AstImportTool) {}
 
   scan(astNode: AstType): void {
     if (typeof astNode === "string") return;

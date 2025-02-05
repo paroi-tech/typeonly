@@ -1,11 +1,7 @@
-import * as fs from "fs";
-import { join } from "path";
-import { promisify } from "util";
-import Project from "./loader/Project";
-import type { Modules, Type } from "./typeonly-loader";
-
-const readdir = promisify(fs.readdir);
-const readFile = promisify(fs.readFile);
+import { readFile, readdir } from "node:fs/promises";
+import { join } from "node:path";
+import Project from "./loader/Project.js";
+import type { Modules, Type } from "./typeonly-loader.d.ts";
 
 export type ReadModulesOptions = SyncReadModulesOptions | AsyncReadModulesOptions;
 
@@ -39,13 +35,13 @@ export function loadModules(options: SyncReadModulesOptions): Modules;
 export function loadModules(options: AsyncReadModulesOptions): Promise<Modules>;
 export function loadModules(options: ReadModulesOptions): any {
   if (isSyncReadModulesOptions(options)) return loadModulesSync(options);
-  else return loadModulesAsync(options);
+  return loadModulesAsync(options);
 }
 
 export function isSyncReadModulesOptions(
   options: ReadModulesOptions,
 ): options is SyncReadModulesOptions {
-  return !!(options as any)["bundle"];
+  return !!(options as any).bundle;
 }
 
 function loadModulesSync(options: SyncReadModulesOptions): Modules {

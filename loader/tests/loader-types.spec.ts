@@ -1,4 +1,5 @@
 import { createStandaloneRtoModule, parseTypeOnly } from "typeonly";
+import { describe, expect, test } from "vitest";
 import { loadModules } from "../src/api.js";
 import type {
   ArrayType,
@@ -13,7 +14,7 @@ import type {
   MemberType,
   TupleType,
   TypeName,
-} from "../src/typeonly-loader";
+} from "../src/typeonly-loader.d.ts";
 
 describe("Loader Specification for Types", () => {
   test("TypeName", async () => {
@@ -30,7 +31,7 @@ describe("Loader Specification for Types", () => {
     const sources: any[] = [];
     for (const ts of rtoSpecialTypeName) {
       sources.push({
-        input: "export type T1 = " + ts,
+        input: `export type T1 = ${ts}`,
         output: {
           name: "T1",
           exported: true,
@@ -42,7 +43,7 @@ describe("Loader Specification for Types", () => {
     }
     for (const primitive of rtoPrimitiveTypeName) {
       sources.push({
-        input: "export type T1 = " + primitive,
+        input: `export type T1 = ${primitive}`,
         output: {
           name: "T1",
           exported: true,
@@ -57,16 +58,17 @@ describe("Loader Specification for Types", () => {
         modulePaths: ["./mod1"],
         rtoModuleProvider: async () =>
           createStandaloneRtoModule({
-            ast: parseTypeOnly({ source: source["input"] }),
+            ast: parseTypeOnly({ source: source.input }),
           }),
       });
 
       expect(modules["./mod1"]).toBeDefined();
-      expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-      expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-      const namedType = modules["./mod1"]["namedTypes"]["T1"] as TypeName & BaseNamedType;
-      delete (namedType as any)["module"];
-      expect(namedType).toEqual(source["output"]);
+      expect(modules["./mod1"].namedTypes).toBeDefined();
+      expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+      const namedType = modules["./mod1"].namedTypes.T1 as TypeName & BaseNamedType;
+      // biome-ignore lint/performance/noDelete: easier for testing
+      delete (namedType as any).module;
+      expect(namedType).toEqual(source.output);
     }
   });
 
@@ -84,9 +86,9 @@ describe("Loader Specification for Types", () => {
     });
 
     expect(modules["./mod1"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-    const namedType = modules["./mod1"]["namedTypes"]["T1"] as ArrayType & BaseNamedType;
+    expect(modules["./mod1"].namedTypes).toBeDefined();
+    expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+    const namedType = modules["./mod1"].namedTypes.T1 as ArrayType & BaseNamedType;
     expect(namedType.name).toBe("T1");
     expect(namedType.exported).toBe(true);
     expect(namedType.kind).toBe("array");
@@ -112,9 +114,9 @@ describe("Loader Specification for Types", () => {
     });
 
     expect(modules["./mod1"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-    const namedType = modules["./mod1"]["namedTypes"]["T1"] as LocalTypeRef & BaseNamedType;
+    expect(modules["./mod1"].namedTypes).toBeDefined();
+    expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+    const namedType = modules["./mod1"].namedTypes.T1 as LocalTypeRef & BaseNamedType;
     expect(namedType.name).toBe("T1");
     expect(namedType.exported).toBe(true);
     expect(namedType.module).toBeDefined();
@@ -122,6 +124,7 @@ describe("Loader Specification for Types", () => {
     expect(namedType.kind).toBe("localRef");
     expect(namedType.refName).toBe("B");
     expect(namedType.ref.module).toBeDefined();
+    // biome-ignore lint/performance/noDelete: easier for testing
     delete (namedType.ref as any).module;
     expect(namedType.ref).toEqual({
       name: "B",
@@ -146,10 +149,11 @@ describe("Loader Specification for Types", () => {
     });
 
     expect(modules["./mod1"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-    const namedType = modules["./mod1"]["namedTypes"]["T1"] as LiteralType & BaseNamedType;
+    expect(modules["./mod1"].namedTypes).toBeDefined();
+    expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+    const namedType = modules["./mod1"].namedTypes.T1 as LiteralType & BaseNamedType;
 
+    // biome-ignore lint/performance/noDelete: easier for testing
     delete (namedType as any).module;
     expect(namedType).toEqual({
       name: "T1",
@@ -172,9 +176,9 @@ describe("Loader Specification for Types", () => {
     });
 
     expect(modules["./mod1"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-    const namedType = modules["./mod1"]["namedTypes"]["T1"] as CompositeType & BaseNamedType;
+    expect(modules["./mod1"].namedTypes).toBeDefined();
+    expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+    const namedType = modules["./mod1"].namedTypes.T1 as CompositeType & BaseNamedType;
 
     expect(namedType.docComment).toBeUndefined();
     expect(namedType.exported).toBe(true);
@@ -206,9 +210,9 @@ describe("Loader Specification for Types", () => {
     });
 
     expect(modules["./mod1"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-    const namedType = modules["./mod1"]["namedTypes"]["T1"] as TupleType & BaseNamedType;
+    expect(modules["./mod1"].namedTypes).toBeDefined();
+    expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+    const namedType = modules["./mod1"].namedTypes.T1 as TupleType & BaseNamedType;
 
     expect(namedType.docComment).toBeUndefined();
     expect(namedType.exported).toBe(true);
@@ -242,9 +246,9 @@ describe("Loader Specification for Types", () => {
     });
 
     expect(modules["./mod1"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-    const namedType = modules["./mod1"]["namedTypes"]["T1"] as KeyofType & BaseNamedType;
+    expect(modules["./mod1"].namedTypes).toBeDefined();
+    expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+    const namedType = modules["./mod1"].namedTypes.T1 as KeyofType & BaseNamedType;
 
     expect(namedType.docComment).toBeUndefined();
     expect(namedType.exported).toBe(true);
@@ -285,9 +289,9 @@ describe("Loader Specification for Types", () => {
     });
 
     expect(modules["./mod1"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-    const namedType = modules["./mod1"]["namedTypes"]["T1"] as MemberType & BaseNamedType;
+    expect(modules["./mod1"].namedTypes).toBeDefined();
+    expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+    const namedType = modules["./mod1"].namedTypes.T1 as MemberType & BaseNamedType;
 
     expect(namedType.docComment).toBeUndefined();
     expect(namedType.exported).toBe(true);
@@ -338,9 +342,9 @@ describe("Loader Specification for Types", () => {
     });
 
     expect(modules["./mod1"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-    const namedType = modules["./mod1"]["namedTypes"]["T1"] as MemberType & BaseNamedType;
+    expect(modules["./mod1"].namedTypes).toBeDefined();
+    expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+    const namedType = modules["./mod1"].namedTypes.T1 as MemberType & BaseNamedType;
 
     expect(namedType.docComment).toBeUndefined();
     expect(namedType.exported).toBe(true);
@@ -391,9 +395,9 @@ describe("Loader Specification for Types", () => {
     });
 
     expect(modules["./mod1"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-    const namedType = modules["./mod1"]["namedTypes"]["T1"] as Interface & BaseNamedType;
+    expect(modules["./mod1"].namedTypes).toBeDefined();
+    expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+    const namedType = modules["./mod1"].namedTypes.T1 as Interface & BaseNamedType;
 
     expect(namedType.docComment).toBeUndefined();
     expect(namedType.exported).toBe(true);
@@ -434,9 +438,9 @@ describe("Loader Specification for Types", () => {
     });
 
     expect(modules["./mod1"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-    const namedType = modules["./mod1"]["namedTypes"]["T1"] as Interface & BaseNamedType;
+    expect(modules["./mod1"].namedTypes).toBeDefined();
+    expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+    const namedType = modules["./mod1"].namedTypes.T1 as Interface & BaseNamedType;
 
     expect(namedType.docComment).toBeUndefined();
     expect(namedType.exported).toBe(true);
@@ -479,9 +483,9 @@ describe("Loader Specification for Types", () => {
     });
 
     expect(modules["./mod1"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-    const namedType = modules["./mod1"]["namedTypes"]["T1"] as Interface & BaseNamedType;
+    expect(modules["./mod1"].namedTypes).toBeDefined();
+    expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+    const namedType = modules["./mod1"].namedTypes.T1 as Interface & BaseNamedType;
 
     expect(namedType.docComment).toBeUndefined();
     expect(namedType.exported).toBe(true);
@@ -491,15 +495,15 @@ describe("Loader Specification for Types", () => {
     expect(namedType.indexSignature).toBeUndefined();
     expect(namedType.properties).toBeUndefined();
     expect(namedType.mappedIndexSignature).toBeDefined();
-    expect(namedType.mappedIndexSignature!.keyName).toBe("A");
-    expect(namedType.mappedIndexSignature!.type).toEqual({
+    expect(namedType.mappedIndexSignature?.keyName).toBe("A");
+    expect(namedType.mappedIndexSignature?.type).toEqual({
       kind: "name",
       group: "primitive",
       refName: "boolean",
     });
-    expect(namedType.mappedIndexSignature!.optional).toBe(false);
-    expect(namedType.mappedIndexSignature!.readonly).toBe(false);
-    const localRef = namedType.mappedIndexSignature!.keyInType! as LocalTypeRef;
+    expect(namedType.mappedIndexSignature?.optional).toBe(false);
+    expect(namedType.mappedIndexSignature?.readonly).toBe(false);
+    const localRef = namedType.mappedIndexSignature?.keyInType as LocalTypeRef;
     expect(localRef.kind).toBe("localRef");
     expect(localRef.refName).toBe("B");
     const tuple = localRef.ref as TupleType & BaseNamedType;
@@ -531,9 +535,9 @@ describe("Loader Specification for Types", () => {
     });
 
     expect(modules["./mod1"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-    const namedType = modules["./mod1"]["namedTypes"]["T1"] as FunctionType & BaseNamedType;
+    expect(modules["./mod1"].namedTypes).toBeDefined();
+    expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+    const namedType = modules["./mod1"].namedTypes.T1 as FunctionType & BaseNamedType;
 
     expect(namedType.docComment).toBeUndefined();
     expect(namedType.exported).toBe(true);
@@ -575,9 +579,9 @@ describe("Loader Specification for Types", () => {
     });
 
     expect(modules["./mod1"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-    const namedType = modules["./mod1"]["namedTypes"]["T1"] as GenericInstance & BaseNamedType;
+    expect(modules["./mod1"].namedTypes).toBeDefined();
+    expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+    const namedType = modules["./mod1"].namedTypes.T1 as GenericInstance & BaseNamedType;
 
     expect(namedType.docComment).toBeUndefined();
     expect(namedType.exported).toBe(true);
@@ -607,9 +611,9 @@ describe("Loader Specification for Types", () => {
     });
 
     expect(modules["./mod1"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]).toBeDefined();
-    expect(modules["./mod1"]["namedTypes"]["T1"]).toBeDefined();
-    const namedType = modules["./mod1"]["namedTypes"]["T1"] as ArrayType & BaseNamedType;
+    expect(modules["./mod1"].namedTypes).toBeDefined();
+    expect(modules["./mod1"].namedTypes.T1).toBeDefined();
+    const namedType = modules["./mod1"].namedTypes.T1 as ArrayType & BaseNamedType;
 
     expect(namedType.docComment).toBeUndefined();
     expect(namedType.exported).toBe(true);

@@ -5,10 +5,10 @@
   "author": "Paroi",
   "scripts": {
     "prepublishOnly": "npm run build && npm run test",
-    "clear": "rimraf dist/* bundle-tsd/declarations/*",
+    "clear": "rimraf dist/* scripts/declarations/*",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
-    "bundle-tsd": "node bundle-tsd/bundle-tsd",
+    "bundle-tsd": "node scripts/bundle-tsd",
     "build": "npm run clear && npm run tsc && npm run bundle-tsd",
     "lint": "biome check . --json-formatter-enabled=false --organize-imports-enabled=false",
     "test:watch": "vitest",

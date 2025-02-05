@@ -1,9 +1,9 @@
 import { loadModules } from "@typeonly/loader";
 import { createStandaloneRtoModule, parseTypeOnly } from "typeonly";
+import { describe, expect, test } from "vitest";
 import { createValidator, createValidatorFromModules } from "../src/api.js";
 
 describe("Validate Types", () => {
-
   test("TypeName", async () => {
     const source = `
     export type A = B
@@ -11,9 +11,10 @@ describe("Validate Types", () => {
 `;
     const modules = await loadModules({
       modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      rtoModuleProvider: async () =>
+        createStandaloneRtoModule({
+          ast: parseTypeOnly({ source }),
+        }),
     });
     const validator = createValidatorFromModules(modules);
 
@@ -23,16 +24,16 @@ describe("Validate Types", () => {
     expect(response.error).not.toBeUndefined();
   });
 
-
   test("ArrayType", async () => {
     const source = `
       export type A = number[]
     `;
     const validator = await createValidator({
       modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      rtoModuleProvider: async () =>
+        createStandaloneRtoModule({
+          ast: parseTypeOnly({ source }),
+        }),
     });
 
     const result = validator.validate("A", [12, "90"], "./mod1");
@@ -41,16 +42,16 @@ describe("Validate Types", () => {
     expect(result.error).toBeDefined();
   });
 
-
   test("TupleType", async () => {
     const source = `
       export type A = [number, string]
     `;
     const validator = await createValidator({
       modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      rtoModuleProvider: async () =>
+        createStandaloneRtoModule({
+          ast: parseTypeOnly({ source }),
+        }),
     });
 
     const result = validator.validate("A", [12, "90", 23], "./mod1");
@@ -70,9 +71,10 @@ describe("Validate Types", () => {
 
     const validator = await createValidator({
       modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      rtoModuleProvider: async () =>
+        createStandaloneRtoModule({
+          ast: parseTypeOnly({ source }),
+        }),
     });
 
     const result = validator.validate("A", 12, "./mod1");
@@ -91,9 +93,10 @@ describe("Validate Types", () => {
 
     const validator = await createValidator({
       modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      rtoModuleProvider: async () =>
+        createStandaloneRtoModule({
+          ast: parseTypeOnly({ source }),
+        }),
     });
 
     const result = validator.validate("A", "sdds", "./mod1");
@@ -102,7 +105,6 @@ describe("Validate Types", () => {
     expect(result.error).toBeUndefined();
   });
 
-
   test("FunctionType", async () => {
     const source = `
       export type A = () => number
@@ -110,9 +112,10 @@ describe("Validate Types", () => {
 
     const validator = await createValidator({
       modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      rtoModuleProvider: async () =>
+        createStandaloneRtoModule({
+          ast: parseTypeOnly({ source }),
+        }),
     });
 
     const result = validator.validate("A", () => "12", "./mod1");
@@ -128,9 +131,10 @@ describe("Validate Types", () => {
 
     const validator = await createValidator({
       modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      rtoModuleProvider: async () =>
+        createStandaloneRtoModule({
+          ast: parseTypeOnly({ source }),
+        }),
     });
 
     const result = validator.validate("A", 12, "./mod1");
@@ -146,16 +150,16 @@ describe("Validate Types", () => {
 
     const validator = await createValidator({
       modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      rtoModuleProvider: async () =>
+        createStandaloneRtoModule({
+          ast: parseTypeOnly({ source }),
+        }),
     });
 
     const result = validator.validate("A", null, "./mod1");
     expect(result.valid).toBe(true);
     expect(result.error).toBeUndefined();
   });
-
 
   test("LiteralType", async () => {
     const source = `
@@ -164,9 +168,10 @@ describe("Validate Types", () => {
 
     const validator = await createValidator({
       modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      rtoModuleProvider: async () =>
+        createStandaloneRtoModule({
+          ast: parseTypeOnly({ source }),
+        }),
     });
 
     const result = validator.validate("A", "ff", "./mod1");
@@ -174,7 +179,6 @@ describe("Validate Types", () => {
     expect(result.valid).toBe(true);
     expect(result.error).toBeUndefined();
   });
-
 
   test("LocalTypeRef", async () => {
     const source = `
@@ -184,9 +188,10 @@ describe("Validate Types", () => {
 
     const validator = await createValidator({
       modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      rtoModuleProvider: async () =>
+        createStandaloneRtoModule({
+          ast: parseTypeOnly({ source }),
+        }),
     });
 
     const result = validator.validate("A", 12, "./mod1");
@@ -195,7 +200,6 @@ describe("Validate Types", () => {
     expect(result.error).toBeUndefined();
   });
 
-
   test("Use default module name", async () => {
     const source = `
     export type A = B
@@ -203,9 +207,10 @@ describe("Validate Types", () => {
 `;
     const modules = await loadModules({
       modulePaths: ["./mod1"],
-      rtoModuleProvider: async () => createStandaloneRtoModule({
-        ast: parseTypeOnly({ source })
-      })
+      rtoModuleProvider: async () =>
+        createStandaloneRtoModule({
+          ast: parseTypeOnly({ source }),
+        }),
     });
     const validator = createValidatorFromModules(modules);
 
@@ -214,7 +219,6 @@ describe("Validate Types", () => {
     expect(response.valid).toBe(false);
     expect(response.error).not.toBeUndefined();
   });
-
 
   // test("GenericInstance", async () => {
   //   const source = `
@@ -238,6 +242,4 @@ describe("Validate Types", () => {
   //   expect(result.valid).toBe(true)
   //   expect(result.error).toBeUndefined()
   // })
-
-
 });
