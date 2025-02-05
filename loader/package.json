@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/loader",
-  "version": "0.5.4",
+  "version": "1.0.0",
   "description": "Brings types and interfaces from TypeScript at runtime.",
   "author": "Paroi",
   "scripts": {
@@ -17,7 +17,7 @@
   "devDependencies": {
     "@types/node": "22",
     "rimraf": "^6.0.1",
-    "typeonly": "^0.4.5",
+    "typeonly": "^1.0.0",
     "typescript": "^5.7.3",
     "vitest": "^3.0.5"
   },
@@ -30,5 +30,10 @@
   },
   "homepage": "https://github.com/paroi-tech/typeonly/tree/master/loader",
   "license": "CC0-1.0",
-  "keywords": ["typescript", "type", "interface", "runtime"]
+  "keywords": [
+    "typescript",
+    "type",
+    "interface",
+    "runtime"
+  ]
 }

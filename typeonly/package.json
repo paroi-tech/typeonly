@@ -1,6 +1,6 @@
 {
   "name": "typeonly",
-  "version": "0.4.6",
+  "version": "1.0.0",
   "description": "Parses types and interfaces from TypeScript and stores them as JSON files.",
   "author": "Paroi",
   "scripts": {
@@ -38,5 +38,10 @@
   },
   "homepage": "https://github.com/paroi-tech/typeonly/tree/master/typeonly",
   "license": "CC0-1.0",
-  "keywords": ["typescript", "type", "interface", "runtime"]
+  "keywords": [
+    "typescript",
+    "type",
+    "interface",
+    "runtime"
+  ]
 }

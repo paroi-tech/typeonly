@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/validator",
-  "version": "0.5.3",
+  "version": "1.0.0",
   "description": "An API to validate JSON data or JavaScript objects, using TypeScript typing definitions.",
   "author": "Paroi",
   "scripts": {
@@ -15,12 +15,12 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@typeonly/loader": "^0.5.4"
+    "@typeonly/loader": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "22",
     "rimraf": "^6.0.1",
-    "typeonly": "^0.4.5",
+    "typeonly": "^1.0.0",
     "typescript": "^5.7.3",
     "vitest": "^3.0.5"
   },
@@ -33,5 +33,9 @@
   },
   "homepage": "https://github.com/paroi-tech/typeonly/tree/master/validator",
   "license": "CC0-1.0",
-  "keywords": ["typescript", "json", "validation"]
+  "keywords": [
+    "typescript",
+    "json",
+    "validation"
+  ]
 }
