@@ -97,4 +97,4 @@ Available options:
 
 With VS Code, our recommanded plugin is:
 
-- **TSLint** from Microsoft (`ms-vscode.vscode-typescript-tslint-plugin`)
+- **Biome** from biomejs (biomejs.dev)

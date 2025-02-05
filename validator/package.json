@@ -5,28 +5,26 @@
   "author": "Paroi",
   "scripts": {
     "prepublishOnly": "npm run build && npm run test",
-    "clear": "rimraf 'dist/*' 'bundle-tsd/declarations/*'",
+    "clear": "rimraf dist/* bundle-tsd/declarations/*",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
     "bundle-tsd": "node bundle-tsd/bundle-tsd",
     "build": "npm run clear && npm run tsc && npm run bundle-tsd",
-    "lint": "tslint -p tsconfig.json -t verbose",
-    "test:watch": "jest --watch",
-    "test": "jest"
+    "lint": "biome check . --json-formatter-enabled=false --organize-imports-enabled=false",
+    "test:watch": "vitest",
+    "test": "vitest run"
   },
   "dependencies": {
     "@typeonly/loader": "^0.5.4"
   },
   "devDependencies": {
-    "@types/jest": "^27.4.1",
-    "@types/node": "16",
-    "jest": "^27.5.1",
-    "rimraf": "^3.0.2",
-    "ts-jest": "^27.1.4",
-    "tslint": "^6.1.2",
+    "@types/node": "22",
+    "rimraf": "^6.0.1",
     "typeonly": "^0.4.5",
-    "typescript": "^4.6.3"
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5"
   },
+  "type": "module",
   "main": "dist/api.js",
   "types": "dist/validator.d.ts",
   "repository": {

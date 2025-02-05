@@ -21,7 +21,8 @@ Create a file `src/validate-main.js` with the following content:
 
 ```ts
 // src/validate-main.js
-const { createValidator } = require("@typeonly/validator");
+import { readFileSync } from "node:fs"
+import { createValidator } from "@typeonly/validator";
 
 const data = {
   color: "green",
@@ -34,7 +35,7 @@ const data = {
 };
 
 const validator = createValidator({
-  bundle: require("./types.to.json")
+  bundle: JSON.parse(readFileSync(`./types.to.json`));
 });
 const result = validator.validate("./drawing", "Drawing", data);
 console.log(result);
@@ -53,4 +54,4 @@ $ node src/validate-main.js
 
 With VS Code, our recommanded plugin is:
 
-- **TSLint** from Microsoft (`ms-vscode.vscode-typescript-tslint-plugin`)
+- **Biome** from biomejs (biomejs.dev)

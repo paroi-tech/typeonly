@@ -1,124 +1,122 @@
-import { AstImport, AstInlineImportType } from "../ast"
-import { RtoImport, RtoNamespacedImport } from "../rto"
-import { RtoModuleLoader } from "./internal-types"
-import RtoModuleFactory from "./RtoModuleFactory"
+import type { AstImport, AstInlineImportType } from "../ast.d.ts";
+import type { RtoImport, RtoNamespacedImport } from "../rto.d.ts";
+import type RtoModuleFactory from "./RtoModuleFactory.js";
+import type { RtoModuleLoader } from "./internal-types.js";
 
 export interface ImportRef {
-  refName: string
-  namespace?: string
+  refName: string;
+  namespace?: string;
 }
 
 interface ImportedFromModule {
-  namedMembers: Array<{ name: string, as?: string }>
-  namespaces: string[]
-  inlineMembers: Set<string>
+  namedMembers: Array<{ name: string; as?: string; }>;
+  namespaces: string[];
+  inlineMembers: Set<string>;
 }
 
 export default class AstImportTool {
-  private fromModules = new Map<string, ImportedFromModule>()
-  private importedIdentifiers = new Set<string>()
-  private importedNamespaces = new Set<string>()
+  private fromModules = new Map<string, ImportedFromModule>();
+  private importedIdentifiers = new Set<string>();
+  private importedNamespaces = new Set<string>();
 
-  constructor(readonly path: string, private moduleLoader: RtoModuleLoader) {
-  }
+  constructor(
+    readonly path: string,
+    private moduleLoader: RtoModuleLoader,
+  ) { }
 
   addImport(astNode: AstImport) {
-    const ifm = this.getImportedFromModule(astNode.from)
-    if (astNode.whichImport === "namespaced")
-      this.addNamespacedImport(astNode.asNamespace, ifm)
+    const ifm = this.getImportedFromModule(astNode.from);
+    if (astNode.whichImport === "namespaced") this.addNamespacedImport(astNode.asNamespace, ifm);
     else {
       if (astNode.namedMembers) {
-        for (const member of astNode.namedMembers)
-          this.addNamedImport({ ...member }, ifm)
+        for (const member of astNode.namedMembers) this.addNamedImport({ ...member }, ifm);
       }
     }
   }
 
   addInlineImport(astNode: AstInlineImportType) {
-    const ifm = this.getImportedFromModule(astNode.from)
-    ifm.inlineMembers.add(astNode.exportedName)
+    const ifm = this.getImportedFromModule(astNode.from);
+    ifm.inlineMembers.add(astNode.exportedName);
   }
 
   async load() {
     for (const [from, ifm] of this.fromModules.entries()) {
-      const factory = await this.moduleLoader({ from, relativeToModule: this.path })
-      this.checkExportedNames(ifm, factory)
+      const factory = await this.moduleLoader({ from, relativeToModule: this.path });
+      this.checkExportedNames(ifm, factory);
     }
   }
 
-  createRtoImports(): { imports?: RtoImport[], namespacedImports?: RtoNamespacedImport[] } {
-    const imports: RtoImport[] = []
-    const namespacedImports: RtoNamespacedImport[] = []
+  createRtoImports(): { imports?: RtoImport[]; namespacedImports?: RtoNamespacedImport[]; } {
+    const imports: RtoImport[] = [];
+    const namespacedImports: RtoNamespacedImport[] = [];
     for (const [from, ifm] of this.fromModules.entries()) {
-      const { namedMembers, namespaces } = ifm
+      const { namedMembers, namespaces } = ifm;
       if (namedMembers.length > 0) {
         imports.push({
           from,
-          namedMembers
-        })
+          namedMembers,
+        });
       }
-      namespaces.forEach(asNamespace => namespacedImports.push({ from, asNamespace }))
+      namespaces.forEach((asNamespace) => namespacedImports.push({ from, asNamespace }));
     }
-    const result: { imports?: RtoImport[], namespacedImports?: RtoNamespacedImport[] } = {}
-    if (imports.length > 0)
-      result.imports = imports
-    if (namespacedImports.length > 0)
-      result.namespacedImports = namespacedImports
-    return result
+    const result: { imports?: RtoImport[]; namespacedImports?: RtoNamespacedImport[]; } = {};
+    if (imports.length > 0) result.imports = imports;
+    if (namespacedImports.length > 0) result.namespacedImports = namespacedImports;
+    return result;
   }
 
   findImportedMember(fullName: string): ImportRef | undefined {
-    const dotIndex = fullName.indexOf(".")
+    const dotIndex = fullName.indexOf(".");
     if (dotIndex !== -1) {
-      const refName = fullName.slice(0, dotIndex)
-      const namespace = fullName.slice(dotIndex + 1)
+      const refName = fullName.slice(0, dotIndex);
+      const namespace = fullName.slice(dotIndex + 1);
       if (!this.importedNamespaces.has(namespace))
-        throw new Error(`Unknown namespace: ${namespace}`)
-      return { refName, namespace }
+        throw new Error(`Unknown namespace: ${namespace}`);
+      return { refName, namespace };
     }
-    return this.importedIdentifiers.has(fullName) ? { refName: fullName } : undefined
+    return this.importedIdentifiers.has(fullName) ? { refName: fullName } : undefined;
   }
 
   inlineImport({ exportedName }: AstInlineImportType): ImportRef {
-    return { refName: exportedName }
+    return { refName: exportedName };
   }
 
   private addNamespacedImport(asNamespace: string, ifm: ImportedFromModule) {
     if (this.importedNamespaces.has(asNamespace) || this.importedIdentifiers.has(asNamespace))
-      throw new Error(`Duplicate identifier '${asNamespace}'`)
-    this.importedNamespaces.add(asNamespace)
-    ifm.namespaces.push(asNamespace)
+      throw new Error(`Duplicate identifier '${asNamespace}'`);
+    this.importedNamespaces.add(asNamespace);
+    ifm.namespaces.push(asNamespace);
   }
 
-  private addNamedImport(member: { name: string, as?: string }, ifm: ImportedFromModule) {
-    const name = member.as || member.name
+  private addNamedImport(member: { name: string; as?: string; }, ifm: ImportedFromModule) {
+    const name = member.as || member.name;
     if (this.importedNamespaces.has(name) || this.importedIdentifiers.has(name))
-      throw new Error(`Duplicate identifier '${name}'`)
-    this.importedIdentifiers.add(name)
-    ifm.namedMembers.push({ ...member })
+      throw new Error(`Duplicate identifier '${name}'`);
+    this.importedIdentifiers.add(name);
+    ifm.namedMembers.push({ ...member });
   }
 
   private getImportedFromModule(from: string): ImportedFromModule {
-    let ifm = this.fromModules.get(from)
+    let ifm = this.fromModules.get(from);
     if (!ifm) {
       ifm = {
         namedMembers: [],
         namespaces: [],
         inlineMembers: new Set(),
-      }
-      this.fromModules.set(from, ifm)
+      };
+      this.fromModules.set(from, ifm);
     }
-    return ifm
+    return ifm;
   }
 
   private checkExportedNames(ifm: ImportedFromModule, factory: RtoModuleFactory) {
     for (const { name } of ifm.namedMembers) {
       if (!factory.hasExportedNamedType(name))
-        throw new Error(`Module '${factory.getModulePath()}' has no exported member '${name}'.`)
+        throw new Error(`Module '${factory.getModulePath()}' has no exported member '${name}'.`);
     }
     for (const name of ifm.inlineMembers) {
       if (!factory.hasExportedNamedType(name))
-        throw new Error(`Module '${factory.getModulePath()}' has no exported member '${name}'.`)
+        throw new Error(`Module '${factory.getModulePath()}' has no exported member '${name}'.`);
     }
   }
 }

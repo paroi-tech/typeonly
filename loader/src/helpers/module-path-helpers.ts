@@ -1,42 +1,42 @@
-import { dirname } from "path"
+import { dirname } from "node:path";
 
 export interface RelativeModulePath {
-  from: string
-  relativeToModule?: string
+  from: string;
+  relativeToModule?: string;
 }
 
 export interface ToModulePathOptions extends RelativeModulePath {
-  removeExtensions?: string[]
+  removeExtensions?: string[];
 }
 
 export function toModulePath(options: ToModulePathOptions): string {
   let from = options.removeExtensions
     ? removeExtensions(options.from, options.removeExtensions)
-    : options.from
+    : options.from;
   if (!from.startsWith("./") && !from.startsWith("../"))
-    throw new Error(`Module path must start with './' or '../'`)
-  let parentDir = options.relativeToModule ? dirname(options.relativeToModule) : "."
+    throw new Error("Module path must start with './' or '../'");
+  let parentDir = options.relativeToModule ? dirname(options.relativeToModule) : ".";
   while (true) {
     if (from.startsWith("./"))
-      from = from.substr(2)
+      from = from.substr(2);
     else if (from.startsWith("../")) {
-      const newDir = dirname(parentDir)
+      const newDir = dirname(parentDir);
       if (newDir === parentDir)
-        break
-      parentDir = newDir
-      from = from.substr(3)
+        break;
+      parentDir = newDir;
+      from = from.substr(3);
     } else
-      break
+      break;
   }
   if (from.startsWith("../"))
-    return from
-  return `${parentDir}/${from}`
+    return from;
+  return `${parentDir}/${from}`;
 }
 
 function removeExtensions(path: string, extensions: string[]): string {
   for (const extension of extensions) {
     if (path.endsWith(extension))
-      return path.substr(0, path.length - extension.length)
+      return path.substr(0, path.length - extension.length);
   }
-  return path
+  return path;
 }

@@ -1,4 +1,4 @@
-import RtoModuleFactory from "./RtoModuleFactory";
-import { RelativeModulePath } from "../helpers/module-path-helpers";
+import type { RelativeModulePath } from "../helpers/module-path-helpers.js";
+import type RtoModuleFactory from "./RtoModuleFactory.d.ts";
 
-export type RtoModuleLoader = (modulePath: RelativeModulePath) => Promise<RtoModuleFactory>
+export type RtoModuleLoader = (modulePath: RelativeModulePath) => Promise<RtoModuleFactory>;

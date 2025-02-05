@@ -1,71 +1,76 @@
-import { parseTypeOnly } from "../../src/api"
-import { AstInlineComment, AstNamedInterface, AstNamedType, AstStandaloneComment } from "../../src/ast"
+import { describe, expect, test } from "vitest";
+import { parseTypeOnly } from "../../src/api.js";
+import type {
+  AstInlineComment,
+  AstNamedInterface,
+  AstNamedType,
+  AstStandaloneComment,
+} from "../../src/ast.d.ts";
 
 describe("AST Specification for Comments", () => {
-
   function testStandaloneComment(source: string, text: string, syntax: "inline" | "classic") {
     test(`standalone comment: ${JSON.stringify(source).replace(/\\n/g, "\u23ce")}`, () => {
-      const ast = parseTypeOnly({ source })
-      expect(ast.declarations![0]).toEqual({
+      const ast = parseTypeOnly({ source });
+      expect(ast.declarations?.[0]).toEqual({
         whichDeclaration: "comment",
         text,
-        syntax
-      } as AstStandaloneComment)
-    })
+        syntax,
+      } as AstStandaloneComment);
+    });
   }
 
-  testStandaloneComment("// com 1", "com 1", "inline")
-  testStandaloneComment("//line 1\n// line 2", "line 1\nline 2", "inline")
-  testStandaloneComment("//  line 1\n//  line 2", " line 1\n line 2", "inline")
-  testStandaloneComment(" \n\n  // com 1  \n   \n  ", "com 1", "inline")
-  testStandaloneComment("//\n// com 1\n//", "\ncom 1\n", "inline")
+  testStandaloneComment("// com 1", "com 1", "inline");
+  testStandaloneComment("//line 1\n// line 2", "line 1\nline 2", "inline");
+  testStandaloneComment("//  line 1\n//  line 2", " line 1\n line 2", "inline");
+  testStandaloneComment(" \n\n  // com 1  \n   \n  ", "com 1", "inline");
+  testStandaloneComment("//\n// com 1\n//", "\ncom 1\n", "inline");
 
-  testStandaloneComment("/* com 1 */", "com 1", "classic")
-  testStandaloneComment("/* line 1\n line 2 */", " line 1\n line 2", "classic")
-  testStandaloneComment("/*\n * com 1\n */", "com 1", "classic")
-  testStandaloneComment(" \n\n  /* com 1 */  \n   \n  ", "com 1", "classic")
-  testStandaloneComment("/*\ncom 1\n*/", "\ncom 1\n", "classic")
-  testStandaloneComment("/*\n *\n * com 1\n *\n */", "\ncom 1\n", "classic")
+  testStandaloneComment("/* com 1 */", "com 1", "classic");
+  testStandaloneComment("/* line 1\n line 2 */", " line 1\n line 2", "classic");
+  testStandaloneComment("/*\n * com 1\n */", "com 1", "classic");
+  testStandaloneComment(" \n\n  /* com 1 */  \n   \n  ", "com 1", "classic");
+  testStandaloneComment("/*\ncom 1\n*/", "\ncom 1\n", "classic");
+  testStandaloneComment("/*\n *\n * com 1\n *\n */", "\ncom 1\n", "classic");
 
   function testInlineComment(source: string, text: string, syntax: "inline" | "classic") {
     test(`inline comment: ${JSON.stringify(source).replace(/\\n/g, "\u23ce")}`, () => {
-      const ast = parseTypeOnly({ source })
-      const namedType = ast.declarations![0] as AstNamedType
+      const ast = parseTypeOnly({ source });
+      const namedType = ast.declarations?.[0] as AstNamedType;
       expect(namedType.inlineComments).toEqual([
         {
           syntax,
-          text
-        }
-      ] as AstInlineComment[])
-    })
+          text,
+        },
+      ] as AstInlineComment[]);
+    });
   }
 
-  testInlineComment("type T1 = string // com 1", "com 1", "inline")
-  testInlineComment("type T1 = string /* com 1 */", "com 1", "classic")
-  testInlineComment("type T1 = /* com 1 */ string", "com 1", "classic")
-  testInlineComment("type T1 /* com 1 */ = string", "com 1", "classic")
-  testInlineComment("type /* com 1 */ T1 = string", "com 1", "classic")
+  testInlineComment("type T1 = string // com 1", "com 1", "inline");
+  testInlineComment("type T1 = string /* com 1 */", "com 1", "classic");
+  testInlineComment("type T1 = /* com 1 */ string", "com 1", "classic");
+  testInlineComment("type T1 /* com 1 */ = string", "com 1", "classic");
+  testInlineComment("type /* com 1 */ T1 = string", "com 1", "classic");
 
   function testDocCommentOnDeclaration(source: string, text: string) {
     test(`doc comment in declaration: ${JSON.stringify(source).replace(/\\n/g, "\u23ce")}`, () => {
-      const ast = parseTypeOnly({ source })
-      const decl = ast.declarations![0] as AstNamedType | AstNamedInterface
-      expect(decl.docComment).toBe(text)
-    })
+      const ast = parseTypeOnly({ source });
+      const decl = ast.declarations?.[0] as AstNamedType | AstNamedInterface;
+      expect(decl.docComment).toBe(text);
+    });
   }
 
   function testDocCommentsOnDeclaration(declaration: string) {
-    testDocCommentOnDeclaration(`/** com 1 */${declaration}`, "com 1")
-    testDocCommentOnDeclaration(`/** com 1 */ ${declaration}`, "com 1")
-    testDocCommentOnDeclaration(`/** com 1 */\n${declaration}`, "com 1")
-    testDocCommentOnDeclaration(`/** line 1\n line 2 */\n${declaration}`, " line 1\n line 2")
-    testDocCommentOnDeclaration(`/**\n * line 1\n * line 2\n */\n${declaration}`, "line 1\nline 2")
+    testDocCommentOnDeclaration(`/** com 1 */${declaration}`, "com 1");
+    testDocCommentOnDeclaration(`/** com 1 */ ${declaration}`, "com 1");
+    testDocCommentOnDeclaration(`/** com 1 */\n${declaration}`, "com 1");
+    testDocCommentOnDeclaration(`/** line 1\n line 2 */\n${declaration}`, " line 1\n line 2");
+    testDocCommentOnDeclaration(`/**\n * line 1\n * line 2\n */\n${declaration}`, "line 1\nline 2");
   }
 
-  testDocCommentsOnDeclaration("type T1 = string")
-  testDocCommentsOnDeclaration("interface I1 {}")
+  testDocCommentsOnDeclaration("type T1 = string");
+  testDocCommentsOnDeclaration("interface I1 {}");
 
-  test(`multiple comments`, () => {
+  test("multiple comments", () => {
     const source = `
 // standalone 1, line 1
 // standalone 1, line 2
@@ -78,31 +83,31 @@ describe("AST Specification for Comments", () => {
 type T1 = A // inline T1
 
 // standalone 3
-    `
-    const ast = parseTypeOnly({ source })
-    expect(ast.declarations![0]).toEqual({
+    `;
+    const ast = parseTypeOnly({ source });
+    expect(ast.declarations?.[0]).toEqual({
       whichDeclaration: "comment",
       text: "standalone 1, line 1\nstandalone 1, line 2",
-      syntax: "inline"
-    } as AstStandaloneComment)
-    expect(ast.declarations![1]).toEqual({
+      syntax: "inline",
+    } as AstStandaloneComment);
+    expect(ast.declarations?.[1]).toEqual({
       whichDeclaration: "comment",
       text: "standalone 2",
-      syntax: "inline"
-    } as AstStandaloneComment)
-    const namedType = ast.declarations![2] as AstNamedType
-    expect(namedType.whichDeclaration).toBe("type")
-    expect(namedType.docComment).toBe("doc T1")
+      syntax: "inline",
+    } as AstStandaloneComment);
+    const namedType = ast.declarations?.[2] as AstNamedType;
+    expect(namedType.whichDeclaration).toBe("type");
+    expect(namedType.docComment).toBe("doc T1");
     expect(namedType.inlineComments).toEqual([
       {
         syntax: "inline",
-        text: "inline T1"
-      }
-    ] as AstInlineComment[])
-    expect(ast.declarations![3]).toEqual({
+        text: "inline T1",
+      },
+    ] as AstInlineComment[]);
+    expect(ast.declarations?.[3]).toEqual({
       whichDeclaration: "comment",
       text: "standalone 3",
-      syntax: "inline"
-    } as AstStandaloneComment)
-  })
-})
+      syntax: "inline",
+    } as AstStandaloneComment);
+  });
+});

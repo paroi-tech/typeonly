@@ -1,4 +1,5 @@
-import { parseTypeOnly } from "../../src/api"
+import { describe, expect, test } from "vitest";
+import { parseTypeOnly } from "../../src/api.js";
 
 describe("AST Specification about White Spaces", () => {
   test("weird spaces do not matter", () => {
@@ -13,10 +14,10 @@ describe("AST Specification about White Spaces", () => {
  b:string
  }
 
-      `
-    const ast = parseTypeOnly({ source })
-    expect(ast.declarations!.length).toBe(1)
-  })
+      `;
+    const ast = parseTypeOnly({ source });
+    expect(ast.declarations?.length).toBe(1);
+  });
 
 
   test("new lines in a named type", () => {
@@ -29,8 +30,8 @@ number
 
 ]
 `
-    })
-  })
+    });
+  });
 
   test("new lines in a named interface", () => {
     parseTypeOnly({
@@ -43,6 +44,6 @@ export
   string
 }
 `
-    })
-  })
-})
+    });
+  });
+});

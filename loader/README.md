@@ -21,10 +21,11 @@ Create a file `src/main.js` with the following content:
 
 ```ts
 // src/main.js
-const { loadModules, literals } = require("@typeonly/loader");
+import { readFileSync } from "node:fs"
+import { loadModules, literals } from "@typeonly/loader";
 
 const modules = loadModules({
-  bundle: require(`./types.to.json`)
+  bundle: JSON.parse(readFileSync(`./types.to.json`));
 });
 
 const { ColorName } = modules["./drawing"].namedTypes;
@@ -48,4 +49,4 @@ Notice: The TypeOnly parser is used at build time. At runtime, our code only use
 
 With VS Code, our recommanded plugin is:
 
-- **TSLint** from Microsoft (`ms-vscode.vscode-typescript-tslint-plugin`)
+- **Biome** from biomejs (biomejs.dev)

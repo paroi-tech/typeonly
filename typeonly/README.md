@@ -127,12 +127,12 @@ npm install typeonly --save-dev
 Then, use it:
 
 ```js
-const { generateRtoModules } = require("typeonly");
+import { generateRtoModules } from "typeonly";
 
 const bundle = await generateRtoModules({
   modulePaths: ["./file-name"],
   readFiles: {
-    sourceDir: `${__dirname}/types`
+    sourceDir: `../types`
   },
   returnRtoModules: true
 }).catch(console.log);
@@ -163,7 +163,7 @@ In a terminal, open the cloned `typeonly/typeonly/` repository. Then:
 
 ```sh
 # Download once the ANTLR JAR file in the project's root directory
-wget https://www.antlr.org/download/antlr-4.13.1-complete.jar
+wget https://www.antlr.org/download/antlr-4.13.2-complete.jar
 
 # Install once all Node.js dependencies
 npm install
@@ -174,4 +174,4 @@ npm install
 With VS Code, our recommanded plugins are:
 
 - **ANTLR4 grammar syntax support** from Mike Lischke (`mike-lischke.vscode-antlr4`)
-- **TSLint** from Microsoft (`ms-vscode.vscode-typescript-tslint-plugin`)
+- **Biome** from biomejs (biomejs.dev)

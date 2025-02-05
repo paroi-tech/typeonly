@@ -3,9 +3,9 @@ import { createValidator } from "@typeonly/validator"
 import { readFileSync } from "fs"
 import { basename, dirname } from "path"
 import { generateRtoModules, RtoModules } from "typeonly"
-// tslint:disable-next-line: ordered-imports
-import commandLineArgs = require("command-line-args")
-import commandLineUsage = require("command-line-usage")
+
+import commandLineArgs from "command-line-args"
+import commandLineUsage from "command-line-usage"
 
 process.on("uncaughtException", err => {
   console.error("uncaughtException", err)

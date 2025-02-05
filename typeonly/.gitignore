@@ -9,6 +9,6 @@ node_modules
 
 /.antlr
 /antlr-*.jar
-/antlr-parser
+antlr-parser
 
 !/tests/import-tests/**/node_modules
