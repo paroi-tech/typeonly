@@ -1,5 +1,14 @@
 # @typeonly/validator-cli
 
+## 1.0.1
+
+### Patch Changes
+
+- 9759c6a: Documentation
+- Updated dependencies [9759c6a]
+  - @typeonly/validator@1.0.1
+  - typeonly@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

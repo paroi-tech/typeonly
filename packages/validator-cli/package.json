@@ -1,6 +1,6 @@
 {
   "name": "@typeonly/validator-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A CLI to validate JSON files, using TypeScript typing definitions.",
   "author": "Paroi",
   "type": "module",
@@ -13,10 +13,10 @@
     "lint": "biome check . --json-formatter-enabled=false --organize-imports-enabled=false"
   },
   "dependencies": {
-    "@typeonly/validator": "^1.0.0",
+    "@typeonly/validator": "^1.0.1",
     "command-line-args": "^6.0.1",
     "command-line-usage": "^7.0.3",
-    "typeonly": "^1.0.0"
+    "typeonly": "^1.0.1"
   },
   "devDependencies": {
     "@types/command-line-args": "^5.2.3",
