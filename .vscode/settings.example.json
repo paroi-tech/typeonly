@@ -1,0 +1,39 @@
+{
+  "editor.insertSpaces": true,
+  "editor.rulers": [100],
+  "editor.tabSize": 2,
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 100,
+  "files.encoding": "utf8",
+  "files.trimTrailingWhitespace": true,
+  "javascript.preferences.quoteStyle": "double",
+  "search.useIgnoreFiles": true,
+  "javascript.format.semicolons": "insert",
+  "typescript.locale": "en",
+  "typescript.format.semicolons": "insert",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.preferences.quoteStyle": "double",
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/package-lock.json": true,
+    "**/dist": true,
+    "**/CHANGELOG.md": true
+  },
+  "[typescript]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
+  "antlr4.format": {
+    "continuationIndentWidth": 2,
+    "indentWidth": 2,
+    "tabWidth": 2,
+    "useTab": false
+  }
+}

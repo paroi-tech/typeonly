@@ -1,16 +1,12 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "es2017",
-    "module": "commonjs",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "sourceMap": false,
-    "lib": [
-      "esnext"
-    ],
-    "moduleResolution": "node",
+    "lib": ["esnext"],
     "noEmit": true
   },
-  "include": [
-    ".",
-  ]
+  "include": ["."]
 }

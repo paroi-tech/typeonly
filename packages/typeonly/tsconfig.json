@@ -1,20 +1,19 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "es2017",
-    "module": "commonjs",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "sourceMap": false,
-    "lib": [
-      "esnext"
-    ],
-    "moduleResolution": "node",
+    "lib": ["esnext"],
+    "esModuleInterop": true,
     "outDir": "dist",
     "noEmitOnError": true,
     "declaration": true,
     "declarationDir": "scripts/declarations",
-    "allowJs": true
+    "allowJs": true,
+    "skipLibCheck": true,
+    "rootDir": "src"
   },
-  "include": [
-    "src",
-  ]
+  "include": ["src"]
 }

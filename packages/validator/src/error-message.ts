@@ -1,96 +1,97 @@
-import { Type } from "@typeonly/loader"
-import { Unmatch } from "./Validator"
+import type { Type } from "@typeonly/loader";
+import type { Unmatch } from "./Validator.js";
 
 export function makeErrorMessage(unmatchs: Unmatch[]): string {
-  const messages: string[] = []
+  const messages: string[] = [];
   for (const { val, type, cause, parentContextMsg } of unmatchs) {
-    let message = `${valueAsString(val)} is not conform to ${typeAsString(type)}`
-    if (cause)
-      message += `: ${cause}`
-    if (parentContextMsg)
-      message = `In ${parentContextMsg}, value ${message}`
-    else
-      message = `Value ${message}`
-    message += "."
-    messages.push(message)
+    let message = `${valueAsString(val)} is not conform to ${typeAsString(type)}`;
+    if (cause) message += `: ${cause}`;
+    if (parentContextMsg) message = `In ${parentContextMsg}, value ${message}`;
+    else message = `Value ${message}`;
+    message += ".";
+    messages.push(message);
   }
-  messages.reverse()
-  return messages.join("\n")
+  messages.reverse();
+  return messages.join("\n");
 }
 
 function valueAsString(val: unknown): string {
+  if (Array.isArray(val)) return `[array of ${val.length}]`;
   switch (typeof val) {
     case "string":
     case "number":
     case "boolean":
     case "bigint":
-      return `'${primitiveValueAsString(val)}'`
+      return `'${primitiveValueAsString(val)}'`;
     case "object":
-      if (val === null)
-        return "null"
-      return objectAsString(val as object)
+      if (val === null) return "null";
+      return objectAsString(val as object);
     case "function":
     case "symbol":
     case "undefined":
-      return typeof val
+      return typeof val;
     default:
-      throw new Error(`Unexpected typeof val: ${typeof val}`)
+      throw new Error(`Unexpected typeof val: ${typeof val}`);
   }
 }
 
 function primitiveValueAsString(val: string | number | bigint | boolean) {
   switch (typeof val) {
     case "string":
-      return JSON.stringify(val.length <= 12 ? val : val.substr(0, 12) + "…")
+      return JSON.stringify(val.length <= 12 ? val : `${val.substring(0, 12)}…`);
     case "number":
     case "boolean":
-      return String(val)
+      return String(val);
     case "bigint":
-      return `${val}n`
+      return `${val}n`;
     default:
-      throw new Error(`Unexpected primitive type: ${typeof val}`)
+      throw new Error(`Unexpected primitive type: ${typeof val}`);
   }
 }
 
 function objectAsString(obj: object) {
-  return `{${Object.entries(obj).map(([key, val]) => {
-    const t = typeof val
-    if (t === "string" || t === "number" || t === "bigint" || t === "boolean")
-      return `${key}: ${primitiveValueAsString(val)}`
-    return key
-  }).join(", ")}}`
+  return `{${Object.entries(obj)
+    .map(([key, val]) => {
+      const t = typeof val;
+      if (t === "string" || t === "number" || t === "bigint" || t === "boolean")
+        return `${key}: ${primitiveValueAsString(val)}`;
+      return key;
+    })
+    .join(", ")}}`;
 }
 
 export function typeAsString(type: Type): string {
-  if ((type as any)["name"])
-    return (type as any)["name"]
+  if ((type as any).name) return (type as any).name;
   switch (type.kind) {
     case "name":
-      return type.refName
+      return type.refName;
     case "localRef":
-      return type.refName
+      return type.refName;
     case "importedRef":
-      return type.refName
+      return type.refName;
     case "array":
-      return `${typeAsString(type.itemType)}[]`
+      return `${typeAsString(type.itemType)}[]`;
     case "tuple":
-      return `[${type.itemTypes.map(typeAsString).join(", ")}]`
+      return `[${type.itemTypes.map(typeAsString).join(", ")}]`;
     case "composite":
-      return type.op
+      return type.op;
     case "function":
     case "genericInstance":
     case "interface":
-      return type.kind
+      return type.kind;
     case "genericParameterName":
-      return type.genericParameterName
+      return type.genericParameterName;
     case "keyof":
-      return `keyof ${typeAsString(type.type)}`
+      return `keyof ${typeAsString(type.type)}`;
     case "literal":
-      return JSON.stringify(type.literal)
+      return JSON.stringify(type.literal);
     case "member":
-      const propName = typeof type.memberName !== "string" ? JSON.stringify(type.memberName.literal) : type.memberName
-      return `${typeAsString(type.parentType)}[${propName}]`
+      const propName =
+        typeof type.memberName !== "string"
+          ? JSON.stringify(type.memberName.literal)
+          : type.memberName;
+      return `${typeAsString(type.parentType)}[${propName}]`;
     default:
-      throw new Error(`Unexpected type: ${(type as Type).kind}`)
+      throw new Error(`Unexpected type: ${(type as Type).kind}`);
   }
 }

@@ -6,4 +6,4 @@ package-lock.json
 .npmrc
 
 /dist
-/bundle-tsd/declarations
+/scripts/declarations

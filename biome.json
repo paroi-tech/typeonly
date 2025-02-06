@@ -1,0 +1,49 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "javascript": {
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "noExplicitAny": "off",
+        "useValidTypeof": "off"
+      },
+      "complexity": {
+        "noForEach": "off",
+        "useSimplifiedLogicExpression": "off"
+      },
+      "a11y": {
+        "useKeyWithClickEvents": "warn",
+        "noLabelWithoutControl": "off"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
+      },
+      "correctness": {
+        "noConstantCondition": "off",
+        "noSwitchDeclarations": "off",
+        "useExhaustiveDependencies": "off",
+        "useImportExtensions": "error"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "files": {
+    "include": ["*.ts", "*.json"],
+    "ignore": ["dist", "node_modules", "scripts/declarations"]
+  },
+  "organizeImports": {
+    "enabled": true
+  }
+}

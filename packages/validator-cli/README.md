@@ -1,78 +1,15 @@
 # @typeonly/validator-cli
 
-<!-- [![Build Status](https://travis-ci.com/paroi-tech/typeonly-validator-cli.svg?branch=master)](https://travis-ci.com/paroi-tech/typeonly-validator-cli)
-[![Dependencies Status](https://david-dm.org/paroi-tech/typeonly-validator-cli/status.svg)](https://david-dm.org/paroi-tech/typeonly-validator-cli)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8a2c29e43ddf401fa7e5f80e96efdcc2)](https://www.codacy.com/manual/paleo/typeonly-validator-cli?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=paroi-tech/typeonly-validator-cli&amp;utm_campaign=Badge_Grade) -->
 [![Build Status](https://travis-ci.com/paroi-tech/typeonly.svg?branch=master)](https://travis-ci.com/paroi-tech/typeonly)
 [![npm](https://img.shields.io/npm/dm/@typeonly/validator-cli)](https://www.npmjs.com/package/@typeonly/validator-cli)
 ![Type definitions](https://img.shields.io/npm/types/@typeonly/validator-cli)
 ![GitHub](https://img.shields.io/github/license/paroi-tech/typeonly)
 
-[TypeOnly](https://github.com/paroi-tech/typeonly/tree/master/packages/typeonly) aims to be the pure typing part of TypeScript. This package provides a Command Line Interface to validate JSON with TypeScript definitions, using the TypeOnly parser.
+This package is part of **TypeOnly**, a lightweight validation library that uses TypeScript type definitions to validate JSON data. **[Learn more about TypeOnly here](https://www.npmjs.com/package/typeonly)**.
 
-## Tutorial: How to validate the conformity of a JSON file using the CLI
+## Command Line Interface of the Validator
 
-Create a file _"drawing.d.ts"_ with the following code:
-
-```ts
-// drawing.d.ts
-
-export interface Drawing {
-  color: ColorName
-  dashed?: boolean
-  shape: Rectangle | Circle
-}
-
-export type ColorName = "red" | "green" | "blue"
-
-export interface Rectangle {
-  kind: "rectangle",
-  x: number
-  y: number
-  width: number
-  height: number
-}
-
-export interface Circle {
-  kind: "circle",
-  x: number
-  y: number
-  radius: number
-}
-```
-
-Then, create a JSON file _"drawing.json"_ that must be of type `Drawing`:
-
-```json
-{
-  "color": "green",
-  "shape": {
-    "kind": "circle",
-    "x": 100,
-    "y": 100,
-    "radius": "wrong value"
-  }
-}
-```
-
-We are ready to validate the JSON file:
-
-```sh
-$ npx @typeonly/validator-cli -s drawing.d.ts -t "Drawing" drawing.json
-In property 'radius', value '"wrong value"' is not conform to number.
-```
-
-A mistake is detected in the JSON file. Fix it by replacing the value of the property `"radius"` with a valid number. For example: `"radius": 50`. And run the command again:
-
-```sh
-$ npx @typeonly/validator-cli -s drawing.d.ts -t "Drawing" drawing.json
-```
-
-Good. The validator no longer complain.
-
-## Options of Command Line Interface
-
-Example of command:
+Example:
 
 ```sh
 npx @typeonly/validator-cli -s src/file-name.d.ts -t RootTypeName data.json
@@ -92,9 +29,3 @@ Available options:
   -e, --json-encoding string       Encoding for JSON file to validate (default is utf8).
   --json file.json                 The JSON file to validate (by default at last position, one file allowed).
 ```
-
-## Contribute
-
-With VS Code, our recommanded plugin is:
-
-- **TSLint** from Microsoft (`ms-vscode.vscode-typescript-tslint-plugin`)

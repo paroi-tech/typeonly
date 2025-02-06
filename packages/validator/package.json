@@ -1,32 +1,30 @@
 {
   "name": "@typeonly/validator",
-  "version": "0.6.0",
+  "version": "1.0.1",
   "description": "An API to validate JSON data or JavaScript objects, using TypeScript typing definitions.",
-  "author": "Paroi",
+  "author": "Paroi Team",
   "scripts": {
-    "prepublishOnly": "npm run test",
-    "clear": "rimraf dist/* bundle-tsd/declarations/*",
+    "prepublishOnly": "npm run build && npm run test",
+    "clear": "rimraf dist/* scripts/declarations/*",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
-    "bundle-tsd": "node bundle-tsd/bundle-tsd",
+    "bundle-tsd": "node scripts/bundle-tsd",
     "build": "npm run clear && npm run tsc && npm run bundle-tsd",
-    "lint": "tslint -p tsconfig.json -t verbose",
-    "test:watch": "jest --watch",
-    "test": "jest"
+    "lint": "biome check . --json-formatter-enabled=false --organize-imports-enabled=false",
+    "test:watch": "vitest",
+    "test": "vitest run"
   },
   "dependencies": {
-    "@typeonly/loader": "^0.6.0"
+    "@typeonly/loader": "^1.0.1"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
-    "@types/node": "20",
-    "jest": "^29.7.0",
-    "rimraf": "^5.0.5",
-    "ts-jest": "^29.1.2",
-    "tslint": "^6.1.3",
-    "typeonly": "^0.5.0",
-    "typescript": "^5.4.2"
+    "@types/node": "22",
+    "rimraf": "^6.0.1",
+    "typeonly": "^1.0.1",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.5"
   },
+  "type": "module",
   "main": "dist/api.js",
   "types": "dist/validator.d.ts",
   "repository": {

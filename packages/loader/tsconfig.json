@@ -1,23 +1,16 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "es2017",
-    "module": "commonjs",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "sourceMap": false,
-    "lib": [
-      "esnext"
-    ],
-    "moduleResolution": "node",
+    "lib": ["esnext"],
     "outDir": "dist",
     "noEmitOnError": true,
     "declaration": true,
-    "declarationDir": "bundle-tsd/declarations"
+    "declarationDir": "scripts/declarations"
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }
