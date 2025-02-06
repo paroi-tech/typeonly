@@ -1,18 +1,21 @@
 {
-  "name": "@typeonly/loader",
+  "name": "@typeonly/validator",
   "version": "1.0.0",
-  "description": "Brings types and interfaces from TypeScript at runtime.",
-  "author": "Paroi",
+  "description": "An API to validate JSON data or JavaScript objects, using TypeScript typing definitions.",
+  "author": "Paroi Team",
   "scripts": {
     "prepublishOnly": "npm run build && npm run test",
     "clear": "rimraf dist/* scripts/declarations/*",
     "tsc": "tsc",
     "tsc:watch": "tsc --watch",
-    "bundle-tsd": "node scripts/bundle-tsd.js",
+    "bundle-tsd": "node scripts/bundle-tsd",
     "build": "npm run clear && npm run tsc && npm run bundle-tsd",
     "lint": "biome check . --json-formatter-enabled=false --organize-imports-enabled=false",
     "test:watch": "vitest",
     "test": "vitest run"
+  },
+  "dependencies": {
+    "@typeonly/loader": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "22",
@@ -23,17 +26,16 @@
   },
   "type": "module",
   "main": "dist/api.js",
-  "types": "dist/loader.d.ts",
+  "types": "dist/validator.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/paroi-tech/typeonly.git"
   },
-  "homepage": "https://github.com/paroi-tech/typeonly/tree/master/loader",
+  "homepage": "https://github.com/paroi-tech/typeonly/tree/master/packages/validator",
   "license": "CC0-1.0",
   "keywords": [
     "typescript",
-    "type",
-    "interface",
-    "runtime"
+    "json",
+    "validation"
   ]
 }

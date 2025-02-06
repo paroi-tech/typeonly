@@ -2,6 +2,7 @@
 ._*
 
 node_modules
+package-lock.json
 .npmrc
 
 /dist

@@ -432,6 +432,10 @@ export default class AstExtractor extends TypeOnlyParserListener {
     if (!compositeType) throw new Error("Missing composite type");
     this.compositeMap.delete(ctx);
     const [left, right] = compositeType.types;
+    if (!right) {
+      return;
+    }
+
     const mergeLeft =
       typeof left !== "string" && left.whichType === "composite" && left.op === compositeType.op;
     const mergeRight =

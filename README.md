@@ -32,5 +32,5 @@ npm install
 
 With VS Code, our recommanded plugins are:
 
-- **ANTLR4 grammar syntax support** from Mike Lischke (`mike-lischke.vscode-antlr4`)
 - **Biome** from biomejs (biomejs.dev)
+- **ANTLR4 grammar syntax support** from Mike Lischke (`mike-lischke.vscode-antlr4`)

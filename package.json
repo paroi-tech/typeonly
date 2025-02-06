@@ -16,5 +16,10 @@
     "@biomejs/biome": "~1.9.4",
     "@changesets/cli": "~2.27.12"
   },
-  "workspaces": ["typeonly", "loader", "validator", "validator-cli"]
+  "workspaces": [
+    "packages/typeonly",
+    "packages/loader",
+    "packages/validator",
+    "packages/validator-cli"
+  ]
 }

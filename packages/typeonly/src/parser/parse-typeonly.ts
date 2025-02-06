@@ -12,9 +12,6 @@ export function parseTypeOnlyToAst(source: string) {
 
   parser.buildParseTrees = true;
 
-  // parser.removeParseListeners();
-  // parser.addParseListener(errorListener);
-
   // console.log(debugTokensToText(tokenStream.tokens))
   // function debugTokensToText(tokens) {
   //   if (!tokens)
