@@ -1,6 +1,6 @@
 # Development
 
-The everyday workflow of this repository. Run `npm run docmap` for the full documentation — `docs/development.md` details the build, test, and tooling setup.
+The everyday workflow of this repository. Run `npm run docmap` for the full documentation — `docs/build-system.md` details the Turbo task graph and the per-package scripts.
 
 ## Stack and layout
 
@@ -26,7 +26,6 @@ Run `npm run workspace -- --guide` to learn the full procedures.
 | `npm run build` | Build all packages in dependency order (Turbo) |
 | `npm test` | Run all tests (Turbo runs build first) |
 | `npm run lint` / `npm run lint:fix` | Check / fix with Biome |
-| `npm run changeset` | Author a changeset for a release |
 | `npm run docmap` | Browse the project documentation |
 | `npm run workspace -- <command>` | Manage worktree workspaces (`--guide` for the procedures) |
 | `npm run plans:sync` | Publish and retrieve the task plans (`.plans`) |

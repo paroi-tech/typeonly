@@ -38,4 +38,4 @@ Changesets is configured to auto-update internal dependencies at patch level. Wh
 
 ## Pre-publish Check
 
-Each package runs `prepublishOnly` which executes lint, build, and test before publishing.
+Each package runs `prepublishOnly` before publishing, but not the same checks: `typeonly` runs lint, build and test; `loader` and `validator` run build and test; `validator-cli` runs build alone.
