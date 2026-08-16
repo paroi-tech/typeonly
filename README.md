@@ -23,6 +23,8 @@ wget https://www.antlr.org/download/antlr-4.13.2-complete.jar
 
 # Install once all Node.js dependencies
 npm install
+mkdir .plans   # or use plans:setup if you have a team plans repository
+npm run workspace -- setup
 ```
 
 ### Development environment
