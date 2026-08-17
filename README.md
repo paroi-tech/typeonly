@@ -18,8 +18,8 @@ We need a JVM (Java Virtual Machine) to build the parser because we use [ANTLR](
 In a terminal, open the cloned `typeonly/typeonly/` repository. Then:
 
 ```sh
-# Download once the ANTLR JAR file in the project's root directory
-wget https://www.antlr.org/download/antlr-4.13.2-complete.jar
+# Download once the ANTLR JAR file into the `packages/typeonly/` directory
+wget https://www.antlr.org/download/antlr-4.13.2-complete.jar --directory-prefix packages/typeonly
 
 # Install once all Node.js dependencies
 npm install

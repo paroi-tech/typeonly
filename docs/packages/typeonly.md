@@ -88,11 +88,11 @@ npm run build
 
 ### Prerequisites
 
-A **JVM** must be installed. The ANTLR JAR must be downloaded once:
+A **JVM** must be installed. The ANTLR JAR must be downloaded once into `packages/typeonly/`, where the `antlr` script resolves it:
 
 ```bash
 # From the monorepo root
-wget https://www.antlr.org/download/antlr-4.13.2-complete.jar
+wget https://www.antlr.org/download/antlr-4.13.2-complete.jar --directory-prefix packages/typeonly
 ```
 
 ## Common Modification Scenarios
